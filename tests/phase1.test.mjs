@@ -12,11 +12,11 @@ test("Next config uses static export, trailing slash, and Pages subpath guard", 
   assert.match(src, /Samsungdang-DojoLog-Member/);
 });
 
-test("import route reads session fragment without Phase 2 decoding", async () => {
+test("import route delegates fragment parsing without unsafe DOM insertion", async () => {
   const src = await read("app/components/fragment-probe.tsx");
-  assert.match(src, /URLSearchParams/);
-  assert.match(src, /get\("session"\)/);
-  assert.doesNotMatch(src, /JSON\.parse|TextDecoder|atob\(/);
+  assert.match(src, /parseSessionHash/);
+  assert.match(src, /useSyncExternalStore/);
+  assert.doesNotMatch(src, /innerHTML|eval\(/);
 });
 
 test("service worker is repository-subpath safe", async () => {
@@ -26,13 +26,14 @@ test("service worker is repository-subpath safe", async () => {
   assert.doesNotMatch(src, /caches\.addAll\(\[\s*"\//);
 });
 
-test("Phase 1 does not contain IndexedDB or session payload parser", async () => {
+test("Phase 2 import remains preview-only without browser storage", async () => {
   const files = [
     await read("app/page.tsx"),
     await read("app/import/page.tsx"),
-    await read("app/components/fragment-probe.tsx")
+    await read("app/components/fragment-probe.tsx"),
+    await read("app/session-share.mjs")
   ].join("\n");
-  assert.doesNotMatch(files, /indexedDB|IDBDatabase|samsungdang-dojolog-session|JSON\.parse/);
+  assert.doesNotMatch(files, /indexedDB|IDBDatabase|localStorage|sessionStorage/);
 });
 
 
