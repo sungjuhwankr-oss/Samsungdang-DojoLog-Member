@@ -9,6 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Samsungdang DojoLog - 수련자",
     short_name: "DojoLog 수련자",
     description: "내 아이키도 수련 이력을 장기간 누적해서 보는 개인 수련기록 도구",
+    id: `${basePath}/`,
     start_url: `${basePath}/`,
     scope: `${basePath}/`,
     display: "standalone",
