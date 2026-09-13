@@ -6,6 +6,8 @@ const root = process.cwd();
 const mustExist = [
   "app/page.tsx",
   "app/import/page.tsx",
+  "app/components/pwa-bootstrap.tsx",
+  "app/session-share.mjs",
   "app/manifest.ts",
   "public/sw.js",
   "scripts/inject-sw-precache.mjs",
@@ -30,8 +32,22 @@ const importPage = await readFile(path.join(root, "app/import/page.tsx"), "utf8"
 if (!importPage.includes("FragmentProbe")) throw new Error("import page must include FragmentProbe");
 
 const probe = await readFile(path.join(root, "app/components/fragment-probe.tsx"), "utf8");
-if (!probe.includes('params.get("session")')) throw new Error("fragment probe must read session parameter");
-if (/atob\(|TextDecoder|JSON\.parse/.test(probe)) throw new Error("Phase 1 fragment probe must not decode payloads");
+if (!probe.includes("parseSessionHash") || !probe.includes("../session-share.mjs")) {
+  throw new Error("fragment probe must delegate to the Phase 2 session-share parser");
+}
+if (/atob\(|TextDecoder|JSON\.parse/.test(probe)) {
+  throw new Error("fragment probe must delegate payload decoding to session-share");
+}
+
+const pwaBootstrap = await readFile(path.join(root, "app/components/pwa-bootstrap.tsx"), "utf8");
+for (const required of [
+  "beforeinstallprompt",
+  "appinstalled",
+  "navigator.serviceWorker",
+  "(display-mode: standalone)"
+]) {
+  if (!pwaBootstrap.includes(required)) throw new Error("PWA diagnostic missing " + required);
+}
 
 const sw = await readFile(path.join(root, "public/sw.js"), "utf8");
 if (!sw.includes("self.registration.scope")) throw new Error("service worker must derive its base from registration scope");
