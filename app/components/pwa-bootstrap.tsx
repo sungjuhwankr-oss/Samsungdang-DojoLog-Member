@@ -20,8 +20,14 @@ export function PwaBootstrap() {
   const [controllerStatus, setControllerStatus] =
     useState<"controlled" | "not controlled">("not controlled");
   const [registrationScope, setRegistrationScope] = useState("not registered");
-  const [displayMode, setDisplayMode] =
-    useState<"standalone" | "browser">("browser");
+  const [displayMode, setDisplayMode] = useState<"standalone" | "browser">(
+    () => {
+      if (typeof window === "undefined") return "browser";
+      return window.matchMedia("(display-mode: standalone)").matches
+        ? "standalone"
+        : "browser";
+    },
+  );
   const [appInstalled, setAppInstalled] =
     useState<"received" | "not received">("not received");
   const [userChoice, setUserChoice] = useState<
@@ -29,8 +35,11 @@ export function PwaBootstrap() {
   >("not requested");
 
   useEffect(() => {
-    const standalone = window.matchMedia("(display-mode: standalone)").matches;
-    setDisplayMode(standalone ? "standalone" : "browser");
+    const displayModeQuery = window.matchMedia("(display-mode: standalone)");
+    const onDisplayModeChange = (event: MediaQueryListEvent) => {
+      setDisplayMode(event.matches ? "standalone" : "browser");
+    };
+    displayModeQuery.addEventListener("change", onDisplayModeChange);
 
     const updateController = () => {
       setControllerStatus(
@@ -72,6 +81,7 @@ export function PwaBootstrap() {
     }
 
     return () => {
+      displayModeQuery.removeEventListener("change", onDisplayModeChange);
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
       window.removeEventListener("appinstalled", onAppInstalled);
       navigator.serviceWorker?.removeEventListener(
