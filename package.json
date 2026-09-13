@@ -1,0 +1,30 @@
+{
+  "name": "samsungdang-dojolog-member",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "node --test tests/*.test.mjs",
+    "validate:phase1": "node scripts/validate-phase1.mjs",
+    "postbuild": "node scripts/inject-sw-precache.mjs"
+  },
+  "dependencies": {
+    "next": "16.3.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.35.0",
+    "eslint-config-next": "16.3.5",
+    "typescript": "5.9.2"
+  },
+  "engines": {
+    "node": ">=22.16.0 <23"
+  }
+}
