@@ -13,11 +13,13 @@ export default function ImportPage() {
 
       <section className="panel">
         <h2>수련기록 가져오기</h2>
-        <p>Session Share Payload v1을 검증해 저장 없이 미리보기합니다.</p>
+        <p>
+          Session Share Payload v1을 검증한 뒤 사용자가 선택한 경우에만
+          IndexedDB 수련일지에 추가합니다.
+        </p>
         <FragmentProbe />
         <p className="small">
-          fragment는 브라우저 안에서만 처리되며 서버로 전송하거나 수련일지에
-          저장하지 않습니다.
+          fragment는 브라우저 안에서만 처리되며 서버로 전송하지 않습니다.
         </p>
         <a href={`${basePath}/`}>홈으로 돌아가기</a>
       </section>
