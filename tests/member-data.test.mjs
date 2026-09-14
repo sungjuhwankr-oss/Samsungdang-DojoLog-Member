@@ -118,6 +118,12 @@ test("existing Phase 3 duplicate rule remains unchanged", async () => {
   assert.match(source, /status: "conflict"/);
 });
 
+test("new promotion rank input starts empty", async () => {
+  const source = await readFile(new URL("../app/components/member-panel.tsx", import.meta.url), "utf8");
+  assert.match(source, /const \[rankValue, setRankValue\] = useState\(""\)/);
+  assert.match(source, /type="number"[\s\S]*required[\s\S]*value=\{rankValue\}/);
+});
+
 test("migration never clears or deletes existing stores", async () => {
   const source = await readFile(new URL("../app/training-store.ts", import.meta.url), "utf8");
   assert.doesNotMatch(source, /deleteObjectStore|\.clear\(|indexedDB\.deleteDatabase/);

@@ -24,7 +24,7 @@ export function MemberPanel() {
   const [profileStatus, setProfileStatus] = useState("");
   const [promotionStatus, setPromotionStatus] = useState("");
   const [rankType, setRankType] = useState<"kyu" | "dan">("kyu");
-  const [rankValue, setRankValue] = useState("9");
+  const [rankValue, setRankValue] = useState("");
   const [rankDate, setRankDate] = useState("");
   const [dateUnknown, setDateUnknown] = useState(false);
   const currentRank = useMemo(() => deriveCurrentRank(promotions), [promotions]);

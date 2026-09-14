@@ -20,7 +20,8 @@ export default function Home() {
           IndexedDB에 추가하는 최소 데이터 모델 검증 단계입니다.
         </p>
         <p className="small">
-          수련 통계, 검색, 수정·삭제, backup/restore는 구현하지 않았습니다.
+          수련 통계, 검색, 수정·삭제는 구현하지 않았습니다. 데이터 백업·전체
+          복원은 아래에서 사용할 수 있습니다.
         </p>
         <a className="cta" href={`${basePath}/import/#session=test123`}>
           import 연결 테스트
