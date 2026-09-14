@@ -1,3 +1,4 @@
+import { BackupRestorePanel } from "./components/backup-restore-panel";
 import { Diagnostics } from "./components/diagnostics";
 import { MemberPanel } from "./components/member-panel";
 import { TrainingLog } from "./components/training-log";
@@ -28,6 +29,7 @@ export default function Home() {
 
       <MemberPanel />
       <TrainingLog />
+      <BackupRestorePanel />
       <Diagnostics />
     </main>
   );
