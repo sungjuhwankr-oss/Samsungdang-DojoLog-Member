@@ -1,9 +1,13 @@
 import type { SessionPayload } from "./session-share.mjs";
+import { createMemberProfile, createPromotion, nextPromotionOrder } from "./member-data.mjs";
+import type { MemberProfile, MemberProfileInput, PromotionInput, PromotionRecord } from "./member-data.mjs";
 import {
   createTrainingRecords,
   classifyExistingSession,
   hydrateTrainingSessions,
   SESSION_KATA_STORE,
+  MEMBER_PROFILE_STORE,
+  PROMOTION_HISTORY_STORE,
   TRAINING_DB_NAME,
   TRAINING_DB_VERSION,
   TRAINING_SESSION_STORE,
@@ -55,6 +59,15 @@ function openTrainingDatabase() {
           keyPath: ["dojo", "sessionNo", "order"]
         });
         kataStore.createIndex("bySession", ["dojo", "sessionNo"]);
+      }
+
+      if (!database.objectStoreNames.contains(MEMBER_PROFILE_STORE)) {
+        database.createObjectStore(MEMBER_PROFILE_STORE, { keyPath: "id" });
+      }
+
+      if (!database.objectStoreNames.contains(PROMOTION_HISTORY_STORE)) {
+        const promotionStore = database.createObjectStore(PROMOTION_HISTORY_STORE, { keyPath: "id" });
+        promotionStore.createIndex("byOrder", "order", { unique: true });
       }
     };
 
@@ -119,6 +132,66 @@ export async function listTrainingSessions(): Promise<HydratedTrainingSession[]>
     ]);
     await transactionDone(transaction);
     return hydrateTrainingSessions(sessions, kata);
+  } finally {
+    database.close();
+  }
+}
+
+
+export async function getMemberProfile(): Promise<MemberProfile | null> {
+  const database = await openTrainingDatabase();
+  try {
+    const transaction = database.transaction(MEMBER_PROFILE_STORE, "readonly");
+    const profile = await requestResult<MemberProfile | undefined>(
+      transaction.objectStore(MEMBER_PROFILE_STORE).get("self")
+    );
+    await transactionDone(transaction);
+    return profile ?? null;
+  } finally {
+    database.close();
+  }
+}
+
+export async function saveMemberProfile(input: MemberProfileInput): Promise<MemberProfile> {
+  const profile = createMemberProfile(input);
+  const database = await openTrainingDatabase();
+  try {
+    const transaction = database.transaction(MEMBER_PROFILE_STORE, "readwrite");
+    transaction.objectStore(MEMBER_PROFILE_STORE).put(profile);
+    await transactionDone(transaction);
+    return profile;
+  } finally {
+    database.close();
+  }
+}
+
+export async function listPromotionHistory(): Promise<PromotionRecord[]> {
+  const database = await openTrainingDatabase();
+  try {
+    const transaction = database.transaction(PROMOTION_HISTORY_STORE, "readonly");
+    const records = await requestResult<PromotionRecord[]>(
+      transaction.objectStore(PROMOTION_HISTORY_STORE).getAll() as IDBRequest<PromotionRecord[]>
+    );
+    await transactionDone(transaction);
+    return records.sort((left, right) => left.order - right.order);
+  } finally {
+    database.close();
+  }
+}
+
+export async function addPromotion(input: PromotionInput): Promise<PromotionRecord> {
+  const database = await openTrainingDatabase();
+  try {
+    const transaction = database.transaction(PROMOTION_HISTORY_STORE, "readwrite");
+    const store = transaction.objectStore(PROMOTION_HISTORY_STORE);
+    const existing = await requestResult<PromotionRecord[]>(
+      store.getAll() as IDBRequest<PromotionRecord[]>
+    );
+    const order = nextPromotionOrder(existing);
+    const promotion = createPromotion(input, order, crypto.randomUUID());
+    store.add(promotion);
+    await transactionDone(transaction);
+    return promotion;
   } finally {
     database.close();
   }

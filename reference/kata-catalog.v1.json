@@ -1,0 +1,13 @@
+{
+  "catalogVersion": 1,
+  "generatedFrom": "Samsungdang DojoLog r8 confirmed Session Share Payload v1 sample",
+  "kata": [
+    {
+      "id": "뒤양손잡기-허리던지기",
+      "nameKo": "뒤양손잡기 허리던지기",
+      "attack": "뒤양손잡기",
+      "technique": "허리던지기",
+      "examGrades": []
+    }
+  ]
+}
