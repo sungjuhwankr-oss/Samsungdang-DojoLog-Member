@@ -136,6 +136,101 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 .session-list ul { margin: 4px 0 0; }
+
+.progress-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+  font-size: 1.08rem;
+}
+
+.training-day-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.training-day-grid > div {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.training-day-grid span,
+.kata-scope summary span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.training-day-grid strong { font-size: 1.12rem; }
+
+.progress-track {
+  height: 0.75rem;
+  margin-top: 1rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.progress-note { margin: 0.5rem 0; font-weight: 700; }
+.encouragement { padding-left: 0.75rem; border-left: 3px solid var(--accent); }
+.discretion-note { padding-top: 0.75rem; border-top: 1px solid var(--line); }
+
+.scope-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+.kata-scope {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem;
+}
+
+.kata-scope summary {
+  display: grid;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+
+.kata-grade-groups { display: grid; gap: 0.75rem; margin-top: 1rem; }
+.kata-grade-groups h3 { margin: 0 0 0.4rem; font-size: 0.98rem; }
+
+.kata-count-list {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kata-count-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.kata-count-list strong { white-space: nowrap; }
+.count-zero { color: var(--warn); }
+
+@media (max-width: 520px) {
+  .training-day-grid { grid-template-columns: 1fr; }
+}
+
 .storage-diagnostic {
   padding-top: 16px;
   margin-top: 16px;

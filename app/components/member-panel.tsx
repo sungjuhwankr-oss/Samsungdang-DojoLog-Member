@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { deriveCurrentRank } from "../member-data.mjs";
 import type { MemberProfile, PromotionRecord } from "../member-data.mjs";
+import { TrainingProgressPanel } from "./training-progress-panel";
 import {
   addPromotion,
   getMemberProfile,
@@ -27,6 +28,7 @@ export function MemberPanel() {
   const [rankValue, setRankValue] = useState("");
   const [rankDate, setRankDate] = useState("");
   const [dateUnknown, setDateUnknown] = useState(false);
+  const [dataStatus, setDataStatus] = useState<"loading" | "ready" | "error">("loading");
   const currentRank = useMemo(() => deriveCurrentRank(promotions), [promotions]);
 
   useEffect(() => {
@@ -36,9 +38,13 @@ export function MemberPanel() {
         if (!active) return;
         if (savedProfile) setProfile(savedProfile);
         setPromotions(savedPromotions);
+        setDataStatus("ready");
       },
       () => {
-        if (active) setProfileStatus("회원 데이터를 읽을 수 없습니다.");
+        if (active) {
+          setDataStatus("error");
+          setProfileStatus("회원 데이터를 읽을 수 없습니다.");
+        }
       }
     );
     return () => {
@@ -116,7 +122,7 @@ export function MemberPanel() {
 
       <section className="panel" aria-labelledby="promotion-title">
         <h2 id="promotion-title">승급이력</h2>
-        <p><strong>현재 급/단:</strong> {currentRank?.label ?? "기록 없음"}</p>
+        <p><strong>현재 급/단:</strong> {currentRank?.label ?? "무급 (승급이력 없음)"}</p>
         <form className="compact-form" onSubmit={submitPromotion}>
           <label>
             구분
@@ -167,6 +173,8 @@ export function MemberPanel() {
           </ol>
         )}
       </section>
+
+      <TrainingProgressPanel promotions={promotions} memberDataStatus={dataStatus} />
     </>
   );
 }
