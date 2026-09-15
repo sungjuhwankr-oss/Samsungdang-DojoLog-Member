@@ -2,6 +2,11 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 
+import kataCatalog from "../../reference/kata-catalog.v1.json";
+import {
+  KATA_CATALOG_STATUS,
+  validateSessionKataCatalog
+} from "../kata-catalog-validation.mjs";
 import {
   parseSessionHash,
   type SessionParseResult,
@@ -32,6 +37,10 @@ function ValidSessionPreview({
   warnings: string[];
 }) {
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const catalogValidation = useMemo(
+    () => validateSessionKataCatalog(payload.kata, kataCatalog),
+    [payload]
+  );
 
   async function handleSave() {
     setSaveState("saving");
@@ -57,12 +66,40 @@ function ValidSessionPreview({
       </dl>
 
       <ul className="preview-list">
-        {payload.kata.map((kata, index) => (
-          <li key={kata.id + "-" + index}>
-            <strong>{kata.name}</strong>
-            <span className="small">ID: {kata.id}</span>
-          </li>
-        ))}
+        {payload.kata.map((kata, index) => {
+          const validation = catalogValidation[index];
+
+          return (
+            <li key={kata.id + "-" + index}>
+              <strong>{kata.name}</strong>
+              <span className="small">ID: {kata.id}</span>
+
+              {validation.status === KATA_CATALOG_STATUS.UNKNOWN_ID && (
+                <>
+                  <p className="status-warn">
+                    현재 앱의 카타 목록에서 확인되지 않는 항목입니다.
+                  </p>
+                  <p className="small">
+                    원본 ID와 이름 그대로 저장할 수 있습니다.
+                  </p>
+                </>
+              )}
+
+              {validation.status === KATA_CATALOG_STATUS.KNOWN_ID_NAME_MISMATCH && (
+                <>
+                  <p className="status-warn">
+                    공유된 이름과 현재 카타 목록의 이름이 다릅니다.
+                  </p>
+                  <div className="small">공유된 이름: {validation.name}</div>
+                  <div className="small">현재 카타 이름: {validation.canonicalName}</div>
+                  <div className="small">
+                    ID는 동일하며 공유된 이름 그대로 저장할 수 있습니다.
+                  </div>
+                </>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       {warnings.map((warning) => (
@@ -99,10 +136,6 @@ function ValidSessionPreview({
           수련기록을 저장하지 못했습니다. IndexedDB 사용 가능 여부를 확인해 주세요.
         </p>
       )}
-
-      <p className="small">
-        Canonical kata catalog 비교는 확정 reference data 추가 후 Phase 2 후속으로 진행합니다.
-      </p>
     </section>
   );
 }
