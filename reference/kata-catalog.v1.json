@@ -1,13 +1,1398 @@
 {
   "catalogVersion": 1,
-  "generatedFrom": "Samsungdang DojoLog r8 confirmed Session Share Payload v1 sample",
+  "generatedFrom": {
+    "artifact": "Samsungdang DojoLog Instructor beta 0.9.9-r8 APK",
+    "apkSha256": "83d7d0ac82d91455978c0e5d8c6d673d43dd8e90836e9bec7a161597b407d659",
+    "bundlePath": "assets/www/assets/page-BMzYHYhZ.js",
+    "extraction": "r8 exam table + video table + canonical Kata factory"
+  },
+  "sourceFacts": {
+    "examTableEntries": 59,
+    "videoTableRows": 106,
+    "videoTableNames": 73,
+    "canonicalKata": 77
+  },
   "kata": [
     {
       "id": "뒤양손잡기-허리던지기",
       "nameKo": "뒤양손잡기 허리던지기",
+      "form": "입기",
       "attack": "뒤양손잡기",
       "technique": "허리던지기",
-      "examGrades": []
+      "grade": 1,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=285"
+        }
+      ]
+    },
+    {
+      "id": "양손잡기-허리던지기",
+      "nameKo": "양손잡기 허리던지기",
+      "form": "입기",
+      "attack": "양손잡기",
+      "technique": "허리던지기",
+      "grade": 1,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "1",
+          "url": "https://youtu.be/K79c41m2SIQ?t=132"
+        },
+        {
+          "label": "2",
+          "url": "https://youtu.be/K79c41m2SIQ?t=218"
+        }
+      ]
+    },
+    {
+      "id": "양어깨잡기-합기떨어뜨리기",
+      "nameKo": "양어깨잡기 합기떨어뜨리기",
+      "form": "입기",
+      "attack": "양어깨잡기",
+      "technique": "합기떨어뜨리기",
+      "grade": 1,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=916"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-합기떨어뜨리기",
+      "nameKo": "뒤양손잡기 합기떨어뜨리기",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "합기떨어뜨리기",
+      "grade": 1,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=1008"
+        }
+      ]
+    },
+    {
+      "id": "한손양손잡기-십자던지기",
+      "nameKo": "한손양손잡기 십자던지기",
+      "form": "입기",
+      "attack": "한손양손잡기",
+      "technique": "십자던지기",
+      "grade": 1,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=659"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-십자던지기",
+      "nameKo": "뒤양손잡기 십자던지기",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "십자던지기",
+      "grade": 1,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=760"
+        }
+      ]
+    },
+    {
+      "id": "뒤양어깨잡기-십자던지기",
+      "nameKo": "뒤양어깨잡기 십자던지기",
+      "form": "입기",
+      "attack": "뒤양어깨잡기",
+      "technique": "십자던지기",
+      "grade": 1,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=868"
+        }
+      ]
+    },
+    {
+      "id": "횡면타-4교",
+      "nameKo": "횡면타 4교",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "4교",
+      "grade": 2,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=878"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=933"
+        }
+      ]
+    },
+    {
+      "id": "어깨잡기-4교",
+      "nameKo": "어깨잡기 4교",
+      "form": "입기",
+      "attack": "어깨잡기",
+      "technique": "4교",
+      "grade": 2,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=983"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1033"
+        }
+      ]
+    },
+    {
+      "id": "양손잡기-4교",
+      "nameKo": "양손잡기 4교",
+      "form": "입기",
+      "attack": "양손잡기",
+      "technique": "4교",
+      "grade": 2,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1088"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1133"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-4교",
+      "nameKo": "뒤양손잡기 4교",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "4교",
+      "grade": 2,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1183"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1240"
+        }
+      ]
+    },
+    {
+      "id": "좌기-정면타-4교",
+      "nameKo": "좌기 정면타 4교",
+      "form": "좌기",
+      "attack": "정면타",
+      "technique": "4교",
+      "grade": 2,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=748"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=823"
+        }
+      ]
+    },
+    {
+      "id": "횡면타-5교",
+      "nameKo": "횡면타 5교",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "5교",
+      "grade": 2,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1478"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1528"
+        }
+      ]
+    },
+    {
+      "id": "좌기-정면타-5교",
+      "nameKo": "좌기 정면타 5교",
+      "form": "좌기",
+      "attack": "정면타",
+      "technique": "5교",
+      "grade": 2,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1351"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=1424"
+        }
+      ]
+    },
+    {
+      "id": "한손양손잡기-호흡법",
+      "nameKo": "한손양손잡기 호흡법",
+      "form": "입기",
+      "attack": "한손양손잡기",
+      "technique": "호흡법",
+      "grade": 2,
+      "hombu": true,
+      "exam": true,
+      "area": "호흡력",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1390"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1429"
+        }
+      ]
+    },
+    {
+      "id": "정면타-3교",
+      "nameKo": "정면타 3교",
+      "form": "입기",
+      "attack": "정면타",
+      "technique": "3교",
+      "grade": 3,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=115"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=205"
+        }
+      ]
+    },
+    {
+      "id": "횡면타-3교",
+      "nameKo": "횡면타 3교",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "3교",
+      "grade": 3,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=400"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=473"
+        }
+      ]
+    },
+    {
+      "id": "엇서한손잡기-3교",
+      "nameKo": "엇서한손잡기 3교",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "3교",
+      "grade": 3,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=270"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=340"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-3교",
+      "nameKo": "뒤양손잡기 3교",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "3교",
+      "grade": 3,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=548"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/XJIeNPFzw2Y?t=618"
+        }
+      ]
+    },
+    {
+      "id": "엇서한손잡기-내회전던지기",
+      "nameKo": "엇서한손잡기 내회전던지기",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "내회전던지기",
+      "grade": 3,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=885"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-내회전던지기",
+      "nameKo": "뒤양손잡기 내회전던지기",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "내회전던지기",
+      "grade": 3,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=1270"
+        }
+      ]
+    },
+    {
+      "id": "엇서한손잡기-2교",
+      "nameKo": "엇서한손잡기 2교",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "2교",
+      "grade": 4,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=811"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=896"
+        }
+      ]
+    },
+    {
+      "id": "맞서한손잡기-2교",
+      "nameKo": "맞서한손잡기 2교",
+      "form": "입기",
+      "attack": "맞서한손잡기",
+      "technique": "2교",
+      "grade": 4,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": []
+    },
+    {
+      "id": "어깨잡기-2교",
+      "nameKo": "어깨잡기 2교",
+      "form": "입기",
+      "attack": "어깨잡기",
+      "technique": "2교",
+      "grade": 4,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=966"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=1026"
+        }
+      ]
+    },
+    {
+      "id": "한손양손잡기-2교",
+      "nameKo": "한손양손잡기 2교",
+      "form": "입기",
+      "attack": "한손양손잡기",
+      "technique": "2교",
+      "grade": 4,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=1096"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=1186"
+        }
+      ]
+    },
+    {
+      "id": "좌기-정면타-2교",
+      "nameKo": "좌기 정면타 2교",
+      "form": "좌기",
+      "attack": "정면타",
+      "technique": "2교",
+      "grade": 4,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=694"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=756"
+        }
+      ]
+    },
+    {
+      "id": "엇서한손잡기-외회전던지기",
+      "nameKo": "엇서한손잡기 외회전던지기",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "외회전던지기",
+      "grade": 4,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=970"
+        }
+      ]
+    },
+    {
+      "id": "정면타-외회전던지기",
+      "nameKo": "정면타 외회전던지기",
+      "form": "입기",
+      "attack": "정면타",
+      "technique": "외회전던지기",
+      "grade": 4,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=1085"
+        }
+      ]
+    },
+    {
+      "id": "찌르기-외회전던지기",
+      "nameKo": "찌르기 외회전던지기",
+      "form": "입기",
+      "attack": "찌르기",
+      "technique": "외회전던지기",
+      "grade": 4,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=1190"
+        }
+      ]
+    },
+    {
+      "id": "횡면타-사방던지기",
+      "nameKo": "횡면타 사방던지기",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "사방던지기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/19vFET0GM1g?t=768"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/19vFET0GM1g?t=833"
+        }
+      ]
+    },
+    {
+      "id": "양손잡기-사방던지기",
+      "nameKo": "양손잡기 사방던지기",
+      "form": "입기",
+      "attack": "양손잡기",
+      "technique": "사방던지기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/19vFET0GM1g?t=1178"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/19vFET0GM1g?t=1243"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-사방던지기",
+      "nameKo": "뒤양손잡기 사방던지기",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "사방던지기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/19vFET0GM1g?t=1298"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/19vFET0GM1g?t=1368"
+        }
+      ]
+    },
+    {
+      "id": "반신반립-엇서한손잡기-사방던지기",
+      "nameKo": "반신반립 엇서한손잡기 사방던지기",
+      "form": "반신반립",
+      "attack": "엇서한손잡기",
+      "technique": "사방던지기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/19vFET0GM1g?t=903"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/19vFET0GM1g?t=983"
+        }
+      ]
+    },
+    {
+      "id": "반신반립-양손잡기-사방던지기",
+      "nameKo": "반신반립 양손잡기 사방던지기",
+      "form": "반신반립",
+      "attack": "양손잡기",
+      "technique": "사방던지기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/19vFET0GM1g?t=1033"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/19vFET0GM1g?t=1123"
+        }
+      ]
+    },
+    {
+      "id": "찌르기-손목뒤집기",
+      "nameKo": "찌르기 손목뒤집기",
+      "form": "입기",
+      "attack": "찌르기",
+      "technique": "손목뒤집기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "1",
+          "url": "https://youtu.be/dQTPeYz_qXU?t=111"
+        },
+        {
+          "label": "2",
+          "url": "https://youtu.be/dQTPeYz_qXU?t=226"
+        }
+      ]
+    },
+    {
+      "id": "엇서한손잡기-손목뒤집기",
+      "nameKo": "엇서한손잡기 손목뒤집기",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "손목뒤집기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=303"
+        }
+      ]
+    },
+    {
+      "id": "정면타-손목뒤집기",
+      "nameKo": "정면타 손목뒤집기",
+      "form": "입기",
+      "attack": "정면타",
+      "technique": "손목뒤집기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=408"
+        }
+      ]
+    },
+    {
+      "id": "횡면타-손목뒤집기",
+      "nameKo": "횡면타 손목뒤집기",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "손목뒤집기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=503"
+        }
+      ]
+    },
+    {
+      "id": "한손양손잡기-손목뒤집기",
+      "nameKo": "한손양손잡기 손목뒤집기",
+      "form": "입기",
+      "attack": "한손양손잡기",
+      "technique": "손목뒤집기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=625"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-손목뒤집기",
+      "nameKo": "뒤양손잡기 손목뒤집기",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "손목뒤집기",
+      "grade": 5,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/dQTPeYz_qXU?t=745"
+        }
+      ]
+    },
+    {
+      "id": "정면타-입신던지기",
+      "nameKo": "정면타 입신던지기",
+      "form": "입기",
+      "attack": "정면타",
+      "technique": "입신던지기",
+      "grade": 6,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/19vFET0GM1g?t=116"
+        }
+      ]
+    },
+    {
+      "id": "횡면타-입신던지기",
+      "nameKo": "횡면타 입신던지기",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "입신던지기",
+      "grade": 6,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/19vFET0GM1g?t=187"
+        }
+      ]
+    },
+    {
+      "id": "찌르기-입신던지기",
+      "nameKo": "찌르기 입신던지기",
+      "form": "입기",
+      "attack": "찌르기",
+      "technique": "입신던지기",
+      "grade": 6,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/19vFET0GM1g?t=558"
+        }
+      ]
+    },
+    {
+      "id": "엇서한손잡기-입신던지기",
+      "nameKo": "엇서한손잡기 입신던지기",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "입신던지기",
+      "grade": 6,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/19vFET0GM1g?t=348"
+        }
+      ]
+    },
+    {
+      "id": "양손잡기-입신던지기",
+      "nameKo": "양손잡기 입신던지기",
+      "form": "입기",
+      "attack": "양손잡기",
+      "technique": "입신던지기",
+      "grade": 6,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/19vFET0GM1g?t=422"
+        }
+      ]
+    },
+    {
+      "id": "한손양손잡기-입신던지기",
+      "nameKo": "한손양손잡기 입신던지기",
+      "form": "입기",
+      "attack": "한손양손잡기",
+      "technique": "입신던지기",
+      "grade": 6,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/19vFET0GM1g?t=488"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-입신던지기",
+      "nameKo": "뒤양손잡기 입신던지기",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "입신던지기",
+      "grade": 6,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/19vFET0GM1g?t=628"
+        }
+      ]
+    },
+    {
+      "id": "양손잡기-천지던지기",
+      "nameKo": "양손잡기 천지던지기",
+      "form": "입기",
+      "attack": "양손잡기",
+      "technique": "천지던지기",
+      "grade": 6,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/dQTPeYz_qXU?t=1400"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/dQTPeYz_qXU?t=1465"
+        }
+      ]
+    },
+    {
+      "id": "정면타-1교",
+      "nameKo": "정면타 1교",
+      "form": "입기",
+      "attack": "정면타",
+      "technique": "1교",
+      "grade": 7,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1250"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1285"
+        }
+      ]
+    },
+    {
+      "id": "어깨잡기-1교",
+      "nameKo": "어깨잡기 1교",
+      "form": "입기",
+      "attack": "어깨잡기",
+      "technique": "1교",
+      "grade": 7,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=386"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=456"
+        }
+      ]
+    },
+    {
+      "id": "횡면타-1교",
+      "nameKo": "횡면타 1교",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "1교",
+      "grade": 7,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=258"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=324"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-1교",
+      "nameKo": "뒤양손잡기 1교",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "1교",
+      "grade": 7,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=510"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=590"
+        }
+      ]
+    },
+    {
+      "id": "좌기-정면타-1교",
+      "nameKo": "좌기 정면타 1교",
+      "form": "좌기",
+      "attack": "정면타",
+      "technique": "1교",
+      "grade": 7,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=132"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=195"
+        }
+      ]
+    },
+    {
+      "id": "맞서한손잡기-입신던지기",
+      "nameKo": "맞서한손잡기 입신던지기",
+      "form": "입기",
+      "attack": "맞서한손잡기",
+      "technique": "입신던지기",
+      "grade": 8,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/19vFET0GM1g?t=277"
+        }
+      ]
+    },
+    {
+      "id": "맞서한손잡기-손목뒤집기",
+      "nameKo": "맞서한손잡기 손목뒤집기",
+      "form": "입기",
+      "attack": "맞서한손잡기",
+      "technique": "손목뒤집기",
+      "grade": 8,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": []
+    },
+    {
+      "id": "맞서한손잡기-1교",
+      "nameKo": "맞서한손잡기 1교",
+      "form": "입기",
+      "attack": "맞서한손잡기",
+      "technique": "1교",
+      "grade": 8,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1151"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1201"
+        }
+      ]
+    },
+    {
+      "id": "엇서한손잡기-사방던지기",
+      "nameKo": "엇서한손잡기 사방던지기",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "사방던지기",
+      "grade": 8,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1041"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1111"
+        }
+      ]
+    },
+    {
+      "id": "엇서한손잡기-구석던지기",
+      "nameKo": "엇서한손잡기 구석던지기",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "구석던지기",
+      "grade": 9,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": []
+    },
+    {
+      "id": "엇서한손잡기-호흡던지기",
+      "nameKo": "엇서한손잡기 호흡던지기",
+      "form": "입기",
+      "attack": "엇서한손잡기",
+      "technique": "호흡던지기",
+      "grade": 9,
+      "hombu": true,
+      "exam": true,
+      "area": "일반 체술",
+      "links": []
+    },
+    {
+      "id": "좌기-호흡법",
+      "nameKo": "좌기 호흡법",
+      "form": "좌기",
+      "attack": "호흡법",
+      "technique": "호흡법",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "호흡력",
+      "links": [
+        {
+          "url": "https://youtu.be/HmTnMlx5GrA?t=1362"
+        }
+      ]
+    },
+    {
+      "id": "맞서한손잡기에서-바로-넣는-2교",
+      "nameKo": "맞서한손잡기에서 바로 넣는 2교",
+      "form": "입기",
+      "attack": "맞서한손잡기",
+      "technique": "2교",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/u_7Mgi_VnaE?t=1247"
+        }
+      ]
+    },
+    {
+      "id": "한손양손잡기-호흡던지기",
+      "nameKo": "한손양손잡기 호흡던지기",
+      "form": "입기",
+      "attack": "한손양손잡기",
+      "technique": "호흡던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=393"
+        }
+      ]
+    },
+    {
+      "id": "횡면타-호흡던지기",
+      "nameKo": "횡면타 호흡던지기",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "호흡던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=473"
+        }
+      ]
+    },
+    {
+      "id": "뒤양손잡기-호흡던지기",
+      "nameKo": "뒤양손잡기 호흡던지기",
+      "form": "입기",
+      "attack": "뒤양손잡기",
+      "technique": "호흡던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "일반 체술",
+      "links": [
+        {
+          "url": "https://youtu.be/K79c41m2SIQ?t=568"
+        }
+      ]
+    },
+    {
+      "id": "2인-잡기-사방던지기",
+      "nameKo": "2인 잡기 사방던지기",
+      "form": "입기",
+      "attack": "2인 잡기",
+      "technique": "사방던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "다인 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=141"
+        }
+      ]
+    },
+    {
+      "id": "2인-잡기-호흡던지기-1",
+      "nameKo": "2인 잡기 호흡던지기 1",
+      "form": "입기",
+      "attack": "2인 잡기",
+      "technique": "호흡던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "다인 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=226"
+        }
+      ]
+    },
+    {
+      "id": "2인-잡기-호흡던지기-2",
+      "nameKo": "2인 잡기 호흡던지기 2",
+      "form": "입기",
+      "attack": "2인 잡기",
+      "technique": "호흡던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "다인 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=306"
+        }
+      ]
+    },
+    {
+      "id": "단도-뺏기-좌기-정면타-5교",
+      "nameKo": "단도 뺏기 좌기 정면타 5교",
+      "form": "좌기",
+      "attack": "정면타",
+      "technique": "5교",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/l0TaZJsXiIo?t=376"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/l0TaZJsXiIo?t=493"
+        }
+      ]
+    },
+    {
+      "id": "단도-뺏기-횡면타-5교",
+      "nameKo": "단도 뺏기 횡면타 5교",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "5교",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "label": "오모테",
+          "url": "https://youtu.be/l0TaZJsXiIo?t=593"
+        },
+        {
+          "label": "우라",
+          "url": "https://youtu.be/l0TaZJsXiIo?t=713"
+        }
+      ]
+    },
+    {
+      "id": "단도-뺏기-찌르기-팔꿈치굳히기(6교)",
+      "nameKo": "단도 뺏기 찌르기 팔꿈치굳히기(6교)",
+      "form": "입기",
+      "attack": "찌르기",
+      "technique": "팔꿈치굳히기(6교)",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=819"
+        }
+      ]
+    },
+    {
+      "id": "단도-뺏기-찌르기-손목뒤집기",
+      "nameKo": "단도 뺏기 찌르기 손목뒤집기",
+      "form": "입기",
+      "attack": "찌르기",
+      "technique": "손목뒤집기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=909"
+        }
+      ]
+    },
+    {
+      "id": "단도-뺏기-횡면타-사방던지기",
+      "nameKo": "단도 뺏기 횡면타 사방던지기",
+      "form": "입기",
+      "attack": "횡면타",
+      "technique": "사방던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=989"
+        }
+      ]
+    },
+    {
+      "id": "검-뺏기-손목뒤집기",
+      "nameKo": "검 뺏기 손목뒤집기",
+      "form": "입기",
+      "attack": "손목뒤집기",
+      "technique": "손목뒤집기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=1079"
+        }
+      ]
+    },
+    {
+      "id": "검-뺏기-호흡던지기",
+      "nameKo": "검 뺏기 호흡던지기",
+      "form": "입기",
+      "attack": "호흡던지기",
+      "technique": "호흡던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=1149"
+        }
+      ]
+    },
+    {
+      "id": "장-뺏기-입신던지기",
+      "nameKo": "장 뺏기 입신던지기",
+      "form": "입기",
+      "attack": "입신던지기",
+      "technique": "입신던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=1219"
+        }
+      ]
+    },
+    {
+      "id": "장-뺏기-호흡던지기",
+      "nameKo": "장 뺏기 호흡던지기",
+      "form": "입기",
+      "attack": "호흡던지기",
+      "technique": "호흡던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=1274"
+        }
+      ]
+    },
+    {
+      "id": "장-뺏기-사방던지기",
+      "nameKo": "장 뺏기 사방던지기",
+      "form": "입기",
+      "attack": "사방던지기",
+      "technique": "사방던지기",
+      "grade": null,
+      "hombu": true,
+      "exam": false,
+      "area": "무기 잡기",
+      "links": [
+        {
+          "url": "https://youtu.be/l0TaZJsXiIo?t=1339"
+        }
+      ]
     }
   ]
 }

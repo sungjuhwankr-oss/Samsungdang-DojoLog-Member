@@ -1,0 +1,737 @@
+{
+  "terminologyVersion": 1,
+  "generatedFrom": {
+    "artifact": "Phase 4B attached terminology PDF",
+    "pdfSha256": "16abb6589f9bb29a459350e0983e6f8d83975216c1f29e861358dc9f438ee905",
+    "overrides": "Phase 4B authoritative project terminology"
+  },
+  "sourceNotes": [
+    {
+      "termId": "엇서",
+      "field": "romaji",
+      "pdfValue": "`",
+      "resolvedValue": "Gyaku-hanmi",
+      "reason": "Phase 4B authoritative override"
+    },
+    {
+      "termId": "허리던지기",
+      "field": "ko",
+      "pdfValue": "허러딘지기",
+      "resolvedValue": "허리던지기",
+      "reason": "Instructor r8 canonical Korean technique identity is preserved; the PDF value remains an alias."
+    },
+    {
+      "termId": "한손양손잡기",
+      "field": "primary/alternates",
+      "pdfValue": [
+        "諸手取り",
+        "morotedori",
+        "片手両手取り",
+        "katateryotedori"
+      ],
+      "resolvedValue": {
+        "primary": {
+          "ja": "諸手取り",
+          "romaji": "morotedori"
+        },
+        "alternates": [
+          {
+            "ja": "片手両手取り",
+            "romaji": "katateryotedori"
+          }
+        ]
+      },
+      "reason": "Phase 4B dual-alias rule"
+    },
+    {
+      "termId": "구석던지기",
+      "field": "ja/romaji",
+      "pdfValue": "隅落し / sumiotoshi",
+      "resolvedValue": "隅落とし / Sumi-otoshi",
+      "reason": "Phase 4B authoritative override"
+    }
+  ],
+  "terms": [
+    {
+      "id": "엇서",
+      "category": "basic",
+      "ko": "엇서",
+      "ja": "逆半身",
+      "romaji": "Gyaku-hanmi",
+      "aliases": ["갸쿠한미"],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "앞",
+      "category": "basic",
+      "ko": "앞",
+      "ja": "前",
+      "romaji": "mae",
+      "aliases": ["마에"],
+      "source": "pdf"
+    },
+    {
+      "id": "오른쪽",
+      "category": "basic",
+      "ko": "오른쪽",
+      "ja": "右",
+      "romaji": "migi",
+      "aliases": ["미기"],
+      "source": "pdf"
+    },
+    {
+      "id": "우반신",
+      "category": "basic",
+      "ko": "우반신",
+      "ja": "右半身",
+      "romaji": "migi-hanmi",
+      "aliases": ["미기한미"],
+      "source": "pdf"
+    },
+    {
+      "id": "측면",
+      "category": "basic",
+      "ko": "측면",
+      "ja": "側面",
+      "romaji": "sokumen",
+      "aliases": ["소쿠멘"],
+      "source": "pdf"
+    },
+    {
+      "id": "정면",
+      "category": "basic",
+      "ko": "정면",
+      "ja": "正面",
+      "romaji": "shomen",
+      "aliases": ["쇼멘"],
+      "source": "pdf"
+    },
+    {
+      "id": "무릎걸음",
+      "category": "basic",
+      "ko": "무릎걸음",
+      "ja": "膝行",
+      "romaji": "shikko",
+      "aliases": ["싯코"],
+      "source": "pdf"
+    },
+    {
+      "id": "맞서",
+      "category": "basic",
+      "ko": "맞서",
+      "ja": "相半身",
+      "romaji": "ai-hanmi",
+      "aliases": ["아이한미"],
+      "source": "pdf"
+    },
+    {
+      "id": "옆",
+      "category": "basic",
+      "ko": "옆",
+      "ja": "横",
+      "romaji": "yoko",
+      "aliases": ["요코"],
+      "source": "pdf"
+    },
+    {
+      "id": "횡면",
+      "category": "basic",
+      "ko": "횡면",
+      "ja": "横面",
+      "romaji": "yokomen",
+      "aliases": ["요코멘"],
+      "source": "pdf"
+    },
+    {
+      "id": "뒤",
+      "category": "basic",
+      "ko": "뒤",
+      "ja": "後ろ",
+      "romaji": "ushiro",
+      "aliases": ["우시로"],
+      "source": "pdf"
+    },
+    {
+      "id": "받기",
+      "category": "basic",
+      "ko": "받기",
+      "ja": "受け",
+      "romaji": "uke",
+      "aliases": ["우케"],
+      "source": "pdf"
+    },
+    {
+      "id": "낙법",
+      "category": "basic",
+      "ko": "낙법",
+      "ja": "受け身",
+      "romaji": "ukemi",
+      "aliases": ["우케미"],
+      "source": "pdf"
+    },
+    {
+      "id": "입신",
+      "category": "basic",
+      "ko": "입신",
+      "ja": "入り身",
+      "romaji": "irimi",
+      "aliases": ["이리미"],
+      "source": "pdf"
+    },
+    {
+      "id": "자세",
+      "category": "basic",
+      "ko": "자세",
+      "ja": "構え",
+      "romaji": "kamae",
+      "aliases": ["카마에"],
+      "source": "pdf"
+    },
+    {
+      "id": "되치기",
+      "category": "basic",
+      "ko": "되치기",
+      "ja": "返し",
+      "romaji": "kaeshi",
+      "aliases": ["카에시"],
+      "source": "pdf"
+    },
+    {
+      "id": "회전",
+      "category": "basic",
+      "ko": "회전",
+      "ja": "回転",
+      "romaji": "kaiten",
+      "aliases": ["카이텐"],
+      "source": "pdf"
+    },
+    {
+      "id": "형-틀",
+      "category": "basic",
+      "ko": "형, 틀",
+      "ja": "形",
+      "romaji": "kata",
+      "aliases": ["카타"],
+      "source": "pdf"
+    },
+    {
+      "id": "몸다루기-풋워크",
+      "category": "basic",
+      "ko": "몸다루기, 풋워크",
+      "ja": "体捌き",
+      "romaji": "taisabaki",
+      "aliases": ["타이사바키"],
+      "source": "pdf"
+    },
+    {
+      "id": "전회",
+      "category": "basic",
+      "ko": "전회",
+      "ja": "転回",
+      "romaji": "tenkai",
+      "aliases": ["텐카이"],
+      "source": "pdf"
+    },
+    {
+      "id": "전환",
+      "category": "basic",
+      "ko": "전환",
+      "ja": "転換",
+      "romaji": "tenkan",
+      "aliases": ["텐칸"],
+      "source": "pdf"
+    },
+    {
+      "id": "잡기",
+      "category": "basic",
+      "ko": "잡기",
+      "ja": "取り",
+      "romaji": "tori",
+      "aliases": ["토리"],
+      "source": "pdf"
+    },
+    {
+      "id": "반신",
+      "category": "basic",
+      "ko": "반신",
+      "ja": "半身",
+      "romaji": "hanmi",
+      "aliases": ["한미"],
+      "source": "pdf"
+    },
+    {
+      "id": "왼쪽",
+      "category": "basic",
+      "ko": "왼쪽",
+      "ja": "左",
+      "romaji": "hidari",
+      "aliases": ["히다리"],
+      "source": "pdf"
+    },
+    {
+      "id": "좌반신",
+      "category": "basic",
+      "ko": "좌반신",
+      "ja": "左半身",
+      "romaji": "hidari-hanmi",
+      "aliases": ["히다리한미"],
+      "source": "pdf"
+    },
+    {
+      "id": "수부리",
+      "category": "weaponPractice",
+      "ko": "수부리",
+      "ja": "素振り",
+      "romaji": "suburi",
+      "aliases": [],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "장",
+      "category": "weapon",
+      "ko": "장",
+      "ja": "杖",
+      "romaji": "jo",
+      "aliases": ["조"],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "검",
+      "category": "weapon",
+      "ko": "검",
+      "ja": "剣",
+      "romaji": "ken",
+      "aliases": ["켄"],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "장-상대연습",
+      "category": "weaponPractice",
+      "ko": "장 상대연습",
+      "ja": "杖の会わせ",
+      "romaji": "jo no awase",
+      "aliases": ["조 노 아와세"],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "검-상대연습",
+      "category": "weaponPractice",
+      "ko": "검 상대연습",
+      "ja": "剣の会わせ",
+      "romaji": "ken no awase",
+      "aliases": ["켄 노 아와세"],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "쿠미타치",
+      "category": "weaponPractice",
+      "ko": "쿠미타치",
+      "ja": "組太刀",
+      "romaji": "kumitachi",
+      "aliases": [],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "양손잡기",
+      "category": "attack",
+      "ko": "양손잡기",
+      "ja": "両手",
+      "romaji": "ryotedori",
+      "aliases": ["료테도리"],
+      "source": "pdf"
+    },
+    {
+      "id": "한손양손잡기",
+      "category": "attack",
+      "ko": "한손양손잡기",
+      "ja": "諸手取り",
+      "romaji": "morotedori",
+      "aliases": ["모로테도리", "카타테료테도리"],
+      "alternates": [
+        {
+          "ja": "片手両手取り",
+          "romaji": "katateryotedori"
+        }
+      ],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "정면타",
+      "category": "attack",
+      "ko": "정면타",
+      "ja": "正面打ち",
+      "romaji": "shomenuchi",
+      "aliases": ["쇼멘우치"],
+      "source": "pdf"
+    },
+    {
+      "id": "횡면타",
+      "category": "attack",
+      "ko": "횡면타",
+      "ja": "横面打ち",
+      "romaji": "yokomenuchi",
+      "aliases": ["요코멘우치"],
+      "source": "pdf"
+    },
+    {
+      "id": "뒤양손잡기",
+      "category": "attack",
+      "ko": "뒤양손잡기",
+      "ja": "後ろ両手取り",
+      "romaji": "ushiroryotedori",
+      "aliases": ["우시로료테도리"],
+      "source": "pdf"
+    },
+    {
+      "id": "찌르기",
+      "category": "attack",
+      "ko": "찌르기",
+      "ja": "突き",
+      "romaji": "tsuki",
+      "aliases": ["츠키"],
+      "source": "pdf"
+    },
+    {
+      "id": "어깨잡기",
+      "category": "attack",
+      "ko": "어깨잡기",
+      "ja": "肩取り",
+      "romaji": "katadori",
+      "aliases": ["카타도리"],
+      "source": "pdf"
+    },
+    {
+      "id": "한손잡기",
+      "category": "attack",
+      "ko": "한손잡기",
+      "ja": "片手取り",
+      "romaji": "katatedori",
+      "aliases": ["카타테도리"],
+      "source": "pdf"
+    },
+    {
+      "id": "양어깨잡기",
+      "category": "attack",
+      "ko": "양어깨잡기",
+      "ja": "両肩取り",
+      "romaji": "Ryo-katadori",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "뒤양어깨잡기",
+      "category": "attack",
+      "ko": "뒤양어깨잡기",
+      "ja": "後ろ両肩取り",
+      "romaji": "Ushiro-ryokatadori",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "2인-잡기",
+      "category": "attack",
+      "ko": "2인 잡기",
+      "ja": "二人取り",
+      "romaji": "Ninin-dori",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "5교",
+      "category": "technique",
+      "ko": "5교",
+      "ja": "5敎",
+      "romaji": "gokyo",
+      "aliases": ["고쿄"],
+      "source": "pdf"
+    },
+    {
+      "id": "2교",
+      "category": "technique",
+      "ko": "2교",
+      "ja": "2敎",
+      "romaji": "nikyo",
+      "aliases": ["니쿄"],
+      "source": "pdf"
+    },
+    {
+      "id": "3교",
+      "category": "technique",
+      "ko": "3교",
+      "ja": "3敎",
+      "romaji": "sankyo",
+      "aliases": ["산쿄"],
+      "source": "pdf"
+    },
+    {
+      "id": "측면입신던지기",
+      "category": "technique",
+      "ko": "측면입신던지기",
+      "ja": "側面入り身投げ",
+      "romaji": "sokumen iriminage",
+      "aliases": ["소쿠멘이리미나게"],
+      "source": "pdf"
+    },
+    {
+      "id": "구석던지기",
+      "category": "technique",
+      "ko": "구석던지기",
+      "ja": "隅落とし",
+      "romaji": "Sumi-otoshi",
+      "aliases": ["스미오토시", "隅落し", "sumiotoshi"],
+      "source": "pdf+userOverride"
+    },
+    {
+      "id": "사방던지기",
+      "category": "technique",
+      "ko": "사방던지기",
+      "ja": "四方投げ",
+      "romaji": "shihonage",
+      "aliases": ["시호나게"],
+      "source": "pdf"
+    },
+    {
+      "id": "합기떨어뜨리기",
+      "category": "technique",
+      "ko": "합기떨어뜨리기",
+      "ja": "合気落し",
+      "romaji": "aikiotoshi",
+      "aliases": ["아이키오토시"],
+      "source": "pdf"
+    },
+    {
+      "id": "4교",
+      "category": "technique",
+      "ko": "4교",
+      "ja": "4敎",
+      "romaji": "yonkyo",
+      "aliases": ["욘코"],
+      "source": "pdf"
+    },
+    {
+      "id": "입신던지기",
+      "category": "technique",
+      "ko": "입신던지기",
+      "ja": "入り身投げ",
+      "romaji": "iriminage",
+      "aliases": ["이리미나게"],
+      "source": "pdf"
+    },
+    {
+      "id": "1교",
+      "category": "technique",
+      "ko": "1교",
+      "ja": "1敎",
+      "romaji": "ikkyo",
+      "aliases": ["잇쿄"],
+      "source": "pdf"
+    },
+    {
+      "id": "회전던지기",
+      "category": "technique",
+      "ko": "회전던지기",
+      "ja": "回転投げ",
+      "romaji": "kaitennage",
+      "aliases": ["카이텐나게"],
+      "source": "pdf"
+    },
+    {
+      "id": "허리던지기",
+      "category": "technique",
+      "ko": "허리던지기",
+      "ja": "腰投げ",
+      "romaji": "koshinage",
+      "aliases": ["코시나게", "허러딘지기"],
+      "source": "pdf+apkCanonical"
+    },
+    {
+      "id": "호흡던지기",
+      "category": "technique",
+      "ko": "호흡던지기",
+      "ja": "呼吸投げ",
+      "romaji": "kokyunage",
+      "aliases": ["코큐나게"],
+      "source": "pdf"
+    },
+    {
+      "id": "손목뒤집기",
+      "category": "technique",
+      "ko": "손목뒤집기",
+      "ja": "小手返し",
+      "romaji": "kotegaeshi",
+      "aliases": ["코테가에시"],
+      "source": "pdf"
+    },
+    {
+      "id": "천지던지기",
+      "category": "technique",
+      "ko": "천지던지기",
+      "ja": "天地投げ",
+      "romaji": "tenchinage",
+      "aliases": ["텐치나게"],
+      "source": "pdf"
+    },
+    {
+      "id": "팔꿈치굳혀던지기",
+      "category": "technique",
+      "ko": "팔꿈치굳혀던지기",
+      "ja": "肘極め投げ",
+      "romaji": "hijikimenage",
+      "aliases": ["히지키메나게"],
+      "source": "pdf"
+    },
+    {
+      "id": "내회전던지기",
+      "category": "technique",
+      "ko": "내회전던지기",
+      "ja": "内回転投げ",
+      "romaji": "Uchi-kaiten-nage",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "외회전던지기",
+      "category": "technique",
+      "ko": "외회전던지기",
+      "ja": "外回転投げ",
+      "romaji": "Soto-kaiten-nage",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "십자던지기",
+      "category": "technique",
+      "ko": "십자던지기",
+      "ja": "十字投げ",
+      "romaji": "Juji-nage",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "호흡법",
+      "category": "technique",
+      "ko": "호흡법",
+      "ja": "呼吸法",
+      "romaji": "Kokyuho",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "팔꿈치굳히기-6교",
+      "category": "technique",
+      "ko": "팔꿈치굳히기(6교)",
+      "ja": "肘決め(六教）",
+      "romaji": "Hiji-kime(Rokkyo)",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "좌기",
+      "category": "form",
+      "ko": "좌기",
+      "ja": "座技",
+      "romaji": "Suwariwaza",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "반신반립",
+      "category": "form",
+      "ko": "반신반립",
+      "ja": "半身半立ち",
+      "romaji": "Hanmi-handachi",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "입기",
+      "category": "form",
+      "ko": "입기",
+      "ja": "立ち技",
+      "romaji": "Tachi-waza",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "단도-뺏기",
+      "category": "weaponDefense",
+      "ko": "단도 뺏기",
+      "ja": "短刀取り",
+      "romaji": "Tanto-dori",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "검-뺏기",
+      "category": "weaponDefense",
+      "ko": "검 뺏기",
+      "ja": "太刀取り",
+      "romaji": "Tachi-dori",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "장-뺏기",
+      "category": "weaponDefense",
+      "ko": "장 뺏기",
+      "ja": "杖取り",
+      "romaji": "Jo-dori",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "오모테",
+      "category": "modifier",
+      "ko": "오모테",
+      "ja": "表",
+      "romaji": "Omote",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "우라",
+      "category": "modifier",
+      "ko": "우라",
+      "ja": "裏",
+      "romaji": "Ura",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "좌기-호흡법",
+      "category": "specialKata",
+      "ko": "좌기 호흡법",
+      "ja": "座技 呼吸法",
+      "romaji": "Zagi Kokyuho",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "맞서한손잡기에서-바로-넣는-2교",
+      "category": "specialKata",
+      "ko": "맞서한손잡기에서 바로 넣는 2교",
+      "ja": "相半身片手取り二教(応用)",
+      "romaji": "Ai-hanmi katate-dori Nikyo(Oyo)",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "2인-잡기-호흡던지기-1",
+      "category": "specialKata",
+      "ko": "2인 잡기 호흡던지기 1",
+      "ja": "二人取り呼吸投げ1",
+      "romaji": "Ninin-dori kokyunage 1",
+      "aliases": [],
+      "source": "userOverride"
+    },
+    {
+      "id": "2인-잡기-호흡던지기-2",
+      "category": "specialKata",
+      "ko": "2인 잡기 호흡던지기 2",
+      "ja": "二人取り呼吸投げ2",
+      "romaji": "Ninin-dori kokyunage 2",
+      "aliases": [],
+      "source": "userOverride"
+    }
+  ]
+}
