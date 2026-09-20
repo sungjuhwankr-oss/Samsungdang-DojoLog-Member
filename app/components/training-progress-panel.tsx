@@ -137,10 +137,14 @@ export function TrainingProgressPanel({
               <strong>{analysis.totalTrainingDays}일</strong>
             </div>
             <div>
+              <span>입문 후 앱 기록 수련횟수</span>
+              <strong>{analysis.totalTrainingSessions}회</strong>
+            </div>
+            <div>
               <span>
                 {analysis.currentRank
-                  ? "현급 취득 후 앱 기록 수련"
-                  : "무급 앱 기록 수련"}
+                  ? "현급 취득 후 앱 기록 수련횟수"
+                  : "무급 앱 기록 수련횟수"}
               </span>
               <strong>
                 {analysis.progress?.values

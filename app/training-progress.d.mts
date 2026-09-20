@@ -6,14 +6,14 @@ export interface KyuProgressionReference {
   targetType: "kyu" | "dan";
   targetValue: number;
   targetLabel: string;
-  requiredTrainingDays: number;
+  requiredTrainingSessions: number;
 }
 
 export interface DanProgressionReference {
   current: number;
   target: number;
   minimumYears: number;
-  requiredTrainingDays: number;
+  requiredTrainingSessions: number;
   minimumAge: number | null;
 }
 
@@ -74,7 +74,11 @@ export interface ExamKataAnalysis {
 export const KYU_PROGRESSION_REFERENCE: readonly KyuProgressionReference[];
 export const DAN_PROGRESSION_REFERENCE: readonly DanProgressionReference[];
 export function getKyuProgression(currentRank: CurrentRank | null): KyuProgressionReference | null;
-export function countDistinctTrainingDays(sessions: HydratedTrainingSession[], startDate?: string | null): number;
+export function countDistinctTrainingDays(sessions: HydratedTrainingSession[]): number;
+export function countTrainingSessions(
+  sessions: HydratedTrainingSession[],
+  afterDate?: string | null
+): number;
 export function countKataOccurrences(sessions: HydratedTrainingSession[]): Map<string, number>;
 export function calculateTrainingProgress(actual: number, required: number): TrainingProgressValues;
 export function createExamKataAnalysis(
@@ -90,6 +94,7 @@ export function createTrainingAnalysis(
 ): {
   currentRank: CurrentRank | null;
   totalTrainingDays: number;
+  totalTrainingSessions: number;
   progress: TrainingProgress | null;
   exam: ExamKataAnalysis;
 };

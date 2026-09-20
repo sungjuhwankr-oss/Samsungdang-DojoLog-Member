@@ -1,22 +1,22 @@
 import { deriveCurrentRank } from "./member-data.mjs";
 
 export const KYU_PROGRESSION_REFERENCE = Object.freeze([
-  Object.freeze({ current: null, targetType: "kyu", targetValue: 9, targetLabel: "9급", requiredTrainingDays: 10 }),
-  Object.freeze({ current: 9, targetType: "kyu", targetValue: 8, targetLabel: "8급", requiredTrainingDays: 10 }),
-  Object.freeze({ current: 8, targetType: "kyu", targetValue: 7, targetLabel: "7급", requiredTrainingDays: 20 }),
-  Object.freeze({ current: 7, targetType: "kyu", targetValue: 6, targetLabel: "6급", requiredTrainingDays: 20 }),
-  Object.freeze({ current: 6, targetType: "kyu", targetValue: 5, targetLabel: "5급", requiredTrainingDays: 20 }),
-  Object.freeze({ current: 5, targetType: "kyu", targetValue: 4, targetLabel: "4급", requiredTrainingDays: 30 }),
-  Object.freeze({ current: 4, targetType: "kyu", targetValue: 3, targetLabel: "3급", requiredTrainingDays: 30 }),
-  Object.freeze({ current: 3, targetType: "kyu", targetValue: 2, targetLabel: "2급", requiredTrainingDays: 40 }),
-  Object.freeze({ current: 2, targetType: "kyu", targetValue: 1, targetLabel: "1급", requiredTrainingDays: 40 }),
-  Object.freeze({ current: 1, targetType: "dan", targetValue: 1, targetLabel: "초단", requiredTrainingDays: 70 })
+  Object.freeze({ current: null, targetType: "kyu", targetValue: 9, targetLabel: "9급", requiredTrainingSessions: 10 }),
+  Object.freeze({ current: 9, targetType: "kyu", targetValue: 8, targetLabel: "8급", requiredTrainingSessions: 10 }),
+  Object.freeze({ current: 8, targetType: "kyu", targetValue: 7, targetLabel: "7급", requiredTrainingSessions: 20 }),
+  Object.freeze({ current: 7, targetType: "kyu", targetValue: 6, targetLabel: "6급", requiredTrainingSessions: 20 }),
+  Object.freeze({ current: 6, targetType: "kyu", targetValue: 5, targetLabel: "5급", requiredTrainingSessions: 20 }),
+  Object.freeze({ current: 5, targetType: "kyu", targetValue: 4, targetLabel: "4급", requiredTrainingSessions: 30 }),
+  Object.freeze({ current: 4, targetType: "kyu", targetValue: 3, targetLabel: "3급", requiredTrainingSessions: 30 }),
+  Object.freeze({ current: 3, targetType: "kyu", targetValue: 2, targetLabel: "2급", requiredTrainingSessions: 40 }),
+  Object.freeze({ current: 2, targetType: "kyu", targetValue: 1, targetLabel: "1급", requiredTrainingSessions: 40 }),
+  Object.freeze({ current: 1, targetType: "dan", targetValue: 1, targetLabel: "초단", requiredTrainingSessions: 70 })
 ]);
 
 export const DAN_PROGRESSION_REFERENCE = Object.freeze([
-  Object.freeze({ current: 1, target: 2, minimumYears: 1, requiredTrainingDays: 200, minimumAge: null }),
-  Object.freeze({ current: 2, target: 3, minimumYears: 2, requiredTrainingDays: 300, minimumAge: null }),
-  Object.freeze({ current: 3, target: 4, minimumYears: 3, requiredTrainingDays: 400, minimumAge: 22 })
+  Object.freeze({ current: 1, target: 2, minimumYears: 1, requiredTrainingSessions: 200, minimumAge: null }),
+  Object.freeze({ current: 2, target: 3, minimumYears: 2, requiredTrainingSessions: 300, minimumAge: null }),
+  Object.freeze({ current: 3, target: 4, minimumYears: 3, requiredTrainingSessions: 400, minimumAge: 22 })
 ]);
 
 export function getKyuProgression(currentRank) {
@@ -25,16 +25,22 @@ export function getKyuProgression(currentRank) {
   return KYU_PROGRESSION_REFERENCE.find((item) => item.current === currentRank.rankValue) ?? null;
 }
 
-export function countDistinctTrainingDays(sessions, startDate = null) {
+export function countDistinctTrainingDays(sessions) {
   const dates = new Set();
 
   for (const session of sessions) {
     if (typeof session.date !== "string") continue;
-    if (startDate !== null && session.date < startDate) continue;
     dates.add(session.date);
   }
 
   return dates.size;
+}
+
+export function countTrainingSessions(sessions, afterDate = null) {
+  if (afterDate === null) return sessions.length;
+  return sessions.filter((session) => (
+    typeof session.date === "string" && session.date > afterDate
+  )).length;
 }
 
 export function countKataOccurrences(sessions) {
@@ -187,14 +193,15 @@ export function createTrainingAnalysis(promotions, sessions, catalog) {
   const currentRank = deriveCurrentRank(promotions);
   const progressionReference = getKyuProgression(currentRank);
   const totalTrainingDays = countDistinctTrainingDays(sessions);
+  const totalTrainingSessions = countTrainingSessions(sessions);
   let progress = null;
 
   if (progressionReference !== null) {
     const actual = currentRank === null
-      ? totalTrainingDays
+      ? totalTrainingSessions
       : currentRank.date === null
         ? null
-        : countDistinctTrainingDays(sessions, currentRank.date);
+        : countTrainingSessions(sessions, currentRank.date);
     progress = {
       targetType: progressionReference.targetType,
       targetValue: progressionReference.targetValue,
@@ -203,14 +210,15 @@ export function createTrainingAnalysis(promotions, sessions, catalog) {
       promotionDate: currentRank?.date ?? null,
       values: actual === null
         ? null
-        : calculateTrainingProgress(actual, progressionReference.requiredTrainingDays),
-      required: progressionReference.requiredTrainingDays
+        : calculateTrainingProgress(actual, progressionReference.requiredTrainingSessions),
+      required: progressionReference.requiredTrainingSessions
     };
   }
 
   return {
     currentRank,
     totalTrainingDays,
+    totalTrainingSessions,
     progress,
     exam: createExamKataAnalysis(catalog, sessions, currentRank)
   };

@@ -13,6 +13,7 @@ import {
   calculateTrainingProgress,
   countDistinctTrainingDays,
   countKataOccurrences,
+  countTrainingSessions,
   createExamKataAnalysis,
   createTrainingAnalysis,
   getKyuProgression,
@@ -93,42 +94,41 @@ for (const [current, targetLabel, required] of progressionCases) {
       current === null ? null : rank(current)
     );
     assert.equal(progression?.targetLabel, targetLabel);
-    assert.equal(progression?.requiredTrainingDays, required);
+    assert.equal(progression?.requiredTrainingSessions, required);
   });
 }
 
-test("수련일수는 서로 다른 training date만 계산한다", () => {
-  const sessions = [
-    trainingSession(1, "2026-01-01"),
-    trainingSession(2, "2026-01-02"),
-    trainingSession(3, "2026-01-03")
-  ];
-  assert.equal(countDistinctTrainingDays(sessions), 3);
-});
-
-test("같은 date의 복수 세션은 수련일수로 중복 계산하지 않는다", () => {
+test("같은 날짜 session 2개는 수련일수 1일, 수련횟수 2회이다", () => {
   const sessions = [
     trainingSession(1, "2026-01-01"),
     trainingSession(2, "2026-01-01")
   ];
   assert.equal(countDistinctTrainingDays(sessions), 1);
+  assert.equal(countTrainingSessions(sessions), 2);
 });
 
-test("현급 취득일 이후의 서로 다른 수련일만 계산한다", () => {
+test("서로 다른 날짜 session 2개는 수련일수 2일, 수련횟수 2회이다", () => {
   const sessions = [
-    trainingSession(1, "2026-01-31"),
-    trainingSession(2, "2026-02-02"),
-    trainingSession(3, "2026-02-03")
+    trainingSession(1, "2026-01-01"),
+    trainingSession(2, "2026-01-02")
   ];
-  assert.equal(countDistinctTrainingDays(sessions, "2026-02-01"), 2);
+  assert.equal(countDistinctTrainingDays(sessions), 2);
+  assert.equal(countTrainingSessions(sessions), 2);
 });
 
-test("현급 취득일 당일 수련기록을 현급 진행도에 포함한다", () => {
+test("현급 취득일 당일 session은 현급 수련횟수에서 제외한다", () => {
   const sessions = [
     trainingSession(1, "2026-02-01"),
     trainingSession(2, "2026-02-02")
   ];
-  assert.equal(countDistinctTrainingDays(sessions, "2026-02-01"), 2);
+  assert.equal(countTrainingSessions(sessions, "2026-02-01"), 1);
+});
+
+test("현급 취득일 다음 날짜 session은 현급 수련횟수에 포함한다", () => {
+  const sessions = [
+    trainingSession(2, "2026-02-02")
+  ];
+  assert.equal(countTrainingSessions(sessions, "2026-02-01"), 1);
 });
 
 test("현급 취득일 미상이면 현급 count와 remaining을 계산하지 않는다", () => {
@@ -143,7 +143,7 @@ test("현급 취득일 미상이면 현급 count와 remaining을 계산하지 �
 
 test("현급 수련 actual과 required를 독립된 값으로 계산한다", () => {
   const sessions = [
-    trainingSession(1, "2026-02-01"),
+    trainingSession(1, "2026-02-02"),
     trainingSession(2, "2026-02-02"),
     trainingSession(3, "2026-02-03")
   ];
@@ -275,6 +275,22 @@ test("같은 session에서 중복된 Kata.id는 한 번만 집계한다", () => 
   assert.equal(counts.get(known.id), 1);
 });
 
+test("같은 날짜의 서로 다른 session에서 같은 Kata.id는 두 번 집계한다", () => {
+  const counts = countKataOccurrences([
+    trainingSession(1, "2026-01-01", [{ id: known.id, name: known.nameKo }]),
+    trainingSession(2, "2026-01-01", [{ id: known.id, name: known.nameKo }])
+  ]);
+  assert.equal(counts.get(known.id), 2);
+});
+
+test("zero-kata session은 수련일수와 수련횟수에 포함되고 Kata count에는 영향이 없다", () => {
+  const sessions = [trainingSession(1, "2026-01-01")];
+  const analysis = createTrainingAnalysis([], sessions, catalog);
+  assert.equal(analysis.totalTrainingDays, 1);
+  assert.equal(analysis.totalTrainingSessions, 1);
+  assert.equal(countKataOccurrences(sessions).size, 0);
+});
+
 test("기록에 없는 canonical exam Kata는 0회 상태로 유지한다", () => {
   const analysis = createExamKataAnalysis(
     catalog,
@@ -297,7 +313,7 @@ test("기본 threshold 전에 실제 promotion이 있어도 오류로 판정하�
     catalog
   );
   assert.equal(analysis.currentRank?.rankValue, 1);
-  assert.equal(analysis.progress?.values?.actual, 1);
+  assert.equal(analysis.progress?.values?.actual, 0);
 });
 
 test("이전 급의 부족분을 현재 급 progression에 이월하지 않는다", () => {
@@ -312,7 +328,8 @@ test("이전 급의 부족분을 현재 급 progression에 이월하지 않는�
     catalog
   );
   assert.equal(analysis.totalTrainingDays, 3);
-  assert.equal(analysis.progress?.values?.actual, 2);
+  assert.equal(analysis.totalTrainingSessions, 3);
+  assert.equal(analysis.progress?.values?.actual, 1);
   assert.equal(analysis.progress?.values?.required, 70);
 });
 
@@ -324,7 +341,19 @@ test("새 progression은 실제 현재 급 취득일부터 시작한다", () => 
   ];
   const analysis = createTrainingAnalysis([rank(6, "2026-02-01")], sessions, catalog);
   assert.equal(analysis.progress?.promotionDate, "2026-02-01");
+  assert.equal(analysis.progress?.values?.actual, 1);
+});
+
+test("무급은 promotion date 없이 모든 session을 9급 progress에 사용한다", () => {
+  const sessions = [
+    trainingSession(1, "2026-01-01"),
+    trainingSession(2, "2026-01-01")
+  ];
+  const analysis = createTrainingAnalysis([], sessions, catalog);
+  assert.equal(analysis.totalTrainingDays, 1);
+  assert.equal(analysis.totalTrainingSessions, 2);
   assert.equal(analysis.progress?.values?.actual, 2);
+  assert.equal(analysis.progress?.values?.remaining, 8);
 });
 
 test("초기·중간·근접·기준충족 격려 문구는 deterministic하다", () => {
@@ -356,11 +385,14 @@ test("격려 문구는 합격·응시 확정 또는 준비 완료를 생성하�
   const messages = KYU_PROGRESSION_REFERENCE.flatMap((reference) => [
     getProgressEncouragement({
       targetLabel: reference.targetLabel,
-      values: calculateTrainingProgress(0, reference.requiredTrainingDays)
+      values: calculateTrainingProgress(0, reference.requiredTrainingSessions)
     }),
     getProgressEncouragement({
       targetLabel: reference.targetLabel,
-      values: calculateTrainingProgress(reference.requiredTrainingDays, reference.requiredTrainingDays)
+      values: calculateTrainingProgress(
+        reference.requiredTrainingSessions,
+        reference.requiredTrainingSessions
+      )
     })
   ]);
   assert.doesNotMatch(messages.join(" "), /승급 가능|심사 준비 완료|응시 자격|합격 가능|자동 승급/);
@@ -423,9 +455,9 @@ test("Phase 4C KNOWN_MATCH/UNKNOWN_ID/name mismatch 의미는 유지한다", () 
 
 test("유단자 기본 reference는 기간·횟수·연령 조건을 분리해 보존한다", () => {
   assert.deepEqual(DAN_PROGRESSION_REFERENCE, [
-    { current: 1, target: 2, minimumYears: 1, requiredTrainingDays: 200, minimumAge: null },
-    { current: 2, target: 3, minimumYears: 2, requiredTrainingDays: 300, minimumAge: null },
-    { current: 3, target: 4, minimumYears: 3, requiredTrainingDays: 400, minimumAge: 22 }
+    { current: 1, target: 2, minimumYears: 1, requiredTrainingSessions: 200, minimumAge: null },
+    { current: 2, target: 3, minimumYears: 2, requiredTrainingSessions: 300, minimumAge: null },
+    { current: 3, target: 4, minimumYears: 3, requiredTrainingSessions: 400, minimumAge: 22 }
   ]);
 });
 
