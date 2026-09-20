@@ -22,11 +22,11 @@ const catalog = JSON.parse(
   await readFile(new URL("../reference/kata-catalog.v1.json", import.meta.url), "utf8")
 );
 
-test("Phase 3 stores are preserved by the v2 migration plan", () => {
+test("existing stores are preserved by the v3 migration plan", () => {
   const plan = planSchemaUpgrade([TRAINING_SESSION_STORE, SESSION_KATA_STORE]);
-  assert.equal(TRAINING_DB_VERSION, 2);
+  assert.equal(TRAINING_DB_VERSION, 3);
   assert.deepEqual(plan.preserve, [TRAINING_SESSION_STORE, SESSION_KATA_STORE]);
-  assert.deepEqual(plan.create, [MEMBER_PROFILE_STORE, PROMOTION_HISTORY_STORE]);
+  assert.deepEqual(plan.create, [MEMBER_PROFILE_STORE, PROMOTION_HISTORY_STORE, "sharedSessionSnapshot"]);
 });
 
 test("memberProfile stores and returns the minimum fields", () => {
@@ -124,7 +124,7 @@ test("new promotion rank input starts empty", async () => {
   assert.match(source, /type="number"[\s\S]*required[\s\S]*value=\{rankValue\}/);
 });
 
-test("migration never clears or deletes existing stores", async () => {
-  const source = await readFile(new URL("../app/training-store.ts", import.meta.url), "utf8");
+test("v3 migration never clears or deletes existing stores", async () => {
+  const source = await readFile(new URL("../app/training-database.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(source, /deleteObjectStore|\.clear\(|indexedDB\.deleteDatabase/);
 });

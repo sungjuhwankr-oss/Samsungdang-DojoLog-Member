@@ -100,8 +100,16 @@ function sortedData(data) {
   return {
     memberProfile: clone(data.memberProfile).sort((a, b) => a.id.localeCompare(b.id)),
     promotionHistory: clone(data.promotionHistory).sort((a, b) => a.order - b.order || a.id.localeCompare(b.id)),
-    trainingSession: clone(data.trainingSession).sort((a, b) => a.dojo.localeCompare(b.dojo) || a.sessionNo - b.sessionNo),
-    sessionKata: clone(data.sessionKata).sort((a, b) => a.dojo.localeCompare(b.dojo) || a.sessionNo - b.sessionNo || a.order - b.order)
+    trainingSession: clone(data.trainingSession)
+      .map(({ dojo, sessionNo, date, importedAt, sourceSchema, sourceVersion }) => ({
+        dojo, sessionNo, date, importedAt, sourceSchema, sourceVersion
+      }))
+      .sort((a, b) => a.dojo.localeCompare(b.dojo) || a.sessionNo - b.sessionNo),
+    sessionKata: clone(data.sessionKata)
+      .map(({ dojo, sessionNo, kataId, kataName, order }) => ({
+        dojo, sessionNo, kataId, kataName, order
+      }))
+      .sort((a, b) => a.dojo.localeCompare(b.dojo) || a.sessionNo - b.sessionNo || a.order - b.order)
   };
 }
 
@@ -169,4 +177,3 @@ export function createMemoryBackupRepository(initial, options = {}) {
 export async function replaceRepositoryFromBackup(repository, backup) {
   await repository.replaceAll(validateBackupObject(backup).data);
 }
-

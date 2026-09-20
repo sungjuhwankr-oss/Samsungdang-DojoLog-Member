@@ -60,10 +60,10 @@ export function deriveCurrentRank(promotions) {
 
 export function planSchemaUpgrade(existingStores) {
   const phase3Stores = ["trainingSession", "sessionKata"];
-  const phase4Stores = ["memberProfile", "promotionHistory"];
+  const v3Stores = ["memberProfile", "promotionHistory", "sharedSessionSnapshot"];
   return {
     preserve: phase3Stores.filter((name) => existingStores.includes(name)),
-    create: phase4Stores.filter((name) => !existingStores.includes(name))
+    create: v3Stores.filter((name) => !existingStores.includes(name))
   };
 }
 

@@ -49,10 +49,11 @@ export function BackupRestorePanel() {
   }
   return <section className="panel">
     <h2>데이터 백업</h2>
-    <p>수련기록·내 정보·승급이력을 JSON 파일로 백업합니다. 서버로 전송하지 않습니다.</p>
-    <button className="action-button" type="button" onClick={download} disabled={busy}>JSON 백업 파일 만들기</button>
+    <p>기존 Backup v1 형식으로 공유수업·내 정보·승급이력을 JSON 파일에 저장합니다. 서버로 전송하지 않습니다.</p>
+    <p className="status-warn">Backup v1은 개인수련·메모·공유 원본 snapshot을 보존하지 않습니다. DB v3 전체 백업은 후속 Backup v2에서 지원합니다.</p>
+    <button className="action-button" type="button" onClick={download} disabled={busy}>Backup v1 파일 만들기</button>
     <h3>전체 복원</h3>
-    <p className="status-warn">복원하면 현재 수련기록·내 정보·승급이력이 선택한 백업 내용으로 전체 교체됩니다.</p>
+    <p className="status-warn">복원하면 개인수련과 메모를 포함한 현재 DB v3 데이터가 선택한 Backup v1 내용으로 전체 교체됩니다.</p>
     <input type="file" accept=".json,application/json" disabled={busy} onChange={(event) => choose(event.target.files?.[0])} />
     {preview && <div className="codebox">
       <p><strong>복원 미리보기</strong></p>
@@ -69,4 +70,3 @@ export function BackupRestorePanel() {
     {notice && <p className={notice.ok ? "status-ok" : "status-warn"}>{notice.text}</p>}
   </section>;
 }
-

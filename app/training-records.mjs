@@ -1,9 +1,23 @@
 export const TRAINING_DB_NAME = "samsungdang-dojolog-member";
-export const TRAINING_DB_VERSION = 2;
+export const TRAINING_DB_VERSION = 3;
 export const TRAINING_SESSION_STORE = "trainingSession";
 export const SESSION_KATA_STORE = "sessionKata";
 export const MEMBER_PROFILE_STORE = "memberProfile";
 export const PROMOTION_HISTORY_STORE = "promotionHistory";
+export const SHARED_SESSION_SNAPSHOT_STORE = "sharedSessionSnapshot";
+export const PERSONAL_SESSION_DOJO = "__personal__";
+
+export function sessionIdentity(dojo, sessionNo) {
+  return `${dojo}\u0000${sessionNo}`;
+}
+
+export function normalizeTrainingSessionRecord(session) {
+  return {
+    ...session,
+    source: session.source === "personal" ? "personal" : "shared",
+    note: typeof session.note === "string" ? session.note : ""
+  };
+}
 
 export function createTrainingRecords(payload, importedAt) {
   return {
@@ -13,7 +27,9 @@ export function createTrainingRecords(payload, importedAt) {
       date: payload.date,
       importedAt,
       sourceSchema: payload.schema,
-      sourceVersion: payload.version
+      sourceVersion: payload.version,
+      source: "shared",
+      note: ""
     },
     kata: payload.kata.map((item, order) => ({
       dojo: payload.dojo,
@@ -33,20 +49,23 @@ export function classifyExistingSession(existing, payload) {
 
 export function hydrateTrainingSessions(sessions, kataRows) {
   return sessions
-    .map((session) => ({
-      ...session,
-      kata: kataRows
-        .filter((kata) => (
-          kata.dojo === session.dojo &&
-          kata.sessionNo === session.sessionNo
-        ))
-        .sort((left, right) => left.order - right.order)
-        .map((kata) => ({
-          id: kata.kataId,
-          name: kata.kataName,
-          order: kata.order
-        }))
-    }))
+    .map((storedSession) => {
+      const session = normalizeTrainingSessionRecord(storedSession);
+      return {
+        ...session,
+        kata: kataRows
+          .filter((kata) => (
+            kata.dojo === session.dojo &&
+            kata.sessionNo === session.sessionNo
+          ))
+          .sort((left, right) => left.order - right.order)
+          .map((kata) => ({
+            id: kata.kataId,
+            name: kata.kataName,
+            order: kata.order
+          }))
+      };
+    })
     .sort((left, right) => (
       right.date.localeCompare(left.date) ||
       right.sessionNo - left.sessionNo

@@ -1,11 +1,25 @@
 import type { MemberProfile, PromotionRecord } from "./member-data.mjs";
-import type { SessionKataRecord, TrainingSessionRecord } from "./training-records.mjs";
+export interface BackupV1TrainingSessionRecord {
+  dojo: string;
+  sessionNo: number;
+  date: string;
+  importedAt: string;
+  sourceSchema: string;
+  sourceVersion: number;
+}
+export interface BackupV1SessionKataRecord {
+  dojo: string;
+  sessionNo: number;
+  kataId: string;
+  kataName: string;
+  order: number;
+}
 
 export interface MemberBackupData {
   memberProfile: MemberProfile[];
   promotionHistory: PromotionRecord[];
-  trainingSession: TrainingSessionRecord[];
-  sessionKata: SessionKataRecord[];
+  trainingSession: BackupV1TrainingSessionRecord[];
+  sessionKata: BackupV1SessionKataRecord[];
 }
 export interface MemberBackup {
   schema: "samsungdang-dojolog-member-backup";
@@ -28,4 +42,3 @@ export function createMemoryBackupRepository(initial: MemberBackupData, options?
   readAll(): Promise<MemberBackupData>;
   replaceAll(data: MemberBackupData): Promise<void>;
 };
-

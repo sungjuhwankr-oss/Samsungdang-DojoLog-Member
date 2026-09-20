@@ -12,7 +12,7 @@ import {
   type KataScope
 } from "../training-progress.mjs";
 import type { HydratedTrainingSession } from "../training-records.mjs";
-import { listTrainingSessions } from "../training-store";
+import { listTrainingSessions, TRAINING_DATA_CHANGED_EVENT } from "../training-store";
 
 type LoadStatus = "loading" | "ready" | "error";
 
@@ -85,18 +85,23 @@ export function TrainingProgressPanel({
 
   useEffect(() => {
     let active = true;
-    listTrainingSessions().then(
-      (records) => {
-        if (!active) return;
-        setSessions(records);
-        setSessionStatus("ready");
-      },
-      () => {
-        if (active) setSessionStatus("error");
-      }
-    );
+    const reload = () => {
+      listTrainingSessions().then(
+        (records) => {
+          if (!active) return;
+          setSessions(records);
+          setSessionStatus("ready");
+        },
+        () => {
+          if (active) setSessionStatus("error");
+        }
+      );
+    };
+    reload();
+    window.addEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
     return () => {
       active = false;
+      window.removeEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
     };
   }, []);
 
