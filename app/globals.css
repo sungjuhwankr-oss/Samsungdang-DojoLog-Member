@@ -85,6 +85,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .diag-grid dt { color: var(--muted); }
 .diag-grid dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; overflow-wrap: anywhere; }
 
+.poc-results {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
 .codebox {
   padding: 12px;
   border-radius: 10px;
