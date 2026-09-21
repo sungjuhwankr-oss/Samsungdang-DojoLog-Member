@@ -1,4 +1,4 @@
-const CACHE_NAME = "samsungdang-member-phase1-v1";
+const CACHE_NAME = "samsungdang-member-phase4h-b-v1";
 const BUILD_ASSETS = /*__BUILD_ASSETS__*/ [];
 
 function scoped(path) {
@@ -8,6 +8,7 @@ function scoped(path) {
 const SHELL_PATHS = [
   "./",
   "./import/",
+  "./membership/",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
@@ -46,6 +47,9 @@ self.addEventListener("fetch", (event) => {
         .catch(async () => {
           const cached = await caches.match(event.request, { ignoreSearch: true });
           if (cached) return cached;
+          if (url.pathname.endsWith("/membership/") || url.pathname.endsWith("/membership")) {
+            return caches.match(scoped("./membership/"));
+          }
           if (url.pathname.endsWith("/import/") || url.pathname.endsWith("/import")) {
             return caches.match(scoped("./import/"));
           }

@@ -72,11 +72,11 @@ test("empty DB backup", () => {
   });
 });
 
-test("Backup v1 generated on DB v3 includes current database metadata", () => {
+test("Backup v1 generated on DB v4 includes current database metadata", () => {
   const result = createBackup(sample, exportedAt);
   assert.deepEqual(result.database, {
     name: "samsungdang-dojolog-member",
-    version: 3
+    version: 4
   });
   assert.equal(result.data.trainingSession[0].sessionNo, 1042);
 });

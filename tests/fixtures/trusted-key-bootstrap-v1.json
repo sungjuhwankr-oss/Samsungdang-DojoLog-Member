@@ -1,0 +1,16 @@
+{
+  "schema": "samsungdang-dojolog-trusted-key-bootstrap",
+  "schemaVersion": 1,
+  "purpose": "credential-v1-initial-trust-provisioning",
+  "keyId": "k1_wVLoeV9NYjTi8BqZ-Ktx4-Z7jC1raOTURWSFeum-zfU",
+  "algorithm": "ECDSA-SHA-256",
+  "curve": "P-256",
+  "publicKeyFormat": "X.509 SubjectPublicKeyInfo DER",
+  "publicKeySpkiBase64Url": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIuIqBKZFL7wfRDDys_gvG6xg0kT8bbeF70Pm-qta2CTcAiC6f1FlQo2rhmHCjO3R_KzswZS-DjAvtgqy5kHXhg",
+  "publicKeyByteLength": 91,
+  "trustStatus": "pending-member-pwa-distribution",
+  "intendedRegistryStatus": "active",
+  "generatedOrReused": "generated",
+  "androidKeyStoreUsed": true,
+  "privateKeyEncodedIsNull": true
+}

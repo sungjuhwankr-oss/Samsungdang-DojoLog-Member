@@ -16,6 +16,7 @@ import {
   MEMBER_PROFILE_STORE,
   PERSONAL_SESSION_DOJO,
   PROMOTION_HISTORY_STORE,
+  SAMSUNGDANG_MEMBERSHIP_STORE,
   SESSION_KATA_STORE,
   SHARED_SESSION_SNAPSHOT_STORE,
   TRAINING_DB_NAME,
@@ -83,14 +84,15 @@ async function createV2Database(factory) {
   database.close();
 }
 
-test("정상 v2 DB를 v3로 올리며 기존 4개 store와 record를 보존한다", async () => {
+test("정상 v2 DB를 현재 v4로 올리며 기존 4개 store와 record를 보존한다", async () => {
   const factory = new IDBFactory();
   await createV2Database(factory);
   const database = await openTrainingDatabase(factory);
-  assert.equal(database.version, 3);
+  assert.equal(database.version, 4);
   assert.deepEqual([...database.objectStoreNames], [
     "memberProfile",
     "promotionHistory",
+    "samsungdangMembership",
     "sessionKata",
     "sharedSessionSnapshot",
     "trainingSession"
@@ -131,7 +133,7 @@ test("v2 migration pure plan은 shared session과 kata를 보존하고 정확한
   assert.deepEqual(result.snapshots[0].kata, [{ ...firstKata, order: 0 }]);
 });
 
-test("v3 migration이 중단되면 upgrade transaction이 rollback되어 v2 데이터가 남는다", async () => {
+test("v2 migration이 중단되면 upgrade transaction이 rollback되어 v2 데이터가 남는다", async () => {
   const factory = new IDBFactory();
   await createV2Database(factory);
   const database = await request(factory.open(TRAINING_DB_NAME, 2));
@@ -214,7 +216,7 @@ test("memo 모아보기는 최신순이며 본문 부분검색과 수정 즉시 
   assert.equal(memos[0].sessionNo, older.sessionNo);
 });
 
-test("Backup v1은 v3에서 restore되고 shared snapshot을 재구성한다", async () => {
+test("Backup v1은 v4에서 restore되고 shared snapshot을 재구성한다", async () => {
   const factory = new IDBFactory();
   const backup = createBackup({
     memberProfile: [{ id: "self", name: "성주환", memberNo: null, joinDate: null }],
@@ -249,7 +251,7 @@ test("Backup v1은 v3에서 restore되고 shared snapshot을 재구성한다", a
   database.close();
 });
 
-test("잘못된 Backup v1 restore는 기존 DB v3 데이터를 변경하지 않는다", async () => {
+test("잘못된 Backup v1 restore는 기존 DB v4 데이터를 변경하지 않는다", async () => {
   const factory = new IDBFactory();
   const valid = createBackup({
     memberProfile: [], promotionHistory: [], trainingSession: [sharedSession], sessionKata: sharedKata
@@ -287,11 +289,12 @@ test("Backup v1 export adapter는 personal, memo, snapshot을 schema v1에 섞�
   assert.deepEqual(Object.keys(result.data).sort(), ["memberProfile", "promotionHistory", "sessionKata", "trainingSession"]);
 });
 
-test("DB v3에는 별도 memo store가 없고 UI 검색 결과는 원본 session anchor를 사용한다", async () => {
-  assert.equal(TRAINING_DB_VERSION, 3);
+test("DB v4에는 별도 memo store가 없고 UI 검색 결과는 원본 session anchor를 사용한다", async () => {
+  assert.equal(TRAINING_DB_VERSION, 4);
   const factory = new IDBFactory();
   const database = await openTrainingDatabase(factory);
   assert.equal(database.objectStoreNames.contains("memo"), false);
+  assert.equal(database.objectStoreNames.contains(SAMSUNGDANG_MEMBERSHIP_STORE), true);
   database.close();
   const source = await readFile(new URL("../app/components/training-log.tsx", import.meta.url), "utf8");
   assert.match(source, /listMemoSessions\(records, memoQuery\)/);

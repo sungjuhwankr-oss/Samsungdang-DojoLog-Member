@@ -1,6 +1,7 @@
 import { BackupRestorePanel } from "./components/backup-restore-panel";
 import { Diagnostics } from "./components/diagnostics";
 import { MemberPanel } from "./components/member-panel";
+import { MembershipCard } from "./components/membership-card";
 import { SamsungdangFeatureBoundary } from "./components/samsungdang-feature-boundary";
 import { TrainingLog } from "./components/training-log";
 import { TrainingSummary } from "./components/training-summary";
@@ -26,6 +27,9 @@ export default function Home() {
 
       <TrainingLog />
       <TrainingSummary />
+      <SamsungdangFeatureBoundary feature={SAMSUNGDANG_FEATURE.MEMBERSHIP_CARD}>
+        <MembershipCard />
+      </SamsungdangFeatureBoundary>
       <SamsungdangFeatureBoundary feature={SAMSUNGDANG_FEATURE.TRAINING_PROGRESS}>
         <MemberPanel />
       </SamsungdangFeatureBoundary>

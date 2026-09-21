@@ -6,6 +6,8 @@ const root = process.cwd();
 const mustExist = [
   "app/page.tsx",
   "app/import/page.tsx",
+  "app/membership/page.tsx",
+  "app/poc/membership-credential-v1/page.tsx",
   "app/components/pwa-bootstrap.tsx",
   "app/session-share.mjs",
   "app/manifest.ts",
@@ -61,7 +63,15 @@ for (const icon of ["icon-192.png", "icon-512.png", "icon-maskable-512.png", "ap
 const outDir = path.join(root, "out");
 try {
   await access(outDir);
-  for (const rel of ["index.html", "import/index.html", "manifest.webmanifest", "sw.js"]) {
+  for (const rel of [
+    "index.html",
+    "import/index.html",
+    "membership/index.html",
+    "poc/credential-verify/index.html",
+    "poc/membership-credential-v1/index.html",
+    "manifest.webmanifest",
+    "sw.js"
+  ]) {
     await access(path.join(outDir, rel));
   }
   const builtSw = await readFile(path.join(outDir, "sw.js"), "utf8");

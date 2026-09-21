@@ -22,9 +22,9 @@ const catalog = JSON.parse(
   await readFile(new URL("../reference/kata-catalog.v1.json", import.meta.url), "utf8")
 );
 
-test("existing stores are preserved by the v3 migration plan", () => {
+test("the historical v3 migration plan remains unchanged under DB v4", () => {
   const plan = planSchemaUpgrade([TRAINING_SESSION_STORE, SESSION_KATA_STORE]);
-  assert.equal(TRAINING_DB_VERSION, 3);
+  assert.equal(TRAINING_DB_VERSION, 4);
   assert.deepEqual(plan.preserve, [TRAINING_SESSION_STORE, SESSION_KATA_STORE]);
   assert.deepEqual(plan.create, [MEMBER_PROFILE_STORE, PROMOTION_HISTORY_STORE, "sharedSessionSnapshot"]);
 });
@@ -124,7 +124,7 @@ test("new promotion rank input starts empty", async () => {
   assert.match(source, /type="number"[\s\S]*required[\s\S]*value=\{rankValue\}/);
 });
 
-test("v3 migration never clears or deletes existing stores", async () => {
+test("database migrations never clear or delete existing stores", async () => {
   const source = await readFile(new URL("../app/training-database.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(source, /deleteObjectStore|\.clear\(|indexedDB\.deleteDatabase/);
 });

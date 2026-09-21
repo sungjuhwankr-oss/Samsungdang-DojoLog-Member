@@ -2,6 +2,7 @@ import { createSharedSnapshot } from "./training-journal.mjs";
 import {
   MEMBER_PROFILE_STORE,
   PROMOTION_HISTORY_STORE,
+  SAMSUNGDANG_MEMBERSHIP_STORE,
   SESSION_KATA_STORE,
   SHARED_SESSION_SNAPSHOT_STORE,
   TRAINING_DB_NAME,
@@ -43,6 +44,10 @@ export function upgradeTrainingDatabase(request, oldVersion) {
     ? transaction.objectStore(SHARED_SESSION_SNAPSHOT_STORE)
     : database.createObjectStore(SHARED_SESSION_SNAPSHOT_STORE, { keyPath: ["dojo", "sessionNo"] });
   ensureIndex(snapshots, "byDate", "date");
+
+  if (!database.objectStoreNames.contains(SAMSUNGDANG_MEMBERSHIP_STORE)) {
+    database.createObjectStore(SAMSUNGDANG_MEMBERSHIP_STORE, { keyPath: "id" });
+  }
 
   if (oldVersion < 3) {
     const kataRequest = kata.getAll();

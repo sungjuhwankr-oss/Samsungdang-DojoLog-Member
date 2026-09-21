@@ -142,22 +142,18 @@ test("A2 SPKI public-key byte tamper is rejected at import or verify", async () 
   assert.equal(result.overallPassed, true);
 });
 
-test("4G-B PoC remains outside the membership gate and IndexedDB schema", async () => {
+test("4G-B PoC remains outside the production membership gate and DB path", async () => {
   const gate = getCurrentMembershipFeatureGate();
   assert.equal(gate.hasValidMembershipCredential, false);
   assert.deepEqual(gate.enabledFeatures, []);
-  assert.equal(TRAINING_DB_VERSION, 3);
+  assert.equal(TRAINING_DB_VERSION, 4);
 
   const pocSource = await readFile(
     new URL("../app/poc/credential-verify/web-crypto-poc.mjs", import.meta.url),
     "utf8"
   );
-  const databaseSource = await readFile(
-    new URL("../app/training-database.mjs", import.meta.url),
-    "utf8"
-  );
   assert.doesNotMatch(pocSource, /membership-gate|indexedDB|localStorage|sessionStorage/);
-  assert.doesNotMatch(databaseSource, /credential|samsungdangMembership/);
+  assert.doesNotMatch(pocSource, /membership-verifier|membership-store/);
 });
 
 test("4G-B route is unlinked and explicitly marked dev/test candidate-not-credential-v1", async () => {

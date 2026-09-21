@@ -50,10 +50,10 @@ export function BackupRestorePanel() {
   return <section className="panel">
     <h2>데이터 백업</h2>
     <p>기존 Backup v1 호환 형식으로 지원 데이터를 JSON 파일에 저장합니다. 서버로 전송하지 않습니다.</p>
-    <p className="status-warn">Backup v1은 개인수련·메모·공유 원본 snapshot을 보존하지 않습니다. DB v3 전체 백업은 후속 Backup v2에서 지원합니다.</p>
+    <p className="status-warn">Backup v1은 개인수련·메모·공유 원본 snapshot·Membership Credential을 백업하지 않습니다. 전체 백업은 후속 Backup v2에서 지원합니다.</p>
     <button className="action-button" type="button" onClick={download} disabled={busy}>Backup v1 파일 만들기</button>
     <h3>전체 복원</h3>
-    <p className="status-warn">복원하면 개인수련과 메모를 포함한 현재 DB v3 데이터가 선택한 Backup v1 내용으로 전체 교체됩니다.</p>
+    <p className="status-warn">복원하면 Backup v1 대상 수련·프로필·승급 데이터가 선택한 내용으로 교체됩니다. 저장된 Membership Credential은 변경하지 않습니다.</p>
     <input type="file" accept=".json,application/json" disabled={busy} onChange={(event) => choose(event.target.files?.[0])} />
     {preview && <div className="codebox">
       <p><strong>복원 미리보기</strong></p>

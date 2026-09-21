@@ -19,24 +19,31 @@ test("credential이 없으면 B 기본 gate는 모든 삼성당 전용 기능을
 });
 
 test("invalid 결과는 삼성당 기능을 활성화하지 않는다", () => {
-  const gate = createMembershipFeatureGate({ status: "invalid" });
+  const gate = createMembershipFeatureGate({ valid: false, credentialType: "membership", verifiedPayload: null });
   assert.equal(gate.hasValidMembershipCredential, false);
   assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.SESSION_SHARE_IMPORT), false);
 });
 
-test("향후 verifier의 valid 결과만 A 기능 gate를 연다", () => {
-  const gate = createMembershipFeatureGate({ status: "valid" });
+test("production verifier의 valid membership 결과만 A 기능 gate를 연다", () => {
+  const gate = createMembershipFeatureGate({
+    valid: true,
+    reason: "OK",
+    credentialType: "membership",
+    keyId: "k1_verified",
+    credentialId: "c1_verified",
+    verifiedPayload: { name: "검증", memberId: "ASD-001", joinedAt: "2026-01-01" }
+  });
   assert.equal(gate.hasValidMembershipCredential, true);
   assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.SESSION_SHARE_IMPORT), true);
   assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.TRAINING_PROGRESS), true);
-  assert.equal(allowsSamsungdangFeature(gate, "membership-card"), false);
+  assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.MEMBERSHIP_CARD), true);
 });
 
-test("Phase 4F gate는 credential을 저장하거나 standalone mode를 사용하지 않는다", async () => {
+test("Phase 4H-B gate는 저장 credential 검증결과를 사용하고 standalone mode를 사용하지 않는다", async () => {
   const source = await readFile(new URL("../app/membership-gate.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(source, /indexedDB|localStorage|sessionStorage|standalone/);
   assert.match(source, /createMembershipFeatureGate\(null\)/);
-  assert.match(source, /loadCurrentMembershipFeatureGate/);
+  assert.match(source, /loadStoredMembershipVerification/);
 });
 
 test("B 수련 요약은 날짜·session·카타 집계의 기존 의미를 유지한다", () => {
@@ -68,9 +75,10 @@ test("import route는 gate 안에서만 payload preview를 렌더링한다", asy
   assert.match(source, /<FragmentProbe \/>/);
 });
 
-test("Phase 4F는 DB v3 physical schema를 변경하지 않는다", async () => {
+test("Phase 4H-B는 DB v4의 dedicated membership store만 추가한다", async () => {
   const source = await readFile(new URL("../app/training-records.mjs", import.meta.url), "utf8");
-  assert.match(source, /TRAINING_DB_VERSION = 3/);
+  assert.match(source, /TRAINING_DB_VERSION = 4/);
   const database = await readFile(new URL("../app/training-database.mjs", import.meta.url), "utf8");
-  assert.doesNotMatch(database, /samsungdangMembership|specialTrainingHistory/);
+  assert.match(database, /SAMSUNGDANG_MEMBERSHIP_STORE/);
+  assert.doesNotMatch(database, /specialTrainingHistory/);
 });

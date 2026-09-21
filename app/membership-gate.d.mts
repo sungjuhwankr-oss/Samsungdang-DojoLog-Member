@@ -1,10 +1,8 @@
-export type MembershipVerificationResult =
-  | { status: "valid" }
-  | { status: "absent" | "invalid" }
-  | null
-  | undefined;
+import type { CredentialVerificationResult } from "./credential/membership-verifier.mjs";
 
-export type SamsungdangFeature = "session-share-import" | "training-progress";
+export type MembershipVerificationResult = CredentialVerificationResult | null | undefined;
+
+export type SamsungdangFeature = "session-share-import" | "training-progress" | "membership-card";
 
 export interface MembershipFeatureGate {
   hasValidMembershipCredential: boolean;
@@ -14,6 +12,7 @@ export interface MembershipFeatureGate {
 export const SAMSUNGDANG_FEATURE: {
   readonly SESSION_SHARE_IMPORT: "session-share-import";
   readonly TRAINING_PROGRESS: "training-progress";
+  readonly MEMBERSHIP_CARD: "membership-card";
 };
 
 export function createMembershipFeatureGate(
