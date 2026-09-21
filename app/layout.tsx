@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { PwaBootstrap } from "./components/pwa-bootstrap";
+import { MembershipFeatureGateProvider } from "./components/samsungdang-feature-boundary";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -38,7 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="ko">
       <body>
         <PwaBootstrap />
-        {children}
+        <MembershipFeatureGateProvider>{children}</MembershipFeatureGateProvider>
       </body>
     </html>
   );

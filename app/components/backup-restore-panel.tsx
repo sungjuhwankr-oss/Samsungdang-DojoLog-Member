@@ -49,7 +49,7 @@ export function BackupRestorePanel() {
   }
   return <section className="panel">
     <h2>데이터 백업</h2>
-    <p>기존 Backup v1 형식으로 공유수업·내 정보·승급이력을 JSON 파일에 저장합니다. 서버로 전송하지 않습니다.</p>
+    <p>기존 Backup v1 호환 형식으로 지원 데이터를 JSON 파일에 저장합니다. 서버로 전송하지 않습니다.</p>
     <p className="status-warn">Backup v1은 개인수련·메모·공유 원본 snapshot을 보존하지 않습니다. DB v3 전체 백업은 후속 Backup v2에서 지원합니다.</p>
     <button className="action-button" type="button" onClick={download} disabled={busy}>Backup v1 파일 만들기</button>
     <h3>전체 복원</h3>
