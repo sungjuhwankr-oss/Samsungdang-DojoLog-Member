@@ -2,6 +2,7 @@ import type { SessionPayload } from "./session-share.mjs";
 import { createMemberProfile, createPromotion, nextPromotionOrder } from "./member-data.mjs";
 import type { MemberProfile, MemberProfileInput, PromotionInput, PromotionRecord } from "./member-data.mjs";
 import { openTrainingDatabase, requestResult, transactionDone } from "./training-database.mjs";
+import { listVerifiedPromotionHistory } from "./promotion-store.mjs";
 import {
   createPersonalTrainingRecords,
   createSharedSnapshot,
@@ -262,17 +263,7 @@ export async function saveMemberProfile(input: MemberProfileInput): Promise<Memb
 }
 
 export async function listPromotionHistory(): Promise<PromotionRecord[]> {
-  const database = await openTrainingDatabase();
-  try {
-    const transaction = database.transaction(PROMOTION_HISTORY_STORE, "readonly");
-    const records = await requestResult<PromotionRecord[]>(
-      transaction.objectStore(PROMOTION_HISTORY_STORE).getAll() as IDBRequest<PromotionRecord[]>
-    );
-    await transactionDone(transaction);
-    return records.sort((left, right) => left.order - right.order);
-  } finally {
-    database.close();
-  }
+  return listVerifiedPromotionHistory() as Promise<PromotionRecord[]>;
 }
 
 export async function addPromotion(input: PromotionInput): Promise<PromotionRecord> {

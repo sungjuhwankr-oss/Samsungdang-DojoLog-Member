@@ -7,7 +7,7 @@ export type MemberProfile = {
 
 export type MemberProfileInput = Omit<MemberProfile, "id">;
 
-export type PromotionRecord = {
+export type LegacyPromotionRecord = {
   id: string;
   rankType: "kyu" | "dan";
   rankValue: number;
@@ -15,9 +15,26 @@ export type PromotionRecord = {
   order: number;
 };
 
+export type SelfPromotionRecord = LegacyPromotionRecord & {
+  source: "self";
+  eventType: "self-recorded";
+};
+
+export type SamsungdangPromotionRecord = LegacyPromotionRecord & {
+  source: "samsungdang";
+  eventType: "promoted" | "recognized-at-entry";
+  credentialId: string;
+  keyId: string;
+  envelopeJson: string;
+  registeredAt: string;
+  recognizedAt?: string;
+};
+
+export type PromotionRecord = LegacyPromotionRecord | SelfPromotionRecord | SamsungdangPromotionRecord;
+
 export type PromotionInput = Pick<PromotionRecord, "rankType" | "rankValue" | "date">;
 
-export type CurrentRank = PromotionRecord & { label: string };
+export type CurrentRank = PromotionRecord & { source: "self" | "samsungdang"; eventType: "self-recorded" | "promoted" | "recognized-at-entry"; label: string };
 
 export function createMemberProfile(input: MemberProfileInput): MemberProfile;
 export function createPromotion(input: PromotionInput, order: number, id: string): PromotionRecord;

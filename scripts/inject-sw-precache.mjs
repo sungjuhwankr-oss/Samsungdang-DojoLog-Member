@@ -3,6 +3,7 @@ import path from "node:path";
 
 const outDir = path.resolve("out");
 const swPath = path.join(outDir, "sw.js");
+const swTemplatePath = path.resolve("public", "sw.js");
 const marker = "/*__BUILD_ASSETS__*/ []";
 
 async function walk(dir) {
@@ -24,7 +25,7 @@ const assets = allFiles
 
 if (assets.length === 0) throw new Error("No Next.js JS/CSS build assets found for service-worker precache");
 
-const source = await readFile(swPath, "utf8");
+const source = await readFile(swTemplatePath, "utf8");
 if (!source.includes(marker)) throw new Error("Service-worker precache marker not found");
 await writeFile(swPath, source.replace(marker, JSON.stringify(assets, null, 2)));
 console.log(`Injected ${assets.length} Next.js build assets into out/sw.js`);

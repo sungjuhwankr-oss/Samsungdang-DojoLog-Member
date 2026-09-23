@@ -1,9 +1,12 @@
-import { validateBackupObject } from "./backup.mjs";
+import { BackupValidationError, validateBackupObject } from "./backup.mjs";
+import { verifyMembershipCredentialJson } from "./credential/membership-verifier.mjs";
+import { validateStoredPromotionHistory } from "./promotion-records.mjs";
 import { openTrainingDatabase, requestResult, transactionDone } from "./training-database.mjs";
 import { createSharedSnapshot } from "./training-journal.mjs";
 import {
   MEMBER_PROFILE_STORE,
   PROMOTION_HISTORY_STORE,
+  SAMSUNGDANG_MEMBERSHIP_STORE,
   SESSION_KATA_STORE,
   SHARED_SESSION_SNAPSHOT_STORE,
   TRAINING_SESSION_STORE
@@ -47,6 +50,45 @@ export async function restoreBackupV1ToIndexedDb(value, factory = indexedDB) {
   const backup = validateBackupObject(value);
   const database = await openTrainingDatabase(factory);
   try {
+    const check = database.transaction(
+      [PROMOTION_HISTORY_STORE, SAMSUNGDANG_MEMBERSHIP_STORE],
+      "readonly"
+    );
+    const [currentPromotions, membershipRecord] = await Promise.all([
+      requestResult(check.objectStore(PROMOTION_HISTORY_STORE).getAll()),
+      requestResult(check.objectStore(SAMSUNGDANG_MEMBERSHIP_STORE).get("current"))
+    ]);
+    await transactionDone(check);
+    let membershipVerification = null;
+    if (membershipRecord?.envelopeJson) {
+      const checked = await verifyMembershipCredentialJson(membershipRecord.envelopeJson);
+      if (checked.valid && checked.credentialId === membershipRecord.credentialId && checked.keyId === membershipRecord.keyId) {
+        membershipVerification = checked;
+      }
+    }
+    try {
+      await validateStoredPromotionHistory(backup.data.promotionHistory, membershipVerification);
+    } catch {
+      throw new BackupValidationError(
+        "invalid-samsungdang-promotion",
+        "삼성당 발급 승급이력의 서명 또는 저장값 교차검증에 실패했습니다."
+      );
+    }
+    const backupCredentialIds = new Set(
+      backup.data.promotionHistory
+        .filter((record) => record.source === "samsungdang")
+        .map((record) => record.credentialId)
+    );
+    const missingCurrentCredential = currentPromotions.some((record) =>
+      record.source === "samsungdang" && !backupCredentialIds.has(record.credentialId)
+    );
+    if (missingCurrentCredential) {
+      throw new BackupValidationError(
+        "destructive-promotion-restore",
+        "현재 저장된 삼성당 발급 승급이력이 없는 이전 백업은 복원할 수 없습니다."
+      );
+    }
+
     const transaction = database.transaction(
       [...legacyStores, SHARED_SESSION_SNAPSHOT_STORE],
       "readwrite"

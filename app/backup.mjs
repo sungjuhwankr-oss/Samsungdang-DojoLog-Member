@@ -21,6 +21,12 @@ const text = (value) => typeof value === "string" && value.trim().length > 0;
 const positive = (value) => Number.isInteger(value) && value > 0;
 const nonnegative = (value) => Number.isInteger(value) && value >= 0;
 const clone = (value) => structuredClone(value);
+const exactFields = (value, fields) => {
+  if (!object(value)) return false;
+  const actual = Object.keys(value).sort();
+  const expected = [...fields].sort();
+  return actual.length === expected.length && actual.every((field, index) => field === expected[index]);
+};
 
 function validDate(value) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -62,6 +68,24 @@ function validatePromotions(values) {
       !positive(value.rankValue) || !(value.date === null || validDate(value.date)) ||
       !positive(value.order)) {
       fail("invalid-promotion", "승급이력 구조가 올바르지 않습니다.");
+    }
+    const baseFields = ["id", "rankType", "rankValue", "date", "order"];
+    const legacy = exactFields(value, baseFields);
+    const self = exactFields(value, [...baseFields, "source", "eventType"]) &&
+      value.source === "self" && value.eventType === "self-recorded";
+    const samsungdangFields = [
+      ...baseFields, "source", "eventType", "credentialId", "keyId", "envelopeJson", "registeredAt"
+    ];
+    const samsungdangPromoted = exactFields(value, samsungdangFields) && value.eventType === "promoted";
+    const samsungdangRecognized = exactFields(value, [...samsungdangFields, "recognizedAt"]) &&
+      value.eventType === "recognized-at-entry" && validDate(value.recognizedAt);
+    const samsungdang = value.source === "samsungdang" && (samsungdangPromoted || samsungdangRecognized) &&
+      value.id === value.credentialId && text(value.credentialId) && text(value.keyId) &&
+      text(value.envelopeJson) && validInstant(value.registeredAt) &&
+      Number.isSafeInteger(value.rankValue) &&
+      (value.rankType === "kyu" ? value.rankValue <= 9 : true);
+    if (!legacy && !self && !samsungdang) {
+      fail("invalid-promotion-provenance", "승급이력 출처 구조가 올바르지 않습니다.");
     }
     if (ids.has(value.id)) fail("duplicate-promotion-id", "중복된 승급이력 id가 있습니다.");
     if (orders.has(value.order)) fail("duplicate-promotion-order", "중복된 승급 순서가 있습니다.");

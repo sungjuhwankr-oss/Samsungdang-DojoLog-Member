@@ -8,7 +8,7 @@ test("production membership route uses one credential query token and verified p
   const [page, panel, verifier] = await Promise.all([
     read("../app/membership/page.tsx"),
     read("../app/components/membership-registration-panel.tsx"),
-    read("../app/credential/membership-verifier.mjs")
+    read("../app/credential/credential-verifier.mjs")
   ]);
   assert.match(page, /MembershipRegistrationPanel/);
   assert.match(panel, /window\.location\.search/);

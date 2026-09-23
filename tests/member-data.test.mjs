@@ -56,7 +56,9 @@ test("promotionHistory stores a kyu promotion", () => {
     rankType: "kyu",
     rankValue: 9,
     date: null,
-    order: 1
+    order: 1,
+    source: "self",
+    eventType: "self-recorded"
   });
 });
 

@@ -41,7 +41,9 @@ export function createPromotion(input, order, id) {
     rankType: input.rankType,
     rankValue: input.rankValue,
     date: optionalDate(input.date),
-    order
+    order,
+    source: "self",
+    eventType: "self-recorded"
   };
 }
 
@@ -50,9 +52,17 @@ export function nextPromotionOrder(promotions) {
 }
 
 export function deriveCurrentRank(promotions) {
-  if (promotions.length === 0) return null;
-  const current = [...promotions].sort((left, right) => right.order - left.order)[0];
+  const valid = promotions.filter((item) =>
+    item && typeof item.id === "string" &&
+    (item.rankType === "kyu" || item.rankType === "dan") &&
+    Number.isInteger(item.rankValue) && item.rankValue > 0 &&
+    Number.isInteger(item.order) && item.order > 0
+  );
+  if (valid.length === 0) return null;
+  const current = [...valid].sort((left, right) => right.order - left.order)[0];
   return {
+    source: current.source ?? "self",
+    eventType: current.eventType ?? "self-recorded",
     ...current,
     label: current.rankValue + (current.rankType === "kyu" ? "급" : "단")
   };

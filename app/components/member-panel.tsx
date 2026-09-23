@@ -164,12 +164,14 @@ export function MemberPanel() {
         {promotionStatus && <p role="status">{promotionStatus}</p>}
         {promotions.length > 0 && (
           <ol className="promotion-list">
-            {promotions.map((promotion) => (
-              <li key={promotion.id}>
+            {promotions.map((promotion) => {
+              const eventType = "eventType" in promotion ? promotion.eventType : "self-recorded";
+              return <li key={promotion.id}>
                 {promotion.rankValue}{promotion.rankType === "kyu" ? "급" : "단"}
                 <span>{promotion.date ?? "날짜 미상"}</span>
-              </li>
-            ))}
+                <span>{eventType === "recognized-at-entry" ? "입회·이적 시 인정" : eventType === "promoted" ? "삼성당 발급" : "직접 기록"}</span>
+              </li>;
+            })}
           </ol>
         )}
       </section>
