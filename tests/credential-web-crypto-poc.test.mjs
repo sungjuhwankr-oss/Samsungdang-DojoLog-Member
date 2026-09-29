@@ -146,7 +146,7 @@ test("4G-B PoC remains outside the production membership gate and DB path", asyn
   const gate = getCurrentMembershipFeatureGate();
   assert.equal(gate.hasValidMembershipCredential, false);
   assert.deepEqual(gate.enabledFeatures, []);
-  assert.equal(TRAINING_DB_VERSION, 4);
+  assert.equal(TRAINING_DB_VERSION, 5);
 
   const pocSource = await readFile(
     new URL("../app/poc/credential-verify/web-crypto-poc.mjs", import.meta.url),

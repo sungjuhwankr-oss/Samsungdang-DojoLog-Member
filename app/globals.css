@@ -304,6 +304,17 @@ button, a { -webkit-tap-highlight-color: transparent; }
   font-size: 0.9rem;
 }
 
+.special-training-list {
+  display: grid;
+  gap: 0.65rem;
+  padding-left: 1.5rem;
+}
+
+.special-training-list li { padding: 0.45rem 0; }
+.special-training-list strong,
+.special-training-list span { display: block; }
+.special-training-list span { color: var(--muted); font-size: 0.9rem; }
+
 .create-session-box > summary,
 .session-card summary {
   cursor: pointer;

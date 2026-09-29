@@ -5,6 +5,7 @@ import {
   SAMSUNGDANG_MEMBERSHIP_STORE,
   SESSION_KATA_STORE,
   SHARED_SESSION_SNAPSHOT_STORE,
+  SPECIAL_TRAINING_HISTORY_STORE,
   TRAINING_DB_NAME,
   TRAINING_DB_VERSION,
   TRAINING_SESSION_STORE,
@@ -48,6 +49,11 @@ export function upgradeTrainingDatabase(request, oldVersion) {
   if (!database.objectStoreNames.contains(SAMSUNGDANG_MEMBERSHIP_STORE)) {
     database.createObjectStore(SAMSUNGDANG_MEMBERSHIP_STORE, { keyPath: "id" });
   }
+
+  const specialTraining = database.objectStoreNames.contains(SPECIAL_TRAINING_HISTORY_STORE)
+    ? transaction.objectStore(SPECIAL_TRAINING_HISTORY_STORE)
+    : database.createObjectStore(SPECIAL_TRAINING_HISTORY_STORE, { keyPath: "eventId" });
+  ensureIndex(specialTraining, "byCredentialId", "credentialId", { unique: true });
 
   if (oldVersion < 3) {
     const kataRequest = kata.getAll();

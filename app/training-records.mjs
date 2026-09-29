@@ -1,11 +1,12 @@
 export const TRAINING_DB_NAME = "samsungdang-dojolog-member";
-export const TRAINING_DB_VERSION = 4;
+export const TRAINING_DB_VERSION = 5;
 export const TRAINING_SESSION_STORE = "trainingSession";
 export const SESSION_KATA_STORE = "sessionKata";
 export const MEMBER_PROFILE_STORE = "memberProfile";
 export const PROMOTION_HISTORY_STORE = "promotionHistory";
 export const SHARED_SESSION_SNAPSHOT_STORE = "sharedSessionSnapshot";
 export const SAMSUNGDANG_MEMBERSHIP_STORE = "samsungdangMembership";
+export const SPECIAL_TRAINING_HISTORY_STORE = "specialTrainingHistory";
 export const PERSONAL_SESSION_DOJO = "__personal__";
 
 export function sessionIdentity(dojo, sessionNo) {

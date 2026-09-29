@@ -32,8 +32,14 @@ const PROMOTED_TARGET_FIELDS = ["eventType", "examDate", "mode", "targetRank"];
 const RECOGNIZED_FIELDS = [
   "eventType", "memberId", "mode", "rankDate", "recognizedAt", "targetRank"
 ];
+const SPECIAL_TRAINING_FIELDS = [
+  "eventId", "title", "category", "startDate", "endDate", "instructor"
+];
 const RANK_FIELDS = ["rankType", "rankValue"];
-const SUPPORTED_TYPES = new Set(["membership", "promotion"]);
+const SPECIAL_TRAINING_CATEGORIES = new Set([
+  "seminar", "workshop", "special-training", "camp", "other"
+]);
+const SUPPORTED_TYPES = new Set(["membership", "promotion", "special-training"]);
 const KEY_STATUSES = new Set(Object.values(TRUSTED_KEY_STATUS));
 
 const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -132,6 +138,22 @@ function validatePromotionPayload(payload) {
   return false;
 }
 
+function isBoundedDisplayText(value) {
+  return typeof value === "string" && value.trim().length > 0 && value.length <= 200 &&
+    isWellFormedUnicode(value);
+}
+
+function validateSpecialTrainingPayload(payload) {
+  if (!hasExactFields(payload, SPECIAL_TRAINING_FIELDS)) return false;
+  return hasBinaryIdentifier(payload.eventId, "st1_", 16) &&
+    isBoundedDisplayText(payload.title) &&
+    SPECIAL_TRAINING_CATEGORIES.has(payload.category) &&
+    isCalendarDate(payload.startDate) &&
+    (payload.endDate === null ||
+      (isCalendarDate(payload.endDate) && payload.endDate >= payload.startDate)) &&
+    isBoundedDisplayText(payload.instructor);
+}
+
 function validateFields(envelope, expectedType) {
   if (!hasExactFields(envelope, TOP_LEVEL_FIELDS) || typeof envelope.signature !== "string") {
     return CREDENTIAL_REASON.INVALID_FIELD;
@@ -149,7 +171,9 @@ function validateFields(envelope, expectedType) {
   if (!isUtcSecondInstant(signed.issuedAt)) return CREDENTIAL_REASON.INVALID_FIELD;
   const payloadValid = signed.type === "membership"
     ? validateMembershipPayload(signed.payload)
-    : validatePromotionPayload(signed.payload);
+    : signed.type === "promotion"
+      ? validatePromotionPayload(signed.payload)
+      : validateSpecialTrainingPayload(signed.payload);
   return payloadValid ? null : CREDENTIAL_REASON.INVALID_FIELD;
 }
 

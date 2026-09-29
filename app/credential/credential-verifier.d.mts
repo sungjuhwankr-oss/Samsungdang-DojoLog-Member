@@ -11,7 +11,16 @@ export type VerifiedPromotionPayload =
   | { eventType: "promoted"; examDate: string; mode: "advance-one" }
   | { eventType: "promoted"; examDate: string; mode: "target"; targetRank: PromotionRank }
   | { eventType: "recognized-at-entry"; memberId: string; mode: "target"; rankDate: string | null; recognizedAt: string; targetRank: PromotionRank };
-export interface CredentialVerificationResult<T = VerifiedMembershipPayload | VerifiedPromotionPayload> {
+export type SpecialTrainingCategory = "seminar" | "workshop" | "special-training" | "camp" | "other";
+export interface VerifiedSpecialTrainingPayload {
+  eventId: string;
+  title: string;
+  category: SpecialTrainingCategory;
+  startDate: string;
+  endDate: string | null;
+  instructor: string;
+}
+export interface CredentialVerificationResult<T = VerifiedMembershipPayload | VerifiedPromotionPayload | VerifiedSpecialTrainingPayload> {
   valid: boolean;
   reason: CredentialReason;
   credentialType: string | null;
@@ -24,7 +33,7 @@ export interface CredentialVerifierOptions {
   registry?: TrustedKeyRegistry;
   crypto?: Crypto;
   canonicalize?: (value: unknown) => string;
-  expectedType?: "membership" | "promotion";
+  expectedType?: "membership" | "promotion" | "special-training";
 }
 export const CREDENTIAL_REASON: Readonly<Record<CredentialReason, CredentialReason>>;
 export function isCalendarDate(value: unknown): value is string;

@@ -37,6 +37,7 @@ test("production verifier의 valid membership 결과만 A 기능 gate를 연다"
   assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.SESSION_SHARE_IMPORT), true);
   assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.TRAINING_PROGRESS), true);
   assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.MEMBERSHIP_CARD), true);
+  assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.SPECIAL_TRAINING_HISTORY), true);
 });
 
 test("Phase 4H-B gate는 저장 credential 검증결과를 사용하고 standalone mode를 사용하지 않는다", async () => {
@@ -75,10 +76,10 @@ test("import route는 gate 안에서만 payload preview를 렌더링한다", asy
   assert.match(source, /<FragmentProbe \/>/);
 });
 
-test("Phase 4H-B는 DB v4의 dedicated membership store만 추가한다", async () => {
+test("Phase 4J-B는 DB v5 special-training store를 추가하고 membership store를 유지한다", async () => {
   const source = await readFile(new URL("../app/training-records.mjs", import.meta.url), "utf8");
-  assert.match(source, /TRAINING_DB_VERSION = 4/);
+  assert.match(source, /TRAINING_DB_VERSION = 5/);
   const database = await readFile(new URL("../app/training-database.mjs", import.meta.url), "utf8");
   assert.match(database, /SAMSUNGDANG_MEMBERSHIP_STORE/);
-  assert.doesNotMatch(database, /specialTrainingHistory/);
+  assert.match(database, /SPECIAL_TRAINING_HISTORY_STORE/);
 });

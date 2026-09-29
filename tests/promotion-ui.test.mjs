@@ -41,7 +41,7 @@ test("service worker precaches and directly falls back to the promotion route", 
   assert.match(serviceWorker, /"\.\/promotion\/"/);
   assert.match(serviceWorker, /endsWith\("\/promotion\/"\)/);
   assert.match(serviceWorker, /caches\.match\(scoped\("\.\/promotion\/"\)\)/);
-  assert.match(serviceWorker, /samsungdang-member-phase4i-b-v1/);
+  assert.match(serviceWorker, /samsungdang-member-phase4j-b-v1/);
 });
 
 test("recognized-at-entry history is labeled as entry or transfer recognition", async () => {
@@ -51,13 +51,13 @@ test("recognized-at-entry history is labeled as entry or transfer recognition", 
   assert.doesNotMatch(panel, /삼성당 승급/);
 });
 
-test("Phase 4I-B does not add a DB version, store, or index", async () => {
+test("Phase 4J-B keeps Promotion storage isolated from the new special-training store", async () => {
   const [records, database] = await Promise.all([
     read("../app/training-records.mjs"),
     read("../app/training-database.mjs")
   ]);
-  assert.match(records, /TRAINING_DB_VERSION = 4/);
+  assert.match(records, /TRAINING_DB_VERSION = 5/);
   assert.doesNotMatch(records, /promotionReplay|credentialLedger/);
   assert.match(database, /ensureIndex\(promotions, "byOrder", "order", \{ unique: true \}\)/);
-  assert.equal([...database.matchAll(/createObjectStore/g)].length, 6);
+  assert.equal([...database.matchAll(/createObjectStore/g)].length, 7);
 });

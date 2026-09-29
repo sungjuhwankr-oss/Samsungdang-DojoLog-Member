@@ -29,6 +29,7 @@ import {
   SAMSUNGDANG_MEMBERSHIP_STORE,
   SESSION_KATA_STORE,
   SHARED_SESSION_SNAPSHOT_STORE,
+  SPECIAL_TRAINING_HISTORY_STORE,
   TRAINING_DB_VERSION,
   TRAINING_SESSION_STORE
 } from "../app/training-records.mjs";
@@ -400,11 +401,11 @@ test("격려 문구는 합격·응시 확정 또는 준비 완료를 생성하�
   assert.doesNotMatch(messages.join(" "), /승급 가능|심사 준비 완료|응시 자격|합격 가능|자동 승급/);
 });
 
-test("IndexedDB version은 Phase 4H-B에서 4이다", () => {
-  assert.equal(TRAINING_DB_VERSION, 4);
+test("IndexedDB version은 Phase 4J-B에서 5이다", () => {
+  assert.equal(TRAINING_DB_VERSION, 5);
 });
 
-test("IndexedDB store 구조는 기존 5개와 membership store를 사용한다", () => {
+test("IndexedDB store 구조는 기존 6개와 special-training store를 사용한다", () => {
   assert.deepEqual(
     new Set([
       TRAINING_SESSION_STORE,
@@ -412,9 +413,10 @@ test("IndexedDB store 구조는 기존 5개와 membership store를 사용한다"
       MEMBER_PROFILE_STORE,
       PROMOTION_HISTORY_STORE,
       SHARED_SESSION_SNAPSHOT_STORE,
-      SAMSUNGDANG_MEMBERSHIP_STORE
+      SAMSUNGDANG_MEMBERSHIP_STORE,
+      SPECIAL_TRAINING_HISTORY_STORE
     ]),
-    new Set(["trainingSession", "sessionKata", "memberProfile", "promotionHistory", "sharedSessionSnapshot", "samsungdangMembership"])
+    new Set(["trainingSession", "sessionKata", "memberProfile", "promotionHistory", "sharedSessionSnapshot", "samsungdangMembership", "specialTrainingHistory"])
   );
 });
 

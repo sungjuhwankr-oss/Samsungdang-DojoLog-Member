@@ -20,6 +20,7 @@ import {
   SAMSUNGDANG_MEMBERSHIP_STORE,
   SESSION_KATA_STORE,
   SHARED_SESSION_SNAPSHOT_STORE,
+  SPECIAL_TRAINING_HISTORY_STORE,
   TRAINING_DB_NAME,
   TRAINING_DB_VERSION,
   TRAINING_SESSION_STORE
@@ -121,17 +122,18 @@ async function createV3Database(factory) {
   database.close();
 }
 
-test("v3 → v4 migration adds only samsungdangMembership and preserves every existing record", async () => {
+test("v3 → v5 migration adds membership and special-training stores and preserves every existing record", async () => {
   const factory = new IDBFactory();
   await createV3Database(factory);
   const database = await openTrainingDatabase(factory);
-  assert.equal(database.version, 4);
+  assert.equal(database.version, 5);
   assert.deepEqual([...database.objectStoreNames], [
     "memberProfile",
     "promotionHistory",
     "samsungdangMembership",
     "sessionKata",
     "sharedSessionSnapshot",
+    "specialTrainingHistory",
     "trainingSession"
   ]);
   const transaction = database.transaction(
@@ -141,7 +143,8 @@ test("v3 → v4 migration adds only samsungdangMembership and preserves every ex
       SHARED_SESSION_SNAPSHOT_STORE,
       MEMBER_PROFILE_STORE,
       PROMOTION_HISTORY_STORE,
-      SAMSUNGDANG_MEMBERSHIP_STORE
+      SAMSUNGDANG_MEMBERSHIP_STORE,
+      SPECIAL_TRAINING_HISTORY_STORE
     ],
     "readonly"
   );
@@ -151,14 +154,15 @@ test("v3 → v4 migration adds only samsungdangMembership and preserves every ex
   assert.equal((await requestResult(transaction.objectStore(MEMBER_PROFILE_STORE).get("self"))).name, "기존 사용자");
   assert.equal((await requestResult(transaction.objectStore(PROMOTION_HISTORY_STORE).get("p1"))).rankValue, 8);
   assert.equal(await requestResult(transaction.objectStore(SAMSUNGDANG_MEMBERSHIP_STORE).count()), 0);
+  assert.equal(await requestResult(transaction.objectStore(SPECIAL_TRAINING_HISTORY_STORE).count()), 0);
   await transactionDone(transaction);
   database.close();
 });
 
-test("v3 → v4 upgrade transaction abort rolls back the new store and preserves v3 data", async () => {
+test("v3 → v5 upgrade transaction abort rolls back both new stores and preserves v3 data", async () => {
   const factory = new IDBFactory();
   await createV3Database(factory);
-  const open = factory.open(TRAINING_DB_NAME, 4);
+  const open = factory.open(TRAINING_DB_NAME, 5);
   open.onupgradeneeded = (event) => {
     upgradeTrainingDatabase(open, event.oldVersion);
     open.transaction.abort();
@@ -167,6 +171,7 @@ test("v3 → v4 upgrade transaction abort rolls back the new store and preserves
   const preserved = await request(factory.open(TRAINING_DB_NAME, 3));
   assert.equal(preserved.version, 3);
   assert.equal(preserved.objectStoreNames.contains(SAMSUNGDANG_MEMBERSHIP_STORE), false);
+  assert.equal(preserved.objectStoreNames.contains(SPECIAL_TRAINING_HISTORY_STORE), false);
   const transaction = preserved.transaction(TRAINING_SESSION_STORE, "readonly");
   assert.equal((await request(transaction.objectStore(TRAINING_SESSION_STORE).get(["__personal__", 7]))).note, "기존 B 기록");
   await complete(transaction);
@@ -293,7 +298,7 @@ test("Backup v1 validation failure preserves both legacy data and Membership Cre
   assert.deepEqual(await readStoredMembershipRecord(factory), before);
 });
 
-test("Phase 4H-B physical schema uses DB v4 and one dedicated membership store", () => {
-  assert.equal(TRAINING_DB_VERSION, 4);
+test("Phase 4J-B physical schema keeps the dedicated membership store under DB v5", () => {
+  assert.equal(TRAINING_DB_VERSION, 5);
   assert.equal(SAMSUNGDANG_MEMBERSHIP_STORE, "samsungdangMembership");
 });

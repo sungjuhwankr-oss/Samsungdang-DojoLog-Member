@@ -3,7 +3,8 @@ import { loadStoredMembershipVerification } from "./membership-store.mjs";
 export const SAMSUNGDANG_FEATURE = Object.freeze({
   SESSION_SHARE_IMPORT: "session-share-import",
   TRAINING_PROGRESS: "training-progress",
-  MEMBERSHIP_CARD: "membership-card"
+  MEMBERSHIP_CARD: "membership-card",
+  SPECIAL_TRAINING_HISTORY: "special-training-history"
 });
 
 const KNOWN_FEATURES = new Set(Object.values(SAMSUNGDANG_FEATURE));
