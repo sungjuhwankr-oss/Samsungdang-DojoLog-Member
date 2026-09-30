@@ -28,14 +28,14 @@ test("B sees verified preview but confirm is assessment-gated and cancel is muta
   assert.doesNotMatch(panel, /localStorage|sessionStorage/);
 });
 
-test("A-only minimal history list is behind the membership feature boundary", async () => {
-  const [page, history] = await Promise.all([
-    read("../app/special-training/page.tsx"),
+test("existing home mounts the A-only minimal history list behind the membership feature boundary", async () => {
+  const [home, history] = await Promise.all([
+    read("../app/page.tsx"),
     read("../app/components/special-training-history.tsx")
   ]);
-  assert.match(page, /SAMSUNGDANG_FEATURE\.SPECIAL_TRAINING_HISTORY/);
-  assert.match(page, /<SpecialTrainingHistory \/>/);
-  assert.ok(page.indexOf("SAMSUNGDANG_FEATURE.SPECIAL_TRAINING_HISTORY") < page.indexOf("<SpecialTrainingHistory />"));
+  assert.match(home, /SAMSUNGDANG_FEATURE\.SPECIAL_TRAINING_HISTORY/);
+  assert.match(home, /<SpecialTrainingHistory \/>/);
+  assert.ok(home.indexOf("SAMSUNGDANG_FEATURE.SPECIAL_TRAINING_HISTORY") < home.indexOf("<SpecialTrainingHistory />"));
   assert.match(history, /listVerifiedSpecialTrainingHistory/);
   assert.match(history, /SPECIAL_TRAINING_CHANGED_EVENT/);
   assert.doesNotMatch(history, /promotionHistory|trainingSession/);
