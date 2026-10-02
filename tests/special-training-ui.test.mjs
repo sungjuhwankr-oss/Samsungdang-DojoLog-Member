@@ -28,14 +28,14 @@ test("B sees verified preview but confirm is assessment-gated and cancel is muta
   assert.doesNotMatch(panel, /localStorage|sessionStorage/);
 });
 
-test("existing home mounts the A-only minimal history list behind the membership feature boundary", async () => {
-  const [home, history] = await Promise.all([
-    read("../app/page.tsx"),
+test("events route reuses the existing verified special history as a read-only B/A shell", async () => {
+  const [events, history] = await Promise.all([
+    read("../app/events/page.tsx"),
     read("../app/components/special-training-history.tsx")
   ]);
-  assert.match(home, /SAMSUNGDANG_FEATURE\.SPECIAL_TRAINING_HISTORY/);
-  assert.match(home, /<SpecialTrainingHistory \/>/);
-  assert.ok(home.indexOf("SAMSUNGDANG_FEATURE.SPECIAL_TRAINING_HISTORY") < home.indexOf("<SpecialTrainingHistory />"));
+  assert.match(events, /<SpecialTrainingHistory \/>/);
+  assert.doesNotMatch(events, /SpecialTrainingRegistrationPanel|externalEvent|participantSession/);
+  assert.match(events, /읽기 전용/);
   assert.match(history, /listVerifiedSpecialTrainingHistory/);
   assert.match(history, /SPECIAL_TRAINING_CHANGED_EVENT/);
   assert.doesNotMatch(history, /promotionHistory|trainingSession/);
@@ -55,7 +55,7 @@ test("service worker precaches and directly falls back to the special-training r
   assert.match(serviceWorker, /"\.\/special-training\/"/);
   assert.match(serviceWorker, /endsWith\("\/special-training\/"\)/);
   assert.match(serviceWorker, /caches\.match\(scoped\("\.\/special-training\/"\)\)/);
-  assert.match(serviceWorker, /samsungdang-member-phase4j-b-v1/);
+  assert.match(serviceWorker, /samsungdang-member-phase4k-b-v1/);
 });
 
 test("Backup v1 UI discloses exclusion, same-device preservation, and cross-device loss risk", async () => {

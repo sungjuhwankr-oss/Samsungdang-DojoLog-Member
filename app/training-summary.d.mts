@@ -1,4 +1,5 @@
 import type { HydratedTrainingSession } from "./training-records.mjs";
+import type { TrainingCountBreakdown } from "./training-count.mjs";
 
 export interface TrainingSummaryKata {
   id: string;
@@ -7,8 +8,8 @@ export interface TrainingSummaryKata {
 }
 
 export interface TrainingSummary {
-  trainingDays: number;
   trainingSessions: number;
+  trainingCounts: TrainingCountBreakdown;
   kata: TrainingSummaryKata[];
 }
 

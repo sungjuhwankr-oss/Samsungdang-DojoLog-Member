@@ -11,7 +11,6 @@ import {
 import { parseSessionHash } from "../app/session-share.mjs";
 import {
   calculateTrainingProgress,
-  countDistinctTrainingDays,
   countKataOccurrences,
   countTrainingSessions,
   createExamKataAnalysis,
@@ -35,6 +34,9 @@ import {
 } from "../app/training-records.mjs";
 
 const catalogBytes = await readFile(
+  new URL("../reference/kata-catalog.v2.json", import.meta.url)
+);
+const legacyCatalogBytes = await readFile(
   new URL("../reference/kata-catalog.v1.json", import.meta.url)
 );
 const terminologyBytes = await readFile(
@@ -101,21 +103,19 @@ for (const [current, targetLabel, required] of progressionCases) {
   });
 }
 
-test("같은 날짜 session 2개는 수련일수 1일, 수련횟수 2회이다", () => {
+test("같은 날짜 session 2개는 수련횟수 2회이다", () => {
   const sessions = [
     trainingSession(1, "2026-01-01"),
     trainingSession(2, "2026-01-01")
   ];
-  assert.equal(countDistinctTrainingDays(sessions), 1);
   assert.equal(countTrainingSessions(sessions), 2);
 });
 
-test("서로 다른 날짜 session 2개는 수련일수 2일, 수련횟수 2회이다", () => {
+test("서로 다른 날짜 session 2개도 수련횟수 2회이다", () => {
   const sessions = [
     trainingSession(1, "2026-01-01"),
     trainingSession(2, "2026-01-02")
   ];
-  assert.equal(countDistinctTrainingDays(sessions), 2);
   assert.equal(countTrainingSessions(sessions), 2);
 });
 
@@ -140,7 +140,7 @@ test("현급 취득일 미상이면 현급 count와 remaining을 계산하지 �
     [trainingSession(1, "2026-02-02")],
     catalog
   );
-  assert.equal(analysis.totalTrainingDays, 1);
+  assert.equal("totalTrainingDays" in analysis, false);
   assert.equal(analysis.progress?.values, null);
 });
 
@@ -180,22 +180,22 @@ test("기준 충족은 심사나 합격 가능 판정으로 변환되지 않는�
   assert.doesNotMatch(message, /응시 자격|승급 가능|합격 가능|준비 완료/);
 });
 
-test("canonical Kata reference는 77개를 유지한다", () => {
-  assert.equal(catalog.kata.length, 77);
+test("canonical Kata reference는 97개를 사용한다", () => {
+  assert.equal(catalog.kata.length, 97);
 });
 
-test("exam-linked canonical Kata는 59개이다", () => {
-  assert.equal(catalog.kata.filter((kata) => kata.exam).length, 59);
+test("exam-linked canonical Kata는 79개이다", () => {
+  assert.equal(catalog.kata.filter((kata) => kata.examEntries.length).length, 79);
 });
 
-test("canonical Kata.id 77개가 모두 unique하다", () => {
-  assert.equal(new Set(catalog.kata.map((kata) => kata.id)).size, 77);
+test("canonical Kata.id 97개가 모두 unique하다", () => {
+  assert.equal(new Set(catalog.kata.map((kata) => kata.id)).size, 97);
 });
 
-test("9급~1급 전체 분석은 수련 0회인 59개 Kata도 포함한다", () => {
+test("9급~1급 전체 분석은 수련 0회인 77개 Kata도 포함한다", () => {
   const analysis = createExamKataAnalysis(catalog, [], null);
-  assert.equal(analysis.all.total, 59);
-  assert.equal(analysis.all.unrecorded, 59);
+  assert.equal(analysis.all.total, 77);
+  assert.equal(analysis.all.unrecorded, 77);
   assert.ok(analysis.all.entries.every((entry) => entry.count === 0));
 });
 
@@ -203,28 +203,28 @@ test("9급~1급 grade grouping은 reference 분포를 유지한다", () => {
   const groups = groupKataByGrade(createExamKataAnalysis(catalog, [], null).all);
   assert.deepEqual(
     Object.fromEntries(groups.map((group) => [group.grade, group.total])),
-    { 9: 2, 8: 4, 7: 5, 6: 8, 5: 11, 4: 8, 3: 6, 2: 8, 1: 7 }
+    { 9: 2, 8: 4, 7: 5, 6: 9, 5: 12, 4: 10, 3: 7, 2: 14, 1: 14 }
   );
 });
 
 test("현재 6급의 누적범위는 9급~6급 exam Kata이다", () => {
   const analysis = createExamKataAnalysis(catalog, [], rank(6));
   assert.equal(analysis.currentLabel, "9급~6급");
-  assert.equal(analysis.current.total, 19);
+  assert.equal(analysis.current.total, 20);
   assert.ok(analysis.current.entries.every((entry) => entry.grade >= 6));
 });
 
-test("현재 6급의 다음 급 신규 범위는 5급 Kata 11개이다", () => {
+test("현재 6급의 다음 급 신규 범위는 5급 Kata 12개이다", () => {
   const analysis = createExamKataAnalysis(catalog, [], rank(6));
   assert.equal(analysis.nextNewGrade, 5);
-  assert.equal(analysis.nextNew.total, 11);
+  assert.equal(analysis.nextNew.total, 12);
   assert.ok(analysis.nextNew.entries.every((entry) => entry.grade === 5));
 });
 
-test("현재 6급의 다음 심사 전체범위는 9급~5급 누적 30개이다", () => {
+test("현재 6급의 다음 심사 전체범위는 9급~5급 누적 32개이다", () => {
   const analysis = createExamKataAnalysis(catalog, [], rank(6));
   assert.equal(analysis.nextCumulativeLabel, "9급~5급");
-  assert.equal(analysis.nextCumulative.total, 30);
+  assert.equal(analysis.nextCumulative.total, 32);
 });
 
 test("무급의 다음 신규 및 다음 심사 범위는 모두 9급 Kata이다", () => {
@@ -236,8 +236,8 @@ test("무급의 다음 신규 및 다음 심사 범위는 모두 9급 Kata이다
 
 test("다음 급 신규와 다음 심사 전체 누적범위를 혼동하지 않는다", () => {
   const analysis = createExamKataAnalysis(catalog, [], rank(6));
-  assert.equal(analysis.nextNew.total, 11);
-  assert.equal(analysis.nextCumulative.total, 30);
+  assert.equal(analysis.nextNew.total, 12);
+  assert.equal(analysis.nextCumulative.total, 32);
   assert.notDeepEqual(analysis.nextNew.entries, analysis.nextCumulative.entries);
 });
 
@@ -265,7 +265,7 @@ test("unknown ID는 같은 name의 known Kata로 remap하지 않는다", () => {
     null
   );
   assert.equal(analysis.all.entries.find((entry) => entry.id === known.id)?.count, 0);
-  assert.equal(analysis.all.total, 59);
+  assert.equal(analysis.all.total, 77);
 });
 
 test("같은 session에서 중복된 Kata.id는 한 번만 집계한다", () => {
@@ -286,10 +286,9 @@ test("같은 날짜의 서로 다른 session에서 같은 Kata.id는 두 번 집
   assert.equal(counts.get(known.id), 2);
 });
 
-test("zero-kata session은 수련일수와 수련횟수에 포함되고 Kata count에는 영향이 없다", () => {
+test("zero-kata session은 수련횟수에 포함되고 Kata count에는 영향이 없다", () => {
   const sessions = [trainingSession(1, "2026-01-01")];
   const analysis = createTrainingAnalysis([], sessions, catalog);
-  assert.equal(analysis.totalTrainingDays, 1);
   assert.equal(analysis.totalTrainingSessions, 1);
   assert.equal(countKataOccurrences(sessions).size, 0);
 });
@@ -300,9 +299,9 @@ test("기록에 없는 canonical exam Kata는 0회 상태로 유지한다", () =
     [trainingSession(1, "2026-01-01", [{ id: known.id, name: known.nameKo }])],
     null
   );
-  assert.equal(analysis.all.total, 59);
+  assert.equal(analysis.all.total, 77);
   assert.equal(analysis.all.practiced, 1);
-  assert.equal(analysis.all.unrecorded, 58);
+  assert.equal(analysis.all.unrecorded, 76);
 });
 
 test("기본 threshold 전에 실제 promotion이 있어도 오류로 판정하지 않는다", () => {
@@ -330,7 +329,6 @@ test("이전 급의 부족분을 현재 급 progression에 이월하지 않는�
     sessions,
     catalog
   );
-  assert.equal(analysis.totalTrainingDays, 3);
   assert.equal(analysis.totalTrainingSessions, 3);
   assert.equal(analysis.progress?.values?.actual, 1);
   assert.equal(analysis.progress?.values?.required, 70);
@@ -353,7 +351,6 @@ test("무급은 promotion date 없이 모든 session을 9급 progress에 사용�
     trainingSession(2, "2026-01-01")
   ];
   const analysis = createTrainingAnalysis([], sessions, catalog);
-  assert.equal(analysis.totalTrainingDays, 1);
   assert.equal(analysis.totalTrainingSessions, 2);
   assert.equal(analysis.progress?.values?.actual, 2);
   assert.equal(analysis.progress?.values?.remaining, 8);
@@ -434,7 +431,7 @@ test("Session Share Payload schema와 version은 v1을 유지한다", () => {
 
 test("Phase 4B reference artifact bytes는 변경되지 않는다", () => {
   assert.equal(
-    createHash("sha256").update(catalogBytes).digest("hex"),
+    createHash("sha256").update(legacyCatalogBytes).digest("hex"),
     "a7139ee72ad12e3972d3e121e13b1a0e185ae6bc0f007d249b3f1b0af3ca8c5d"
   );
   assert.equal(
@@ -467,11 +464,11 @@ test("유단자 기본 reference는 기간·횟수·연령 조건을 분리해 �
   ]);
 });
 
-test("1급 → 초단은 신규 급수 Kata 없이 9급~1급 59개를 누적범위로 유지한다", () => {
+test("1급 → 초단은 신규 급수 Kata 없이 9급~1급 77개를 누적범위로 유지한다", () => {
   const analysis = createExamKataAnalysis(catalog, [], rank(1));
   assert.equal(analysis.nextNew.total, 0);
   assert.equal(analysis.nextCumulativeLabel, "9급~1급");
-  assert.equal(analysis.nextCumulative.total, 59);
+  assert.equal(analysis.nextCumulative.total, 77);
 });
 
 test("빈 수련기록의 무급 진행도는 0 / 10이며 NaN이나 Infinity가 아니다", () => {

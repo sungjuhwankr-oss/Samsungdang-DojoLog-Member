@@ -45,7 +45,6 @@ export function TrainingSummary() {
       {status === "ready" && (
         <>
           <div className="training-day-grid">
-            <div><span>앱 기록 수련일수</span><strong>{summary.trainingDays}일</strong></div>
             <div><span>앱 기록 수련횟수</span><strong>{summary.trainingSessions}회</strong></div>
           </div>
           {summary.kata.length === 0 ? (

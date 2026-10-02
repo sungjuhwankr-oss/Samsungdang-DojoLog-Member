@@ -52,3 +52,7 @@ export function SamsungdangFeatureBoundary({
   const gate = useContext(MembershipFeatureGateContext);
   return allowsSamsungdangFeature(gate, feature) ? children : fallback;
 }
+
+export function useMembershipFeatureGate() {
+  return useContext(MembershipFeatureGateContext);
+}

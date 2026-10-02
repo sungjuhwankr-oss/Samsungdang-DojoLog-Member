@@ -1,4 +1,5 @@
-import { countDistinctTrainingDays, countKataOccurrences, countTrainingSessions } from "./training-progress.mjs";
+import { createTrainingCountBreakdown } from "./training-count.mjs";
+import { countKataOccurrences } from "./training-progress.mjs";
 
 export function createTrainingSummary(sessions) {
   const names = new Map();
@@ -12,9 +13,10 @@ export function createTrainingSummary(sessions) {
   }
 
   const counts = countKataOccurrences(sessions);
+  const trainingCounts = createTrainingCountBreakdown({ trainingSessions: sessions });
   return {
-    trainingDays: countDistinctTrainingDays(sessions),
-    trainingSessions: countTrainingSessions(sessions),
+    trainingSessions: trainingCounts.total,
+    trainingCounts,
     kata: [...counts.entries()]
       .map(([id, count]) => ({ id, name: names.get(id) ?? id, count }))
       .sort((left, right) => right.count - left.count || left.name.localeCompare(right.name, "ko"))

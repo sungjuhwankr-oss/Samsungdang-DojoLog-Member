@@ -2,7 +2,8 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
-import kataCatalog from "../../reference/kata-catalog.v1.json";
+import kataCatalog from "../../reference/kata-catalog.v2.json";
+import { getCurrentKataPresentation } from "../kata-library.mjs";
 import { listMemoSessions } from "../training-journal.mjs";
 import type { HydratedTrainingSession, SharedSessionSnapshotRecord } from "../training-records.mjs";
 import {
@@ -19,6 +20,7 @@ import {
 
 type KataValue = { id: string; name: string };
 type LoadState = "loading" | "ready" | "error";
+type JournalView = "all" | "memo" | "search";
 
 function initialOrigin() {
   return typeof window === "undefined" ? "" : window.location.origin;
@@ -35,6 +37,27 @@ function sessionAnchor(record: Pick<HydratedTrainingSession, "dojo" | "sessionNo
 
 function sessionLabel(record: Pick<HydratedTrainingSession, "source" | "sessionNo">) {
   return record.source === "shared" ? `공유수업 ${record.sessionNo}` : `개인수련 · 기록 ${record.sessionNo}`;
+}
+
+function CurrentKataVideo({ id }: { id: string }) {
+  const presentation = getCurrentKataPresentation(kataCatalog, id);
+  if (presentation.status === "unknown") {
+    return <span className="kata-video-state unknown">카탈로그 외 기록</span>;
+  }
+  if (presentation.status === "no-video") {
+    return <span className="kata-video-state">영상 없음</span>;
+  }
+  return (
+    <span className="saved-kata-video-links">
+      {presentation.links.map((link, index) => (
+        <a key={`${link.url}-${link.label ?? ""}`} href={link.url} target="_blank" rel="noreferrer">
+          {presentation.links.length === 1
+            ? "영상 보기"
+            : `영상 보기${link.label ? ` (${link.label})` : ` ${index + 1}`}`}
+        </a>
+      ))}
+    </span>
+  );
 }
 
 function KataEditor({ values, onChange }: { values: KataValue[]; onChange(values: KataValue[]): void }) {
@@ -54,7 +77,7 @@ function KataEditor({ values, onChange }: { values: KataValue[]; onChange(values
         <ul className="editable-kata-list">
           {values.map((kata) => (
             <li key={kata.id}>
-              <span>{kata.name}</span>
+              <span className="saved-kata-label"><span>{kata.name}</span><CurrentKataVideo id={kata.id} /></span>
               <button type="button" className="secondary-button" onClick={() => onChange(values.filter((item) => item.id !== kata.id))}>삭제</button>
             </li>
           ))}
@@ -76,7 +99,7 @@ function SnapshotView({ snapshot }: { snapshot: SharedSessionSnapshotRecord }) {
     <div className="snapshot-box" aria-label="공유 원본">
       <p><strong>공유 원본</strong> · 수업 {snapshot.sessionNo} · {snapshot.date}</p>
       {snapshot.kata.length === 0 ? <p className="small">원본 카타 없음</p> : (
-        <ol>{snapshot.kata.map((kata) => <li key={`${kata.id}-${kata.order}`}>{kata.name}</li>)}</ol>
+        <ol>{snapshot.kata.map((kata) => <li key={`${kata.id}-${kata.order}`}><span>{kata.name}</span> <CurrentKataVideo id={kata.id} /></li>)}</ol>
       )}
     </div>
   );
@@ -195,6 +218,7 @@ export function TrainingLog() {
   const [kata, setKata] = useState<KataValue[]>([]);
   const [createStatus, setCreateStatus] = useState("");
   const [memoQuery, setMemoQuery] = useState("");
+  const [view, setView] = useState<JournalView>("all");
 
   const reload = useCallback(() => {
     listTrainingSessions().then(
@@ -227,57 +251,69 @@ export function TrainingLog() {
     }
   }
 
+  function openOriginal(record: HydratedTrainingSession) {
+    setView("all");
+    window.setTimeout(() => {
+      const anchor = sessionAnchor(record);
+      const details = document.querySelector(`#${CSS.escape(anchor)} details`);
+      if (details instanceof HTMLDetailsElement) details.open = true;
+      document.getElementById(anchor)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  const shownMemos = view === "search" && !memoQuery.trim() ? [] : memoRecords;
+
   return (
     <>
       <section className="panel" aria-labelledby="training-log-title">
         <h2 id="training-log-title">내 수련일지</h2>
-        <details className="create-session-box">
-          <summary>개인수련 추가</summary>
-          <form className="compact-form" onSubmit={createPersonal}>
-            <label>수련일<input type="date" required value={date} onChange={(event) => setDate(event.target.value)} /></label>
-            <label>메모<textarea value={note} maxLength={20_000} rows={5} onChange={(event) => setNote(event.target.value)} /></label>
-            <fieldset><legend>카타</legend><KataEditor values={kata} onChange={setKata} /></fieldset>
-            <button className="action-button" type="submit">개인수련 저장</button>
-          </form>
-          <p className="small">과거 날짜와 같은 날짜의 복수 수련을 기록할 수 있습니다. 카타 없이도 저장할 수 있습니다.</p>
-          {createStatus && <p role="status">{createStatus}</p>}
-        </details>
+        <div className="section-tabs" role="tablist" aria-label="수련일지 보기">
+          <button type="button" role="tab" aria-selected={view === "all"} onClick={() => setView("all")}>전체</button>
+          <button type="button" role="tab" aria-selected={view === "memo"} onClick={() => setView("memo")}>메모</button>
+          <button type="button" role="tab" aria-selected={view === "search"} onClick={() => setView("search")}>검색</button>
+        </div>
 
-        {loadState === "loading" && <p>저장된 기록을 확인하는 중입니다.</p>}
-        {loadState === "error" && <p className="status-warn" role="status">IndexedDB에서 수련일지를 읽을 수 없습니다.</p>}
-        {loadState === "ready" && records.length === 0 && <p>저장된 수련일지가 없습니다.</p>}
-        {records.length > 0 && <ul className="session-list">{records.map((record) => <SessionEditor key={`${record.dojo}-${record.sessionNo}`} record={record} />)}</ul>}
+        {view === "all" ? <div role="tabpanel">
+          <details className="create-session-box">
+            <summary>개인수련 추가</summary>
+            <form className="compact-form" onSubmit={createPersonal}>
+              <label>수련일<input type="date" required value={date} onChange={(event) => setDate(event.target.value)} /></label>
+              <label>메모<textarea value={note} maxLength={20_000} rows={5} onChange={(event) => setNote(event.target.value)} /></label>
+              <fieldset><legend>카타</legend><KataEditor values={kata} onChange={setKata} /></fieldset>
+              <button className="action-button" type="submit">개인수련 저장</button>
+            </form>
+            <p className="small">과거 날짜와 같은 날짜의 복수 수련을 기록할 수 있습니다. 카타 없이도 저장할 수 있습니다.</p>
+            {createStatus && <p role="status">{createStatus}</p>}
+          </details>
 
-        <dl className="diag-grid storage-diagnostic">
-          <dt>IndexedDB</dt><dd>{typeof indexedDB === "undefined" ? "unavailable" : "available"}</dd>
-          <dt>database</dt><dd>{TRAINING_DB_NAME} v{TRAINING_DB_VERSION}</dd>
-          <dt>origin</dt><dd>{origin || "server render"}</dd>
-          <dt>display-mode</dt><dd>{displayMode}</dd>
-        </dl>
-      </section>
+          {loadState === "loading" && <p>저장된 기록을 확인하는 중입니다.</p>}
+          {loadState === "error" && <p className="status-warn" role="status">IndexedDB에서 수련일지를 읽을 수 없습니다.</p>}
+          {loadState === "ready" && records.length === 0 && <p>저장된 수련일지가 없습니다.</p>}
+          {records.length > 0 && <ul className="session-list">{records.map((record) => <SessionEditor key={`${record.dojo}-${record.sessionNo}`} record={record} />)}</ul>}
 
-      <section className="panel" aria-labelledby="memo-title">
-        <h2 id="memo-title">메모</h2>
-        <label className="search-field">메모 본문 검색<input type="search" value={memoQuery} onChange={(event) => setMemoQuery(event.target.value)} /></label>
-        {memoRecords.length === 0 ? <p className="small">조건에 맞는 메모가 없습니다.</p> : (
-          <ul className="memo-list">
-            {memoRecords.map((record) => (
-              <li key={`${record.dojo}-${record.sessionNo}`}>
-                <a
-                  href={`#${sessionAnchor(record)}`}
-                  onClick={() => {
-                    const details = document.querySelector(`#${CSS.escape(sessionAnchor(record))} details`);
-                    if (details instanceof HTMLDetailsElement) details.open = true;
-                  }}
-                >
-                  <strong>{sessionLabel(record)}</strong>
-                  <span>{record.date}</span>
-                  <p>{record.note}</p>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
+          <dl className="diag-grid storage-diagnostic">
+            <dt>IndexedDB</dt><dd>{typeof indexedDB === "undefined" ? "unavailable" : "available"}</dd>
+            <dt>database</dt><dd>{TRAINING_DB_NAME} v{TRAINING_DB_VERSION}</dd>
+            <dt>origin</dt><dd>{origin || "server render"}</dd>
+            <dt>display-mode</dt><dd>{displayMode}</dd>
+          </dl>
+        </div> : <div role="tabpanel">
+          {view === "search" && <label className="search-field">메모 본문 검색<input type="search" value={memoQuery} onChange={(event) => setMemoQuery(event.target.value)} /></label>}
+          {view === "search" && !memoQuery.trim() && <p className="small">검색할 메모 내용을 입력하십시오.</p>}
+          {shownMemos.length === 0 && (view === "memo" || memoQuery.trim()) ? <p className="small">조건에 맞는 메모가 없습니다.</p> : (
+            <ul className="memo-list">
+              {shownMemos.map((record) => (
+                <li key={`${record.dojo}-${record.sessionNo}`}>
+                  <a href={`#${sessionAnchor(record)}`} onClick={() => openOriginal(record)}>
+                    <strong>{sessionLabel(record)}</strong>
+                    <span>{record.source === "shared" ? "공유" : "개인"} · {record.date}</span>
+                    <p>{record.note}</p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>}
       </section>
     </>
   );

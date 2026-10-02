@@ -1,4 +1,4 @@
-const CACHE_NAME = "samsungdang-member-phase4j-b-v1";
+const CACHE_NAME = "samsungdang-member-phase4k-b-v1";
 const BUILD_ASSETS = /*__BUILD_ASSETS__*/ [];
 
 function scoped(path) {
@@ -11,6 +11,13 @@ const SHELL_PATHS = [
   "./membership/",
   "./promotion/",
   "./special-training/",
+  "./journal/",
+  "./kata/",
+  "./beginner-videos/",
+  "./membership-card/",
+  "./promotion-history/",
+  "./events/",
+  "./backup/",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
@@ -60,6 +67,27 @@ self.addEventListener("fetch", (event) => {
           }
           if (url.pathname.endsWith("/import/") || url.pathname.endsWith("/import")) {
             return caches.match(scoped("./import/"));
+          }
+          if (url.pathname.endsWith("/journal/") || url.pathname.endsWith("/journal")) {
+            return caches.match(scoped("./journal/"));
+          }
+          if (url.pathname.endsWith("/kata/") || url.pathname.endsWith("/kata")) {
+            return caches.match(scoped("./kata/"));
+          }
+          if (url.pathname.endsWith("/beginner-videos/") || url.pathname.endsWith("/beginner-videos")) {
+            return caches.match(scoped("./beginner-videos/"));
+          }
+          if (url.pathname.endsWith("/membership-card/") || url.pathname.endsWith("/membership-card")) {
+            return caches.match(scoped("./membership-card/"));
+          }
+          if (url.pathname.endsWith("/promotion-history/") || url.pathname.endsWith("/promotion-history")) {
+            return caches.match(scoped("./promotion-history/"));
+          }
+          if (url.pathname.endsWith("/events/") || url.pathname.endsWith("/events")) {
+            return caches.match(scoped("./events/"));
+          }
+          if (url.pathname.endsWith("/backup/") || url.pathname.endsWith("/backup")) {
+            return caches.match(scoped("./backup/"));
           }
           return caches.match(scoped("./"));
         })

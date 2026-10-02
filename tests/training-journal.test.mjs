@@ -26,7 +26,7 @@ import {
 } from "../app/training-records.mjs";
 import { createTrainingAnalysis } from "../app/training-progress.mjs";
 
-const catalog = JSON.parse(await readFile(new URL("../reference/kata-catalog.v1.json", import.meta.url), "utf8"));
+const catalog = JSON.parse(await readFile(new URL("../reference/kata-catalog.v2.json", import.meta.url), "utf8"));
 const firstKata = { id: catalog.kata[0].id, name: catalog.kata[0].nameKo };
 const secondKata = { id: catalog.kata[1].id, name: catalog.kata[1].nameKo };
 const sharedSession = {
@@ -197,7 +197,6 @@ test("통계는 snapshot이 아니라 현재 편집 데이터와 session 수를 
   await repository.createPersonal({ date: "2026-09-13", note: "", kata: [firstKata] }, undefined, 200);
   await repository.update("samsungdang", 1042, { date: "2026-09-13", note: "", kata: [secondKata] });
   let analysis = createTrainingAnalysis([], await repository.list(), catalog);
-  assert.equal(analysis.totalTrainingDays, 1);
   assert.equal(analysis.totalTrainingSessions, 2);
   assert.equal(analysis.exam.all.entries.find((item) => item.id === firstKata.id)?.count ?? 0, 1);
   await repository.restore("samsungdang", 1042);

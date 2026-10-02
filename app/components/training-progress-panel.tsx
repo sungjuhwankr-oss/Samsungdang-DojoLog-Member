@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import kataCatalog from "../../reference/kata-catalog.v1.json";
+import kataCatalog from "../../reference/kata-catalog.v2.json";
 import type { PromotionRecord } from "../member-data.mjs";
 import {
   createTrainingAnalysis,
@@ -137,10 +137,6 @@ export function TrainingProgressPanel({
           </div>
 
           <div className="training-day-grid">
-            <div>
-              <span>입문 후 앱 기록 수련일수</span>
-              <strong>{analysis.totalTrainingDays}일</strong>
-            </div>
             <div>
               <span>입문 후 앱 기록 수련횟수</span>
               <strong>{analysis.totalTrainingSessions}회</strong>

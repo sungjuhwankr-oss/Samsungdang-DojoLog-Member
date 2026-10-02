@@ -1,5 +1,6 @@
 import type { CurrentRank, PromotionRecord } from "./member-data.mjs";
 import type { HydratedTrainingSession } from "./training-records.mjs";
+import type { TrainingCountBreakdown } from "./training-count.mjs";
 
 export interface KyuProgressionReference {
   current: number | null;
@@ -20,8 +21,9 @@ export interface DanProgressionReference {
 export interface ExamCatalogEntry {
   id: string;
   nameKo: string;
-  grade: number | null;
-  exam: boolean;
+  grade?: number | null;
+  exam?: boolean;
+  examEntries?: Array<{ track: string; grade?: number }>;
 }
 
 export interface KataCatalog {
@@ -74,7 +76,6 @@ export interface ExamKataAnalysis {
 export const KYU_PROGRESSION_REFERENCE: readonly KyuProgressionReference[];
 export const DAN_PROGRESSION_REFERENCE: readonly DanProgressionReference[];
 export function getKyuProgression(currentRank: CurrentRank | null): KyuProgressionReference | null;
-export function countDistinctTrainingDays(sessions: HydratedTrainingSession[]): number;
 export function countTrainingSessions(
   sessions: HydratedTrainingSession[],
   afterDate?: string | null
@@ -93,8 +94,8 @@ export function createTrainingAnalysis(
   catalog: KataCatalog
 ): {
   currentRank: CurrentRank | null;
-  totalTrainingDays: number;
   totalTrainingSessions: number;
+  trainingCounts: TrainingCountBreakdown;
   progress: TrainingProgress | null;
   exam: ExamKataAnalysis;
 };

@@ -33,11 +33,15 @@ test("invalid credential UI exposes only a reason code, not unverified identity 
   assert.doesNotMatch(invalidBranch, /payload|name|memberId|joinedAt/);
 });
 
-test("B home exposes the digital card only through the membership feature boundary", async () => {
-  const home = await read("../app/page.tsx");
-  assert.match(home, /SAMSUNGDANG_FEATURE\.MEMBERSHIP_CARD/);
-  assert.match(home, /<MembershipCard \/>/);
-  assert.ok(home.indexOf("SAMSUNGDANG_FEATURE.MEMBERSHIP_CARD") < home.indexOf("<MembershipCard />"));
+test("B navigation hides the digital card while the A-only route remains gated", async () => {
+  const [navigation, route] = await Promise.all([
+    read("../app/components/app-navigation.tsx"),
+    read("../app/membership-card/page.tsx")
+  ]);
+  assert.match(navigation, /SAMSUNGDANG_FEATURE\.MEMBERSHIP_CARD/);
+  assert.match(navigation, /href="\/membership-card\/"/);
+  assert.match(route, /SAMSUNGDANG_FEATURE\.MEMBERSHIP_CARD/);
+  assert.match(route, /<MembershipCard \/>/);
 });
 
 test("digital card identity comes only from verified payload and rank only from promotionHistory", async () => {

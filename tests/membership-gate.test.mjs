@@ -47,26 +47,25 @@ test("Phase 4H-B gate는 저장 credential 검증결과를 사용하고 standalo
   assert.match(source, /loadStoredMembershipVerification/);
 });
 
-test("B 수련 요약은 날짜·session·카타 집계의 기존 의미를 유지한다", () => {
+test("B 수련 요약은 session·카타 집계 의미를 유지하고 수련일수 metric을 제거한다", () => {
   const summary = createTrainingSummary([
     { dojo: "__personal__", sessionNo: 1, date: "2026-09-20", kata: [{ id: "a", name: "A" }, { id: "a", name: "A" }] },
     { dojo: "__personal__", sessionNo: 2, date: "2026-09-20", kata: [] },
     { dojo: "__personal__", sessionNo: 3, date: "2026-09-21", kata: [{ id: "a", name: "A" }, { id: "b", name: "B" }] }
   ]);
-  assert.equal(summary.trainingDays, 2);
+  assert.equal("trainingDays" in summary, false);
   assert.equal(summary.trainingSessions, 3);
+  assert.deepEqual(summary.trainingCounts.sources, { general: 3, special: 0, external: 0 });
   assert.deepEqual(summary.kata, [
     { id: "a", name: "A", count: 2 },
     { id: "b", name: "B", count: 1 }
   ]);
 });
 
-test("B 기본 홈은 삼성당 전용 import와 심사 UI를 직접 노출하지 않는다", async () => {
+test("홈은 장문 component mount 대신 summary dashboard만 렌더링한다", async () => {
   const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-  assert.doesNotMatch(source, /import 연결 테스트/);
-  assert.doesNotMatch(source, /수련 진행과 심사 카타/);
-  assert.match(source, /SamsungdangFeatureBoundary/);
-  assert.match(source, /TrainingSummary/);
+  assert.match(source, /<Dashboard \/>/);
+  assert.doesNotMatch(source, /TrainingLog|TrainingSummary|MemberPanel|BackupRestorePanel|SpecialTrainingHistory/);
 });
 
 test("import route는 gate 안에서만 payload preview를 렌더링한다", async () => {

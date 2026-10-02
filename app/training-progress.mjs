@@ -1,4 +1,5 @@
 import { deriveCurrentRank } from "./member-data.mjs";
+import { createTrainingCountBreakdown } from "./training-count.mjs";
 
 export const KYU_PROGRESSION_REFERENCE = Object.freeze([
   Object.freeze({ current: null, targetType: "kyu", targetValue: 9, targetLabel: "9급", requiredTrainingSessions: 10 }),
@@ -23,17 +24,6 @@ export function getKyuProgression(currentRank) {
   if (currentRank === null) return KYU_PROGRESSION_REFERENCE[0];
   if (currentRank.rankType !== "kyu") return null;
   return KYU_PROGRESSION_REFERENCE.find((item) => item.current === currentRank.rankValue) ?? null;
-}
-
-export function countDistinctTrainingDays(sessions) {
-  const dates = new Set();
-
-  for (const session of sessions) {
-    if (typeof session.date !== "string") continue;
-    dates.add(session.date);
-  }
-
-  return dates.size;
 }
 
 export function countTrainingSessions(sessions, afterDate = null) {
@@ -100,20 +90,21 @@ function rangeLabel(targetGrade) {
 export function createExamKataAnalysis(catalog, sessions, currentRank) {
   const counts = countKataOccurrences(sessions);
   const allEntries = catalog.kata
-    .map((kata, sourceOrder) => ({ kata, sourceOrder }))
-    .filter(({ kata }) => (
-      kata.exam === true &&
-      Number.isInteger(kata.grade) &&
-      kata.grade >= 1 &&
-      kata.grade <= 9
-    ))
+    .map((kata, sourceOrder) => ({
+      kata,
+      sourceOrder,
+      grade: Array.isArray(kata.examEntries)
+        ? kata.examEntries.find((entry) => entry.track === "kyu")?.grade
+        : kata.exam === true ? kata.grade : null
+    }))
+    .filter(({ grade }) => Number.isInteger(grade) && grade >= 1 && grade <= 9)
     .sort((left, right) => (
-      right.kata.grade - left.kata.grade || left.sourceOrder - right.sourceOrder
+      right.grade - left.grade || left.sourceOrder - right.sourceOrder
     ))
-    .map(({ kata }) => ({
+    .map(({ kata, grade }) => ({
       id: kata.id,
       nameKo: kata.nameKo,
-      grade: kata.grade,
+      grade,
       count: counts.get(kata.id) ?? 0
     }));
 
@@ -192,8 +183,8 @@ export function groupKataByGrade(scope) {
 export function createTrainingAnalysis(promotions, sessions, catalog) {
   const currentRank = deriveCurrentRank(promotions);
   const progressionReference = getKyuProgression(currentRank);
-  const totalTrainingDays = countDistinctTrainingDays(sessions);
-  const totalTrainingSessions = countTrainingSessions(sessions);
+  const trainingCounts = createTrainingCountBreakdown({ trainingSessions: sessions });
+  const totalTrainingSessions = trainingCounts.total;
   let progress = null;
 
   if (progressionReference !== null) {
@@ -217,8 +208,8 @@ export function createTrainingAnalysis(promotions, sessions, catalog) {
 
   return {
     currentRank,
-    totalTrainingDays,
     totalTrainingSessions,
+    trainingCounts,
     progress,
     exam: createExamKataAnalysis(catalog, sessions, currentRank)
   };

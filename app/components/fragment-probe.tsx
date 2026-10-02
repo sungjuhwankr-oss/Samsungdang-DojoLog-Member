@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 
-import kataCatalog from "../../reference/kata-catalog.v1.json";
+import kataCatalog from "../../reference/kata-catalog.v2.json";
 import {
   KATA_CATALOG_STATUS,
   validateSessionKataCatalog
