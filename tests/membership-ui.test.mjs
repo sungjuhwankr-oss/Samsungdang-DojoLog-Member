@@ -44,11 +44,12 @@ test("B navigation hides the digital card while the A-only route remains gated",
   assert.match(route, /<MembershipCard \/>/);
 });
 
-test("digital card identity comes only from verified payload and rank only from promotionHistory", async () => {
+test("digital card identity comes only from verified payload and rank prefers verified onboarding facts", async () => {
   const card = await read("../app/components/membership-card.tsx");
   assert.match(card, /verification\.verifiedPayload/);
   assert.match(card, /listPromotionHistory/);
-  assert.match(card, /deriveCurrentRank\(promotions\)/);
+  assert.match(card, /deriveCurrentRankWithOnboarding\(promotions, onboarding\)/);
+  assert.match(card, /loadActiveOnboardingState/);
   assert.doesNotMatch(card, /getMemberProfile|memberProfile|payload\.rank|payload\.rankDate/);
   assert.match(card, /확인된 이력 없음/);
   assert.match(card, /법적 신원증명 또는 실시간 활동회원 증명이 아닙니다/);
@@ -73,8 +74,8 @@ test("service worker precaches and directly falls back to the membership route",
 
 test("Backup v1 UI states that membership is excluded from backup and preserved on restore", async () => {
   const panel = await read("../app/components/backup-restore-panel.tsx");
-  assert.match(panel, /Membership Credential을 백업하지 않습니다/);
-  assert.match(panel, /저장된 Membership Credential은 변경하지 않습니다/);
+  assert.match(panel, /Membership\/onboarding identity/);
+  assert.match(panel, /현재 기기의 Membership\/onboarding identity/);
 });
 
 test("unlinked Fold8 diagnostic exercises production verifier with injected blocked and unknown registries only", async () => {

@@ -55,13 +55,13 @@ test("service worker precaches and directly falls back to the special-training r
   assert.match(serviceWorker, /"\.\/special-training\/"/);
   assert.match(serviceWorker, /endsWith\("\/special-training\/"\)/);
   assert.match(serviceWorker, /caches\.match\(scoped\("\.\/special-training\/"\)\)/);
-  assert.match(serviceWorker, /samsungdang-member-phase4k-b-v1/);
+  assert.match(serviceWorker, /samsungdang-member-phase4k-c-v1/);
 });
 
 test("Backup v1 UI discloses exclusion, same-device preservation, and cross-device loss risk", async () => {
   const panel = await read("../app/components/backup-restore-panel.tsx");
-  assert.match(panel, /특별수련 이력은 백업하지 않습니다/);
-  assert.match(panel, /같은 기기에서 Backup v1을 복원해도 유지/);
+  assert.match(panel, /특별수련 credential\/current\/archive/);
+  assert.match(panel, /같은 기기에서 Backup v1을 복원하면 이 항목은 변경하지 않지만/);
   assert.match(panel, /새 브라우저·새 기기에서는 Backup v1만으로 복구할 수 없습니다/);
-  assert.match(panel, /현재 기기의 특별수련 이력은 변경하지 않습니다/);
+  assert.match(panel, /현재 기기의 .*특별수련 이력.*열거나 지우지 않습니다/);
 });

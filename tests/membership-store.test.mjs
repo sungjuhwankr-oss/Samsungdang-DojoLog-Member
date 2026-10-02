@@ -122,13 +122,22 @@ async function createV3Database(factory) {
   database.close();
 }
 
-test("v3 → v5 migration adds membership and special-training stores and preserves every existing record", async () => {
+test("v3 → v6 migration adds current stores and preserves every existing record", async () => {
   const factory = new IDBFactory();
   await createV3Database(factory);
   const database = await openTrainingDatabase(factory);
-  assert.equal(database.version, 5);
+  assert.equal(database.version, 6);
   assert.deepEqual([...database.objectStoreNames], [
+    "baselineChangeHistory",
+    "credentialArchive",
+    "eventChangeHistory",
+    "eventMemo",
+    "eventParticipation",
+    "externalEvent",
     "memberProfile",
+    "onboardingRankHistory",
+    "onboardingReceipt",
+    "progressBaseline",
     "promotionHistory",
     "samsungdangMembership",
     "sessionKata",
@@ -159,7 +168,7 @@ test("v3 → v5 migration adds membership and special-training stores and preser
   database.close();
 });
 
-test("v3 → v5 upgrade transaction abort rolls back both new stores and preserves v3 data", async () => {
+test("v3 → v6 upgrade transaction abort rolls back all new stores and preserves v3 data", async () => {
   const factory = new IDBFactory();
   await createV3Database(factory);
   const open = factory.open(TRAINING_DB_NAME, 5);
@@ -298,7 +307,7 @@ test("Backup v1 validation failure preserves both legacy data and Membership Cre
   assert.deepEqual(await readStoredMembershipRecord(factory), before);
 });
 
-test("Phase 4J-B physical schema keeps the dedicated membership store under DB v5", () => {
-  assert.equal(TRAINING_DB_VERSION, 5);
+test("Phase 4K-C physical schema keeps the dedicated membership store under DB v6", () => {
+  assert.equal(TRAINING_DB_VERSION, 6);
   assert.equal(SAMSUNGDANG_MEMBERSHIP_STORE, "samsungdangMembership");
 });

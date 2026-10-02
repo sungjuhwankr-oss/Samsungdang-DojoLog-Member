@@ -22,9 +22,9 @@ const catalog = JSON.parse(
   await readFile(new URL("../reference/kata-catalog.v1.json", import.meta.url), "utf8")
 );
 
-test("the historical v3 migration plan remains unchanged under DB v5", () => {
+test("the historical v3 migration plan remains unchanged under DB v6", () => {
   const plan = planSchemaUpgrade([TRAINING_SESSION_STORE, SESSION_KATA_STORE]);
-  assert.equal(TRAINING_DB_VERSION, 5);
+  assert.equal(TRAINING_DB_VERSION, 6);
   assert.deepEqual(plan.preserve, [TRAINING_SESSION_STORE, SESSION_KATA_STORE]);
   assert.deepEqual(plan.create, [MEMBER_PROFILE_STORE, PROMOTION_HISTORY_STORE, "sharedSessionSnapshot"]);
 });

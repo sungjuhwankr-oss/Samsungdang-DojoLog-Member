@@ -1,12 +1,11 @@
 import { BackupValidationError, validateBackupObject } from "./backup.mjs";
-import { verifyMembershipCredentialJson } from "./credential/membership-verifier.mjs";
+import { loadStoredMembershipVerification } from "./membership-store.mjs";
 import { validateStoredPromotionHistory } from "./promotion-records.mjs";
 import { openTrainingDatabase, requestResult, transactionDone } from "./training-database.mjs";
 import { createSharedSnapshot } from "./training-journal.mjs";
 import {
   MEMBER_PROFILE_STORE,
   PROMOTION_HISTORY_STORE,
-  SAMSUNGDANG_MEMBERSHIP_STORE,
   SESSION_KATA_STORE,
   SHARED_SESSION_SNAPSHOT_STORE,
   TRAINING_SESSION_STORE
@@ -50,22 +49,10 @@ export async function restoreBackupV1ToIndexedDb(value, factory = indexedDB) {
   const backup = validateBackupObject(value);
   const database = await openTrainingDatabase(factory);
   try {
-    const check = database.transaction(
-      [PROMOTION_HISTORY_STORE, SAMSUNGDANG_MEMBERSHIP_STORE],
-      "readonly"
-    );
-    const [currentPromotions, membershipRecord] = await Promise.all([
-      requestResult(check.objectStore(PROMOTION_HISTORY_STORE).getAll()),
-      requestResult(check.objectStore(SAMSUNGDANG_MEMBERSHIP_STORE).get("current"))
-    ]);
+    const check = database.transaction(PROMOTION_HISTORY_STORE, "readonly");
+    const currentPromotions = await requestResult(check.objectStore(PROMOTION_HISTORY_STORE).getAll());
     await transactionDone(check);
-    let membershipVerification = null;
-    if (membershipRecord?.envelopeJson) {
-      const checked = await verifyMembershipCredentialJson(membershipRecord.envelopeJson);
-      if (checked.valid && checked.credentialId === membershipRecord.credentialId && checked.keyId === membershipRecord.keyId) {
-        membershipVerification = checked;
-      }
-    }
+    const membershipVerification = await loadStoredMembershipVerification(factory);
     try {
       await validateStoredPromotionHistory(backup.data.promotionHistory, membershipVerification);
     } catch {

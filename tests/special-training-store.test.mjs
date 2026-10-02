@@ -262,8 +262,8 @@ async function createV4Database(factory) {
   database.close();
 }
 
-test("new install and v4→v5 create the exact special store/index while preserving all v4 data", async () => {
-  assert.equal(TRAINING_DB_VERSION, 5);
+test("new install and v4→v6 retain the exact special store/index while preserving all v4 data", async () => {
+  assert.equal(TRAINING_DB_VERSION, 6);
   const fresh = await openTrainingDatabase(new IDBFactory());
   const freshStore = fresh.transaction(SPECIAL_TRAINING_HISTORY_STORE, "readonly").objectStore(SPECIAL_TRAINING_HISTORY_STORE);
   assert.equal(freshStore.keyPath, "eventId");
@@ -276,8 +276,8 @@ test("new install and v4→v5 create the exact special store/index while preserv
   const factory = new IDBFactory();
   await createV4Database(factory);
   const database = await openTrainingDatabase(factory);
-  assert.equal(database.version, 5);
-  assert.equal(database.objectStoreNames.length, 7);
+  assert.equal(database.version, 6);
+  assert.equal(database.objectStoreNames.length, 16);
   const transaction = database.transaction([...database.objectStoreNames], "readonly");
   assert.equal((await requestResult(transaction.objectStore(TRAINING_SESSION_STORE).get(["__personal__", 1]))).note, "보존");
   assert.equal((await requestResult(transaction.objectStore(MEMBER_PROFILE_STORE).get("self"))).name, "기존 A");
@@ -288,7 +288,7 @@ test("new install and v4→v5 create the exact special store/index while preserv
   database.close();
 });
 
-test("v4→v5 migration abort rolls back the version change and preserves v4 records", async () => {
+test("v4→v6 migration abort rolls back the version change and preserves v4 records", async () => {
   const factory = new IDBFactory();
   await createV4Database(factory);
   const open = factory.open(TRAINING_DB_NAME, 5);

@@ -398,8 +398,8 @@ test("격려 문구는 합격·응시 확정 또는 준비 완료를 생성하�
   assert.doesNotMatch(messages.join(" "), /승급 가능|심사 준비 완료|응시 자격|합격 가능|자동 승급/);
 });
 
-test("IndexedDB version은 Phase 4J-B에서 5이다", () => {
-  assert.equal(TRAINING_DB_VERSION, 5);
+test("IndexedDB version은 Phase 4K-C에서 6이다", () => {
+  assert.equal(TRAINING_DB_VERSION, 6);
 });
 
 test("IndexedDB store 구조는 기존 6개와 special-training store를 사용한다", () => {

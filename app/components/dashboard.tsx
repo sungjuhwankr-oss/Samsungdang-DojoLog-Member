@@ -5,7 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import kataCatalog from "../../reference/kata-catalog.v2.json";
 import { loadStoredMembershipVerification } from "../membership-store.mjs";
-import { deriveCurrentRank } from "../member-data.mjs";
+import { deriveCurrentRankWithOnboarding } from "../member-data.mjs";
+import { loadActiveOnboardingState, ONBOARDING_CHANGED_EVENT } from "../onboarding-store.mjs";
+import type { ActiveOnboardingState } from "../onboarding-store.mjs";
 import type { PromotionRecord } from "../member-data.mjs";
 import type { SpecialTrainingHistoryView } from "../special-training-records.mjs";
 import { listVerifiedSpecialTrainingHistory } from "../special-training-store.mjs";
@@ -19,9 +21,10 @@ type DashboardData = {
   promotions: PromotionRecord[];
   special: SpecialTrainingHistoryView[];
   memberId: string | null;
+  onboarding: ActiveOnboardingState | null;
 };
 
-const emptyData: DashboardData = { sessions: [], promotions: [], special: [], memberId: null };
+const emptyData: DashboardData = { sessions: [], promotions: [], special: [], memberId: null, onboarding: null };
 
 function sessionTitle(session: HydratedTrainingSession) {
   return session.source === "shared"
@@ -42,15 +45,17 @@ export function Dashboard() {
         listTrainingSessions(),
         listPromotionHistory(),
         listVerifiedSpecialTrainingHistory(),
-        loadStoredMembershipVerification()
+        loadStoredMembershipVerification(),
+        loadActiveOnboardingState()
       ]).then(
-        ([sessions, promotions, special, membership]) => {
+        ([sessions, promotions, special, membership, onboarding]) => {
           if (!active) return;
           setData({
             sessions,
             promotions,
             special,
-            memberId: membership?.valid ? membership.verifiedPayload?.memberId ?? null : null
+            memberId: membership?.valid ? membership.verifiedPayload?.memberId ?? null : null,
+            onboarding
           });
           setStatus("ready");
         },
@@ -61,17 +66,19 @@ export function Dashboard() {
     };
     reload();
     window.addEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
+    window.addEventListener(ONBOARDING_CHANGED_EVENT, reload);
     return () => {
       active = false;
       window.removeEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
+      window.removeEventListener(ONBOARDING_CHANGED_EVENT, reload);
     };
   }, []);
 
   const analysis = useMemo(
-    () => createTrainingAnalysis(data.promotions, data.sessions, kataCatalog),
-    [data.promotions, data.sessions]
+    () => createTrainingAnalysis(data.promotions, data.sessions, kataCatalog, data.onboarding),
+    [data.onboarding, data.promotions, data.sessions]
   );
-  const currentRank = useMemo(() => deriveCurrentRank(data.promotions), [data.promotions]);
+  const currentRank = useMemo(() => deriveCurrentRankWithOnboarding(data.promotions, data.onboarding), [data.onboarding, data.promotions]);
   const latestSession = data.sessions[0] ?? null;
   const latestPromotion = data.promotions.at(-1) ?? null;
   const latestSpecial = data.special[0] ?? null;

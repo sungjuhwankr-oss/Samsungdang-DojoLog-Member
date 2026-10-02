@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import kataCatalog from "../../reference/kata-catalog.v2.json";
 import type { PromotionRecord } from "../member-data.mjs";
+import { loadActiveOnboardingState, ONBOARDING_CHANGED_EVENT } from "../onboarding-store.mjs";
+import type { ActiveOnboardingState } from "../onboarding-store.mjs";
 import {
   createTrainingAnalysis,
   getNextKataEncouragement,
@@ -82,14 +84,16 @@ export function TrainingProgressPanel({
 }) {
   const [sessions, setSessions] = useState<HydratedTrainingSession[]>([]);
   const [sessionStatus, setSessionStatus] = useState<LoadStatus>("loading");
+  const [onboarding, setOnboarding] = useState<ActiveOnboardingState | null>(null);
 
   useEffect(() => {
     let active = true;
     const reload = () => {
-      listTrainingSessions().then(
-        (records) => {
+      Promise.all([listTrainingSessions(), loadActiveOnboardingState()]).then(
+        ([records, onboardingState]) => {
           if (!active) return;
           setSessions(records);
+          setOnboarding(onboardingState);
           setSessionStatus("ready");
         },
         () => {
@@ -99,15 +103,17 @@ export function TrainingProgressPanel({
     };
     reload();
     window.addEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
+    window.addEventListener(ONBOARDING_CHANGED_EVENT, reload);
     return () => {
       active = false;
       window.removeEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
+      window.removeEventListener(ONBOARDING_CHANGED_EVENT, reload);
     };
   }, []);
 
   const analysis = useMemo(
-    () => createTrainingAnalysis(promotions, sessions, kataCatalog),
-    [promotions, sessions]
+    () => createTrainingAnalysis(promotions, sessions, kataCatalog, onboarding),
+    [onboarding, promotions, sessions]
   );
   const progressMessage = analysis.progress
     ? getProgressEncouragement(analysis.progress)
@@ -155,6 +161,18 @@ export function TrainingProgressPanel({
                     : "급수 진행도 대상 아님"}
               </strong>
             </div>
+            {analysis.progress?.baseline && (
+              <div>
+                <span>지도자 제공 baseline ({analysis.progress.baseline.baselineAsOf}까지)</span>
+                <strong>{analysis.progress.baseline.value === null ? "unknown" : `${analysis.progress.baseline.value}회`}</strong>
+              </div>
+            )}
+            {analysis.progress && (
+              <div>
+                <span>기준일 이후 앱 기록</span>
+                <strong>{analysis.progress.appActual === null ? "미산정" : `${analysis.progress.appActual}회`}</strong>
+              </div>
+            )}
           </div>
 
           {analysis.progress?.values && (
@@ -183,7 +201,9 @@ export function TrainingProgressPanel({
 
           {analysis.progress && analysis.progress.values === null && (
             <p className="status-warn">
-              현급 취득일 미입력으로 현급 수련횟수와 남은 횟수를 계산하지 않습니다.
+              {analysis.progress.overlap
+                ? "baseline 기준일 이전의 앱 기록과 중복 가능성이 있어 합산값을 자동 확정하지 않습니다. baseline을 확인·수정한 뒤 다시 계산합니다."
+                : "현급 기준일 또는 baseline 값이 미상이라 합산 수련횟수와 남은 횟수를 계산하지 않습니다."}
             </p>
           )}
 

@@ -35,11 +35,17 @@ const RECOGNIZED_FIELDS = [
 const SPECIAL_TRAINING_FIELDS = [
   "eventId", "title", "category", "startDate", "endDate", "instructor"
 ];
+const ONBOARDING_FIELDS = [
+  "onboardingId", "revision", "supersedesCredentialId", "recognizedAt", "membership",
+  "recognizedRanks", "currentRankEntryId", "baselineAsOf", "currentRankSessionBaseline", "kataBaselines"
+];
+const ONBOARDING_RANK_FIELDS = ["entryId", "rankType", "rankValue", "rankDate"];
+const ONBOARDING_KATA_FIELDS = ["kataId", "count"];
 const RANK_FIELDS = ["rankType", "rankValue"];
 const SPECIAL_TRAINING_CATEGORIES = new Set([
   "seminar", "workshop", "special-training", "camp", "other"
 ]);
-const SUPPORTED_TYPES = new Set(["membership", "promotion", "special-training"]);
+const SUPPORTED_TYPES = new Set(["membership", "promotion", "special-training", "member-onboarding"]);
 const KEY_STATUSES = new Set(Object.values(TRUSTED_KEY_STATUS));
 
 const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -154,6 +160,47 @@ function validateSpecialTrainingPayload(payload) {
     isBoundedDisplayText(payload.instructor);
 }
 
+function rankOrdinal(rank) {
+  if (rank.rankType === "kyu" && Number.isSafeInteger(rank.rankValue) && rank.rankValue >= 1 && rank.rankValue <= 9) return 10 - rank.rankValue;
+  if (rank.rankType === "dan" && Number.isSafeInteger(rank.rankValue) && rank.rankValue > 0) return 9 + rank.rankValue;
+  return null;
+}
+
+function validateOnboardingPayload(payload) {
+  if (!hasExactFields(payload, ONBOARDING_FIELDS) ||
+      !hasBinaryIdentifier(payload.onboardingId, "on1_", 16) ||
+      !Number.isSafeInteger(payload.revision) || payload.revision < 1 ||
+      (payload.revision === 1 ? payload.supersedesCredentialId !== null
+        : !hasBinaryIdentifier(payload.supersedesCredentialId, "c1_", 16)) ||
+      !isCalendarDate(payload.recognizedAt) || !isCalendarDate(payload.baselineAsOf) ||
+      payload.baselineAsOf < payload.recognizedAt ||
+      !validateMembershipPayload(payload.membership) ||
+      !Array.isArray(payload.recognizedRanks) || payload.recognizedRanks.length === 0 ||
+      !Array.isArray(payload.kataBaselines) ||
+      (payload.currentRankSessionBaseline !== null &&
+        (!Number.isSafeInteger(payload.currentRankSessionBaseline) || payload.currentRankSessionBaseline < 0))) return false;
+  const entries = new Set();
+  let previous = 0;
+  for (const rank of payload.recognizedRanks) {
+    const ordinal = rankOrdinal(rank);
+    if (!hasExactFields(rank, ONBOARDING_RANK_FIELDS) ||
+        !hasBinaryIdentifier(rank.entryId, "or1_", 16) || entries.has(rank.entryId) ||
+        ordinal === null || ordinal <= previous ||
+        (rank.rankDate !== null && !isCalendarDate(rank.rankDate))) return false;
+    entries.add(rank.entryId);
+    previous = ordinal;
+  }
+  if (payload.currentRankEntryId !== payload.recognizedRanks.at(-1).entryId) return false;
+  const kataIds = new Set();
+  for (const baseline of payload.kataBaselines) {
+    if (!hasExactFields(baseline, ONBOARDING_KATA_FIELDS) || typeof baseline.kataId !== "string" ||
+        baseline.kataId.length === 0 || kataIds.has(baseline.kataId) ||
+        (baseline.count !== null && (!Number.isSafeInteger(baseline.count) || baseline.count < 0))) return false;
+    kataIds.add(baseline.kataId);
+  }
+  return true;
+}
+
 function validateFields(envelope, expectedType) {
   if (!hasExactFields(envelope, TOP_LEVEL_FIELDS) || typeof envelope.signature !== "string") {
     return CREDENTIAL_REASON.INVALID_FIELD;
@@ -173,7 +220,9 @@ function validateFields(envelope, expectedType) {
     ? validateMembershipPayload(signed.payload)
     : signed.type === "promotion"
       ? validatePromotionPayload(signed.payload)
-      : validateSpecialTrainingPayload(signed.payload);
+      : signed.type === "special-training"
+        ? validateSpecialTrainingPayload(signed.payload)
+        : validateOnboardingPayload(signed.payload);
   return payloadValid ? null : CREDENTIAL_REASON.INVALID_FIELD;
 }
 
@@ -276,7 +325,8 @@ export async function verifyCredentialJson(envelopeJson, options = {}) {
   return result(CREDENTIAL_REASON.OK, {
     ...identity,
     verifiedPayload: Object.freeze(structuredClone(envelope.signed.payload)),
-    envelopeJson
+    envelopeJson,
+    issuedAt: envelope.signed.issuedAt
   });
 }
 

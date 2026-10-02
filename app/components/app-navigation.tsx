@@ -13,7 +13,7 @@ const primary = [
   { href: "/events/", label: "행사" }
 ];
 
-const secondaryPaths = ["/beginner-videos/", "/membership-card/", "/promotion-history/", "/backup/"];
+const secondaryPaths = ["/beginner-videos/", "/onboarding/", "/membership-card/", "/promotion-history/", "/backup/"];
 
 function normalizedPath(pathname: string) {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -39,6 +39,7 @@ export function AppNavigation() {
         <summary aria-current={moreActive ? "page" : undefined}>전체</summary>
         <div className="more-navigation-sheet">
           <Link href="/beginner-videos/">초심자 동영상</Link>
+          <Link href="/onboarding/">기존 회원 등록</Link>
           <SamsungdangFeatureBoundary feature={SAMSUNGDANG_FEATURE.MEMBERSHIP_CARD}>
             <Link href="/membership-card/">회원증</Link>
           </SamsungdangFeatureBoundary>

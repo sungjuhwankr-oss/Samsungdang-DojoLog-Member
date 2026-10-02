@@ -2,22 +2,25 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { deriveCurrentRank } from "../member-data.mjs";
+import { deriveCurrentRankWithOnboarding } from "../member-data.mjs";
 import type { PromotionRecord } from "../member-data.mjs";
 import type { VerifiedMembershipPayload } from "../credential/membership-verifier.mjs";
 import { loadStoredMembershipVerification } from "../membership-store.mjs";
 import { listPromotionHistory } from "../training-store";
+import { loadActiveOnboardingState } from "../onboarding-store.mjs";
+import type { ActiveOnboardingState } from "../onboarding-store.mjs";
 
 export function MembershipCard() {
   const [identity, setIdentity] = useState<VerifiedMembershipPayload | null>(null);
   const [promotions, setPromotions] = useState<PromotionRecord[]>([]);
   const [failed, setFailed] = useState(false);
-  const currentRank = useMemo(() => deriveCurrentRank(promotions), [promotions]);
+  const [onboarding, setOnboarding] = useState<ActiveOnboardingState | null>(null);
+  const currentRank = useMemo(() => deriveCurrentRankWithOnboarding(promotions, onboarding), [onboarding, promotions]);
 
   useEffect(() => {
     let active = true;
-    Promise.all([loadStoredMembershipVerification(), listPromotionHistory()]).then(
-      ([verification, savedPromotions]) => {
+    Promise.all([loadStoredMembershipVerification(), listPromotionHistory(), loadActiveOnboardingState()]).then(
+      ([verification, savedPromotions, onboardingState]) => {
         if (!active) return;
         if (!verification?.valid || !verification.verifiedPayload) {
           setFailed(true);
@@ -25,6 +28,7 @@ export function MembershipCard() {
         }
         setIdentity(verification.verifiedPayload);
         setPromotions(savedPromotions);
+        setOnboarding(onboardingState);
       },
       () => {
         if (active) setFailed(true);

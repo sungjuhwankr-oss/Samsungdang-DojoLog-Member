@@ -1,4 +1,4 @@
-import { deriveCurrentRank } from "./member-data.mjs";
+import { deriveCurrentRankWithOnboarding } from "./member-data.mjs";
 import { createTrainingCountBreakdown } from "./training-count.mjs";
 
 export const KYU_PROGRESSION_REFERENCE = Object.freeze([
@@ -180,28 +180,45 @@ export function groupKataByGrade(scope) {
   return groups;
 }
 
-export function createTrainingAnalysis(promotions, sessions, catalog) {
-  const currentRank = deriveCurrentRank(promotions);
+export function createTrainingAnalysis(promotions, sessions, catalog, onboardingState = null) {
+  const currentRank = deriveCurrentRankWithOnboarding(promotions, onboardingState);
   const progressionReference = getKyuProgression(currentRank);
   const trainingCounts = createTrainingCountBreakdown({ trainingSessions: sessions });
   const totalTrainingSessions = trainingCounts.total;
   let progress = null;
 
   if (progressionReference !== null) {
-    const actual = currentRank === null
+    const attributionDate = currentRank?.attributionAnchorDate ?? currentRank?.date ?? null;
+    const appActual = currentRank === null
       ? totalTrainingSessions
-      : currentRank.date === null
+      : attributionDate === null
         ? null
-        : countTrainingSessions(sessions, currentRank.date);
+        : countTrainingSessions(sessions, attributionDate);
+    const rankBaseline = onboardingState?.baselines?.find(item =>
+      item.kind === "current-rank-session" && item.subjectId === currentRank?.entryId
+    ) ?? null;
+    const overlap = rankBaseline !== null && sessions.some(session =>
+      typeof session.date === "string" && session.date <= rankBaseline.baselineAsOf &&
+      (currentRank?.rankDate === null || currentRank?.rankDate === undefined || session.date > currentRank.rankDate)
+    );
+    const combined = rankBaseline === null
+      ? appActual
+      : rankBaseline.value === null || appActual === null || overlap
+        ? null
+        : rankBaseline.value + appActual;
     progress = {
       targetType: progressionReference.targetType,
       targetValue: progressionReference.targetValue,
       targetLabel: progressionReference.targetLabel,
       currentLabel: currentRank?.label ?? "무급",
       promotionDate: currentRank?.date ?? null,
-      values: actual === null
+      attributionDate,
+      baseline: rankBaseline,
+      appActual,
+      overlap,
+      values: combined === null
         ? null
-        : calculateTrainingProgress(actual, progressionReference.requiredTrainingSessions),
+        : calculateTrainingProgress(combined, progressionReference.requiredTrainingSessions),
       required: progressionReference.requiredTrainingSessions
     };
   }

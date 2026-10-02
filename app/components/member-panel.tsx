@@ -2,9 +2,11 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import { deriveCurrentRank } from "../member-data.mjs";
+import { deriveCurrentRankWithOnboarding } from "../member-data.mjs";
 import type { MemberProfile, PromotionRecord } from "../member-data.mjs";
 import { TrainingProgressPanel } from "./training-progress-panel";
+import { loadActiveOnboardingState, ONBOARDING_CHANGED_EVENT } from "../onboarding-store.mjs";
+import type { ActiveOnboardingState } from "../onboarding-store.mjs";
 import {
   addPromotion,
   getMemberProfile,
@@ -29,15 +31,17 @@ export function MemberPanel() {
   const [rankDate, setRankDate] = useState("");
   const [dateUnknown, setDateUnknown] = useState(false);
   const [dataStatus, setDataStatus] = useState<"loading" | "ready" | "error">("loading");
-  const currentRank = useMemo(() => deriveCurrentRank(promotions), [promotions]);
+  const [onboarding, setOnboarding] = useState<ActiveOnboardingState | null>(null);
+  const currentRank = useMemo(() => deriveCurrentRankWithOnboarding(promotions, onboarding), [onboarding, promotions]);
 
   useEffect(() => {
     let active = true;
-    Promise.all([getMemberProfile(), listPromotionHistory()]).then(
-      ([savedProfile, savedPromotions]) => {
+    const reload = () => Promise.all([getMemberProfile(), listPromotionHistory(), loadActiveOnboardingState()]).then(
+      ([savedProfile, savedPromotions, onboardingState]) => {
         if (!active) return;
         if (savedProfile) setProfile(savedProfile);
         setPromotions(savedPromotions);
+        setOnboarding(onboardingState);
         setDataStatus("ready");
       },
       () => {
@@ -47,8 +51,11 @@ export function MemberPanel() {
         }
       }
     );
+    reload();
+    window.addEventListener(ONBOARDING_CHANGED_EVENT, reload);
     return () => {
       active = false;
+      window.removeEventListener(ONBOARDING_CHANGED_EVENT, reload);
     };
   }, []);
 

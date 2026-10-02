@@ -75,9 +75,9 @@ test("import route는 gate 안에서만 payload preview를 렌더링한다", asy
   assert.match(source, /<FragmentProbe \/>/);
 });
 
-test("Phase 4J-B는 DB v5 special-training store를 추가하고 membership store를 유지한다", async () => {
+test("Phase 4K-C DB v6는 special-training과 membership store를 유지한다", async () => {
   const source = await readFile(new URL("../app/training-records.mjs", import.meta.url), "utf8");
-  assert.match(source, /TRAINING_DB_VERSION = 5/);
+  assert.match(source, /TRAINING_DB_VERSION = 6/);
   const database = await readFile(new URL("../app/training-database.mjs", import.meta.url), "utf8");
   assert.match(database, /SAMSUNGDANG_MEMBERSHIP_STORE/);
   assert.match(database, /SPECIAL_TRAINING_HISTORY_STORE/);

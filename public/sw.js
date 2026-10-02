@@ -1,4 +1,4 @@
-const CACHE_NAME = "samsungdang-member-phase4k-b-v1";
+const CACHE_NAME = "samsungdang-member-phase4k-c-v1";
 const BUILD_ASSETS = /*__BUILD_ASSETS__*/ [];
 
 function scoped(path) {
@@ -9,6 +9,7 @@ const SHELL_PATHS = [
   "./",
   "./import/",
   "./membership/",
+  "./onboarding/",
   "./promotion/",
   "./special-training/",
   "./journal/",
@@ -58,6 +59,9 @@ self.addEventListener("fetch", (event) => {
           if (cached) return cached;
           if (url.pathname.endsWith("/membership/") || url.pathname.endsWith("/membership")) {
             return caches.match(scoped("./membership/"));
+          }
+          if (url.pathname.endsWith("/onboarding/") || url.pathname.endsWith("/onboarding")) {
+            return caches.match(scoped("./onboarding/"));
           }
           if (url.pathname.endsWith("/promotion/") || url.pathname.endsWith("/promotion")) {
             return caches.match(scoped("./promotion/"));

@@ -51,7 +51,7 @@ test("전체 menu keeps B routes visible and wraps A-only routes in credential g
   const promotion = navigation.slice(navigation.indexOf("SAMSUNGDANG_FEATURE.TRAINING_PROGRESS"));
   assert.match(promotion, /href="\/promotion-history\/"/);
   assert.doesNotMatch(navigation, /disabled/);
-  assert.doesNotMatch(navigation, /onboarding/);
+  assert.match(navigation, /href="\/onboarding\/"/);
 });
 
 test("A-only route contents remain fail-closed behind the existing Membership gate", async () => {
@@ -201,21 +201,23 @@ test("events shell does not implement Phase 4K-D event domain semantics", async 
   assert.doesNotMatch(source, /createExternal|participantSession|special-training.*v2|eventMemo/);
 });
 
-test("Phase 4K-B preserves DB v5, seven physical stores, and Backup v1", async () => {
-  assert.equal(TRAINING_DB_VERSION, 5);
+test("Phase 4K-C upgrades to DB v6, sixteen physical stores, and preserves Backup v1", async () => {
+  assert.equal(TRAINING_DB_VERSION, 6);
   assert.equal(SPECIAL_TRAINING_HISTORY_STORE, "specialTrainingHistory");
   assert.equal(BACKUP_SCHEMA, "samsungdang-dojolog-member-backup");
   assert.equal(BACKUP_VERSION, 1);
   const database = await read("../app/training-database.mjs");
-  assert.equal([...database.matchAll(/createObjectStore/g)].length, 7);
-  assert.doesNotMatch(database, /version\s*=\s*6|baselineHistory|externalEvent|eventParticipation/);
+  assert.equal([...database.matchAll(/createObjectStore/g)].length, 16);
+  for (const store of ["ONBOARDING_RECEIPT_STORE", "PROGRESS_BASELINE_STORE", "BASELINE_CHANGE_HISTORY_STORE", "EXTERNAL_EVENT_STORE", "EVENT_PARTICIPATION_STORE"]) {
+    assert.match(database, new RegExp(store));
+  }
 });
 
 test("service worker precaches and directly falls back to every new route", async () => {
   const serviceWorker = await read("../public/sw.js");
   for (const route of [
     "journal", "kata", "beginner-videos", "membership-card",
-    "promotion-history", "events", "backup"
+    "promotion-history", "events", "backup", "onboarding"
   ]) {
     assert.match(serviceWorker, new RegExp(`\\\"\\.\\/${route}\\/\\\"`));
     assert.match(serviceWorker, new RegExp(`endsWith\\(\\\"\\/${route}\\/\\\"\\)`));

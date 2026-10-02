@@ -85,13 +85,22 @@ async function createV2Database(factory) {
   database.close();
 }
 
-test("정상 v2 DB를 현재 v5로 올리며 기존 4개 store와 record를 보존한다", async () => {
+test("정상 v2 DB를 현재 v6로 올리며 기존 4개 store와 record를 보존한다", async () => {
   const factory = new IDBFactory();
   await createV2Database(factory);
   const database = await openTrainingDatabase(factory);
-  assert.equal(database.version, 5);
+  assert.equal(database.version, 6);
   assert.deepEqual([...database.objectStoreNames], [
+    "baselineChangeHistory",
+    "credentialArchive",
+    "eventChangeHistory",
+    "eventMemo",
+    "eventParticipation",
+    "externalEvent",
     "memberProfile",
+    "onboardingRankHistory",
+    "onboardingReceipt",
+    "progressBaseline",
     "promotionHistory",
     "samsungdangMembership",
     "sessionKata",
@@ -217,7 +226,7 @@ test("memo 모아보기는 최신순이며 본문 부분검색과 수정 즉시 
   assert.equal(memos[0].sessionNo, older.sessionNo);
 });
 
-test("Backup v1은 v5에서 restore되고 shared snapshot을 재구성한다", async () => {
+test("Backup v1은 v6에서 restore되고 shared snapshot을 재구성한다", async () => {
   const factory = new IDBFactory();
   const backup = createBackup({
     memberProfile: [{ id: "self", name: "성주환", memberNo: null, joinDate: null }],
@@ -252,7 +261,7 @@ test("Backup v1은 v5에서 restore되고 shared snapshot을 재구성한다", a
   database.close();
 });
 
-test("잘못된 Backup v1 restore는 기존 DB v5 데이터를 변경하지 않는다", async () => {
+test("잘못된 Backup v1 restore는 기존 DB v6 데이터를 변경하지 않는다", async () => {
   const factory = new IDBFactory();
   const valid = createBackup({
     memberProfile: [], promotionHistory: [], trainingSession: [sharedSession], sessionKata: sharedKata
@@ -290,11 +299,12 @@ test("Backup v1 export adapter는 personal, memo, snapshot을 schema v1에 섞�
   assert.deepEqual(Object.keys(result.data).sort(), ["memberProfile", "promotionHistory", "sessionKata", "trainingSession"]);
 });
 
-test("DB v5에는 별도 memo store가 없고 UI 검색 결과는 원본 session anchor를 사용한다", async () => {
-  assert.equal(TRAINING_DB_VERSION, 5);
+test("DB v6의 eventMemo와 일반수련 memo는 분리되고 UI 검색은 원본 session anchor를 사용한다", async () => {
+  assert.equal(TRAINING_DB_VERSION, 6);
   const factory = new IDBFactory();
   const database = await openTrainingDatabase(factory);
   assert.equal(database.objectStoreNames.contains("memo"), false);
+  assert.equal(database.objectStoreNames.contains("eventMemo"), true);
   assert.equal(database.objectStoreNames.contains(SAMSUNGDANG_MEMBERSHIP_STORE), true);
   assert.equal(database.objectStoreNames.contains(SPECIAL_TRAINING_HISTORY_STORE), true);
   database.close();

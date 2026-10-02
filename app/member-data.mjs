@@ -68,6 +68,40 @@ export function deriveCurrentRank(promotions) {
   };
 }
 
+function rankOrdinal(record) {
+  if (record.rankType === "kyu" && Number.isInteger(record.rankValue) && record.rankValue >= 1 && record.rankValue <= 9) return 10 - record.rankValue;
+  if (record.rankType === "dan" && Number.isSafeInteger(record.rankValue) && record.rankValue > 0) return 9 + record.rankValue;
+  return null;
+}
+
+export function deriveCurrentRankWithOnboarding(promotions, onboardingState = null) {
+  const verifiedPromotions = promotions.filter(item => item?.source === "samsungdang" && rankOrdinal(item) !== null)
+    .map(item => ({ ...item, effectiveDate: item.date ?? item.recognizedAt ?? null, verifiedSource: "promotion" }));
+  const onboarding = onboardingState?.ranks?.filter(item => rankOrdinal(item) !== null)
+    .map(item => ({
+      ...item,
+      id: item.entryKey,
+      date: item.rankDate,
+      effectiveDate: item.rankDate ?? item.baselineAsOf ?? item.recognizedAt,
+      source: "samsungdang-onboarding",
+      eventType: "recognized-onboarding",
+      verifiedSource: "onboarding",
+      attributionAnchorDate: item.rankDate ?? item.baselineAsOf ?? item.recognizedAt
+    })) ?? [];
+  const verified = [...verifiedPromotions, ...onboarding];
+  const candidates = verified.length > 0
+    ? verified
+    : promotions.filter(item => rankOrdinal(item) !== null).map(item => ({ ...item, effectiveDate: item.date ?? null }));
+  if (candidates.length === 0) return null;
+  const current = [...candidates].sort((left, right) =>
+    rankOrdinal(right) - rankOrdinal(left) ||
+    String(right.effectiveDate ?? "").localeCompare(String(left.effectiveDate ?? "")) ||
+    String(right.registeredAt ?? right.order ?? "").localeCompare(String(left.registeredAt ?? left.order ?? "")) ||
+    String(right.id ?? right.entryKey).localeCompare(String(left.id ?? left.entryKey))
+  )[0];
+  return { ...current, label: current.rankValue + (current.rankType === "kyu" ? "급" : "단") };
+}
+
 export function planSchemaUpgrade(existingStores) {
   const phase3Stores = ["trainingSession", "sessionKata"];
   const v3Stores = ["memberProfile", "promotionHistory", "sharedSessionSnapshot"];

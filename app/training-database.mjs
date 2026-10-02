@@ -1,7 +1,16 @@
 import { createSharedSnapshot } from "./training-journal.mjs";
 import {
+  BASELINE_CHANGE_HISTORY_STORE,
+  CREDENTIAL_ARCHIVE_STORE,
+  EVENT_CHANGE_HISTORY_STORE,
+  EVENT_MEMO_STORE,
+  EVENT_PARTICIPATION_STORE,
+  EXTERNAL_EVENT_STORE,
   MEMBER_PROFILE_STORE,
+  ONBOARDING_RANK_HISTORY_STORE,
+  ONBOARDING_RECEIPT_STORE,
   PROMOTION_HISTORY_STORE,
+  PROGRESS_BASELINE_STORE,
   SAMSUNGDANG_MEMBERSHIP_STORE,
   SESSION_KATA_STORE,
   SHARED_SESSION_SNAPSHOT_STORE,
@@ -54,6 +63,56 @@ export function upgradeTrainingDatabase(request, oldVersion) {
     ? transaction.objectStore(SPECIAL_TRAINING_HISTORY_STORE)
     : database.createObjectStore(SPECIAL_TRAINING_HISTORY_STORE, { keyPath: "eventId" });
   ensureIndex(specialTraining, "byCredentialId", "credentialId", { unique: true });
+
+  const onboardingReceipt = database.objectStoreNames.contains(ONBOARDING_RECEIPT_STORE)
+    ? transaction.objectStore(ONBOARDING_RECEIPT_STORE)
+    : database.createObjectStore(ONBOARDING_RECEIPT_STORE, { keyPath: "onboardingId" });
+  ensureIndex(onboardingReceipt, "byCredentialId", "credentialId", { unique: true });
+  ensureIndex(onboardingReceipt, "byMemberId", "memberId", { unique: true });
+
+  const onboardingRanks = database.objectStoreNames.contains(ONBOARDING_RANK_HISTORY_STORE)
+    ? transaction.objectStore(ONBOARDING_RANK_HISTORY_STORE)
+    : database.createObjectStore(ONBOARDING_RANK_HISTORY_STORE, { keyPath: "entryKey" });
+  ensureIndex(onboardingRanks, "byOnboarding", ["onboardingId", "revision"]);
+  ensureIndex(onboardingRanks, "byRankDate", "rankDate");
+
+  const progressBaseline = database.objectStoreNames.contains(PROGRESS_BASELINE_STORE)
+    ? transaction.objectStore(PROGRESS_BASELINE_STORE)
+    : database.createObjectStore(PROGRESS_BASELINE_STORE, { keyPath: "baselineId" });
+  ensureIndex(progressBaseline, "byKind", "kind");
+  ensureIndex(progressBaseline, "bySubject", ["kind", "subjectId"], { unique: true });
+
+  const baselineHistory = database.objectStoreNames.contains(BASELINE_CHANGE_HISTORY_STORE)
+    ? transaction.objectStore(BASELINE_CHANGE_HISTORY_STORE)
+    : database.createObjectStore(BASELINE_CHANGE_HISTORY_STORE, { keyPath: "changeId" });
+  ensureIndex(baselineHistory, "byBaselineId", "baselineId");
+  ensureIndex(baselineHistory, "byChangedAt", "changedAt");
+
+  const credentialArchive = database.objectStoreNames.contains(CREDENTIAL_ARCHIVE_STORE)
+    ? transaction.objectStore(CREDENTIAL_ARCHIVE_STORE)
+    : database.createObjectStore(CREDENTIAL_ARCHIVE_STORE, { keyPath: "credentialId" });
+  ensureIndex(credentialArchive, "byDomain", "domain");
+  ensureIndex(credentialArchive, "byArchivedAt", "archivedAt");
+
+  if (!database.objectStoreNames.contains(EVENT_PARTICIPATION_STORE)) {
+    database.createObjectStore(EVENT_PARTICIPATION_STORE, { keyPath: "eventId" });
+  }
+  const eventHistory = database.objectStoreNames.contains(EVENT_CHANGE_HISTORY_STORE)
+    ? transaction.objectStore(EVENT_CHANGE_HISTORY_STORE)
+    : database.createObjectStore(EVENT_CHANGE_HISTORY_STORE, { keyPath: "changeId" });
+  ensureIndex(eventHistory, "byEventKey", "eventKey");
+  ensureIndex(eventHistory, "byChangedAt", "changedAt");
+
+  const externalEvent = database.objectStoreNames.contains(EXTERNAL_EVENT_STORE)
+    ? transaction.objectStore(EXTERNAL_EVENT_STORE)
+    : database.createObjectStore(EXTERNAL_EVENT_STORE, { keyPath: "eventId" });
+  ensureIndex(externalEvent, "byUpdatedAt", "updatedAt");
+  ensureIndex(externalEvent, "byDeletedAt", "deletedAt");
+
+  const eventMemo = database.objectStoreNames.contains(EVENT_MEMO_STORE)
+    ? transaction.objectStore(EVENT_MEMO_STORE)
+    : database.createObjectStore(EVENT_MEMO_STORE, { keyPath: "eventKey" });
+  ensureIndex(eventMemo, "byUpdatedAt", "updatedAt");
 
   if (oldVersion < 3) {
     const kataRequest = kata.getAll();

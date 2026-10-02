@@ -1,6 +1,7 @@
 import type { CurrentRank, PromotionRecord } from "./member-data.mjs";
 import type { HydratedTrainingSession } from "./training-records.mjs";
 import type { TrainingCountBreakdown } from "./training-count.mjs";
+import type { ActiveOnboardingState, ProgressBaselineRecord } from "./onboarding-store.mjs";
 
 export interface KyuProgressionReference {
   current: number | null;
@@ -59,6 +60,10 @@ export interface TrainingProgress {
   targetLabel: string;
   currentLabel: string;
   promotionDate: string | null;
+  attributionDate: string | null;
+  baseline: ProgressBaselineRecord | null;
+  appActual: number | null;
+  overlap: boolean;
   values: TrainingProgressValues | null;
   required: number;
 }
@@ -91,7 +96,8 @@ export function groupKataByGrade(scope: KataScope): Array<KataScope & { grade: n
 export function createTrainingAnalysis(
   promotions: PromotionRecord[],
   sessions: HydratedTrainingSession[],
-  catalog: KataCatalog
+  catalog: KataCatalog,
+  onboardingState?: ActiveOnboardingState | null
 ): {
   currentRank: CurrentRank | null;
   totalTrainingSessions: number;
