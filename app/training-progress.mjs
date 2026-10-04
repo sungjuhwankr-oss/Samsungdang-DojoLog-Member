@@ -1,4 +1,4 @@
-import { deriveCurrentRankWithOnboarding } from "./member-data.mjs";
+import { deriveCurrentRankWithOnboarding, deriveVerifiedRankAtDate } from "./member-data.mjs";
 import { createTrainingCountBreakdown } from "./training-count.mjs";
 
 export const KYU_PROGRESSION_REFERENCE = Object.freeze([
@@ -180,24 +180,42 @@ export function groupKataByGrade(scope) {
   return groups;
 }
 
-export function createTrainingAnalysis(promotions, sessions, catalog, onboardingState = null) {
+export function createTrainingAnalysis(promotions, sessions, catalog, onboardingState = null, eventSessions = {}) {
   const currentRank = deriveCurrentRankWithOnboarding(promotions, onboardingState);
   const progressionReference = getKyuProgression(currentRank);
-  const trainingCounts = createTrainingCountBreakdown({ trainingSessions: sessions });
+  const specialSessions = Array.isArray(eventSessions.special) ? eventSessions.special : [];
+  const externalSessions = Array.isArray(eventSessions.external) ? eventSessions.external : [];
+  const trainingCounts = createTrainingCountBreakdown({
+    trainingSessions: sessions,
+    participatingSpecialSessions: specialSessions.length,
+    activeExternalSessions: externalSessions.length
+  });
   const totalTrainingSessions = trainingCounts.total;
+  const progressSessions = [...sessions, ...specialSessions, ...externalSessions];
   let progress = null;
 
   if (progressionReference !== null) {
     const attributionDate = currentRank?.attributionAnchorDate ?? currentRank?.date ?? null;
+    const hasVerifiedRankFacts = promotions.some(item => item?.source === "samsungdang") ||
+      (onboardingState?.ranks?.length ?? 0) > 0;
+    const attributedCurrentSessions = currentRank !== null && hasVerifiedRankFacts
+      ? progressSessions.filter(session => {
+          if (typeof session.date !== "string") return false;
+          const attributed = deriveVerifiedRankAtDate(promotions, onboardingState, session.date);
+          return attributed?.rankType === currentRank.rankType && attributed?.rankValue === currentRank.rankValue;
+        })
+      : null;
     const appActual = currentRank === null
       ? totalTrainingSessions
-      : attributionDate === null
+      : attributedCurrentSessions !== null
+        ? attributedCurrentSessions.length
+        : attributionDate === null
         ? null
-        : countTrainingSessions(sessions, attributionDate);
+        : countTrainingSessions(progressSessions, attributionDate);
     const rankBaseline = onboardingState?.baselines?.find(item =>
       item.kind === "current-rank-session" && item.subjectId === currentRank?.entryId
     ) ?? null;
-    const overlap = rankBaseline !== null && sessions.some(session =>
+    const overlap = rankBaseline !== null && progressSessions.some(session =>
       typeof session.date === "string" && session.date <= rankBaseline.baselineAsOf &&
       (currentRank?.rankDate === null || currentRank?.rankDate === undefined || session.date > currentRank.rankDate)
     );

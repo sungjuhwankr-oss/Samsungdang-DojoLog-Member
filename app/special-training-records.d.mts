@@ -2,7 +2,8 @@ import type { CredentialVerificationResult } from "./credential/membership-verif
 import type {
   CredentialVerifierOptions,
   SpecialTrainingCredentialVerificationResult,
-  VerifiedSpecialTrainingPayload
+  VerifiedSpecialTrainingPayload,
+  VerifiedSpecialTrainingV2Payload
 } from "./credential/special-training-verifier.mjs";
 
 export interface SpecialTrainingRecord {
@@ -12,12 +13,14 @@ export interface SpecialTrainingRecord {
   envelopeJson: string;
   registeredAt: string;
 }
-export interface SpecialTrainingHistoryView extends VerifiedSpecialTrainingPayload {
+export type SpecialTrainingHistoryView = (VerifiedSpecialTrainingPayload | VerifiedSpecialTrainingV2Payload) & {
   eventId: string;
   credentialId: string;
   keyId: string;
   registeredAt: string;
-}
+  credentialVersion: 1 | 2;
+  payload: VerifiedSpecialTrainingPayload | VerifiedSpecialTrainingV2Payload;
+};
 export interface SpecialTrainingAssessment { canConfirm: boolean; reason: string; }
 export function specialTrainingPayloadEqual(left: unknown, right: unknown): boolean;
 export function classifySpecialTrainingDuplicate(
@@ -36,7 +39,7 @@ export function createSpecialTrainingRecord(
 export function storedSpecialTrainingIdentity(record: SpecialTrainingRecord): {
   eventId: string;
   credentialId: string;
-  payload: VerifiedSpecialTrainingPayload;
+  payload: VerifiedSpecialTrainingPayload | VerifiedSpecialTrainingV2Payload;
 };
 export function validateStoredSpecialTrainingHistory(
   records: SpecialTrainingRecord[],

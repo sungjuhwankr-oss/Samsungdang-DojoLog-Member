@@ -97,7 +97,8 @@ export function createTrainingAnalysis(
   promotions: PromotionRecord[],
   sessions: HydratedTrainingSession[],
   catalog: KataCatalog,
-  onboardingState?: ActiveOnboardingState | null
+  onboardingState?: ActiveOnboardingState | null,
+  eventSessions?: { special?: Array<{ date: string }>; external?: Array<{ date: string }> }
 ): {
   currentRank: CurrentRank | null;
   totalTrainingSessions: number;

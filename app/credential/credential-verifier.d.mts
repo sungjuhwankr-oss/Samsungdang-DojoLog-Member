@@ -20,10 +20,27 @@ export interface VerifiedSpecialTrainingPayload {
   endDate: string | null;
   instructor: string;
 }
-export interface CredentialVerificationResult<T = VerifiedMembershipPayload | VerifiedPromotionPayload | VerifiedSpecialTrainingPayload> {
+export interface VerifiedSpecialTrainingSession {
+  sessionId: string;
+  date: string;
+  label: string;
+}
+export interface VerifiedSpecialTrainingV2Payload {
+  eventId: string;
+  revision: number;
+  supersedesCredentialId: string | null;
+  title: string;
+  category: "special-training";
+  startDate: string;
+  endDate: string | null;
+  instructor: string;
+  sessions: VerifiedSpecialTrainingSession[];
+}
+export interface CredentialVerificationResult<T = VerifiedMembershipPayload | VerifiedPromotionPayload | VerifiedSpecialTrainingPayload | VerifiedSpecialTrainingV2Payload> {
   valid: boolean;
   reason: CredentialReason;
   credentialType: string | null;
+  credentialVersion: number | null;
   keyId: string | null;
   credentialId: string | null;
   verifiedPayload: Readonly<T> | null;
@@ -33,7 +50,7 @@ export interface CredentialVerifierOptions {
   registry?: TrustedKeyRegistry;
   crypto?: Crypto;
   canonicalize?: (value: unknown) => string;
-  expectedType?: "membership" | "promotion" | "special-training";
+  expectedType?: "membership" | "promotion" | "special-training" | "member-onboarding";
 }
 export const CREDENTIAL_REASON: Readonly<Record<CredentialReason, CredentialReason>>;
 export function isCalendarDate(value: unknown): value is string;

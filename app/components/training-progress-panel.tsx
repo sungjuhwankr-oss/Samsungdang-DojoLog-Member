@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import kataCatalog from "../../reference/kata-catalog.v2.json";
+import { EVENTS_CHANGED_EVENT, loadEventTrainingData, type EventTrainingSession } from "../event-store.mjs";
 import type { PromotionRecord } from "../member-data.mjs";
 import { loadActiveOnboardingState, ONBOARDING_CHANGED_EVENT } from "../onboarding-store.mjs";
 import type { ActiveOnboardingState } from "../onboarding-store.mjs";
@@ -85,15 +86,17 @@ export function TrainingProgressPanel({
   const [sessions, setSessions] = useState<HydratedTrainingSession[]>([]);
   const [sessionStatus, setSessionStatus] = useState<LoadStatus>("loading");
   const [onboarding, setOnboarding] = useState<ActiveOnboardingState | null>(null);
+  const [eventSessions, setEventSessions] = useState<{ special: EventTrainingSession[]; external: EventTrainingSession[] }>({ special: [], external: [] });
 
   useEffect(() => {
     let active = true;
     const reload = () => {
-      Promise.all([listTrainingSessions(), loadActiveOnboardingState()]).then(
-        ([records, onboardingState]) => {
+      Promise.all([listTrainingSessions(), loadActiveOnboardingState(), loadEventTrainingData()]).then(
+        ([records, onboardingState, events]) => {
           if (!active) return;
           setSessions(records);
           setOnboarding(onboardingState);
+          setEventSessions(events);
           setSessionStatus("ready");
         },
         () => {
@@ -104,16 +107,18 @@ export function TrainingProgressPanel({
     reload();
     window.addEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
     window.addEventListener(ONBOARDING_CHANGED_EVENT, reload);
+    window.addEventListener(EVENTS_CHANGED_EVENT, reload);
     return () => {
       active = false;
       window.removeEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
       window.removeEventListener(ONBOARDING_CHANGED_EVENT, reload);
+      window.removeEventListener(EVENTS_CHANGED_EVENT, reload);
     };
   }, []);
 
   const analysis = useMemo(
-    () => createTrainingAnalysis(promotions, sessions, kataCatalog, onboarding),
-    [onboarding, promotions, sessions]
+    () => createTrainingAnalysis(promotions, sessions, kataCatalog, onboarding, eventSessions),
+    [eventSessions, onboarding, promotions, sessions]
   );
   const progressMessage = analysis.progress
     ? getProgressEncouragement(analysis.progress)
@@ -146,6 +151,7 @@ export function TrainingProgressPanel({
             <div>
               <span>입문 후 앱 기록 수련횟수</span>
               <strong>{analysis.totalTrainingSessions}회</strong>
+              <small>일반 {analysis.trainingCounts.sources.general} · 특별수련 {analysis.trainingCounts.sources.special} · 외부행사 {analysis.trainingCounts.sources.external}</small>
             </div>
             <div>
               <span>

@@ -53,6 +53,11 @@ export function deriveCurrentRankWithOnboarding(
   promotions: PromotionRecord[],
   onboardingState?: import("./onboarding-store.mjs").ActiveOnboardingState | null
 ): CurrentRank | null;
+export function deriveVerifiedRankAtDate(
+  promotions: PromotionRecord[],
+  onboardingState: import("./onboarding-store.mjs").ActiveOnboardingState | null,
+  sessionDate: string
+): CurrentRank | null;
 export function planSchemaUpgrade(existingStores: string[]): {
   preserve: string[];
   create: string[];

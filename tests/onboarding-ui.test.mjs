@@ -41,10 +41,11 @@ test("Backup v1 UI discloses all v6 exclusions, same-device preservation, and Ph
   }
 });
 
-test("Phase 4K-D behavior remains absent while its four physical stores exist", async () => {
-  const [database, navigation] = await Promise.all([
-    read("../app/training-database.mjs"), read("../app/components/app-navigation.tsx")
+test("Phase 4K-D reuses the four precreated physical stores without navigation expansion", async () => {
+  const [database, navigation, eventStore] = await Promise.all([
+    read("../app/training-database.mjs"), read("../app/components/app-navigation.tsx"), read("../app/event-store.mjs")
   ]);
   for (const name of ["EVENT_PARTICIPATION_STORE", "EVENT_CHANGE_HISTORY_STORE", "EXTERNAL_EVENT_STORE", "EVENT_MEMO_STORE"]) assert.match(database, new RegExp(name));
+  for (const name of ["EVENT_PARTICIPATION_STORE", "EVENT_CHANGE_HISTORY_STORE", "EXTERNAL_EVENT_STORE", "EVENT_MEMO_STORE"]) assert.match(eventStore, new RegExp(name));
   assert.doesNotMatch(navigation, /special-training-v2|external-event-create|event-memo-editor/);
 });

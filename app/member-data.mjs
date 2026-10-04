@@ -102,6 +102,30 @@ export function deriveCurrentRankWithOnboarding(promotions, onboardingState = nu
   return { ...current, label: current.rankValue + (current.rankType === "kyu" ? "급" : "단") };
 }
 
+export function deriveVerifiedRankAtDate(promotions, onboardingState, sessionDate) {
+  const verifiedPromotions = promotions.filter(item => item?.source === "samsungdang" && rankOrdinal(item) !== null)
+    .map(item => ({ ...item, effectiveDate: item.date ?? item.recognizedAt ?? null, verifiedSource: "promotion" }));
+  const onboarding = onboardingState?.ranks?.filter(item => rankOrdinal(item) !== null)
+    .map(item => ({
+      ...item,
+      id: item.entryKey,
+      date: item.rankDate,
+      effectiveDate: item.rankDate ?? item.baselineAsOf ?? item.recognizedAt,
+      source: "samsungdang-onboarding",
+      eventType: "recognized-onboarding",
+      verifiedSource: "onboarding"
+    })) ?? [];
+  const eligible = [...verifiedPromotions, ...onboarding]
+    .filter(item => typeof item.effectiveDate === "string" && item.effectiveDate < sessionDate);
+  if (eligible.length === 0) return null;
+  const rank = eligible.sort((left, right) =>
+    rankOrdinal(right) - rankOrdinal(left) ||
+    right.effectiveDate.localeCompare(left.effectiveDate) ||
+    String(right.registeredAt ?? right.order ?? "").localeCompare(String(left.registeredAt ?? left.order ?? ""))
+  )[0];
+  return { ...rank, label: rank.rankValue + (rank.rankType === "kyu" ? "급" : "단") };
+}
+
 export function planSchemaUpgrade(existingStores) {
   const phase3Stores = ["trainingSession", "sessionKata"];
   const v3Stores = ["memberProfile", "promotionHistory", "sharedSessionSnapshot"];

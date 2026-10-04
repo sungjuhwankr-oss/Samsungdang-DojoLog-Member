@@ -15,13 +15,16 @@ export function previewSpecialTrainingCredentialToken(token: string, options?: {
   verification: SpecialTrainingCredentialVerificationResult;
   membershipVerification: CredentialVerificationResult | null;
   assessment: SpecialTrainingAssessment | null;
+  participation: { eventId: string; selectedSessionIds: string[]; updatedAt: string; revision: number } | null;
 }>;
 export function registerSpecialTrainingCredentialToken(token: string, options?: {
   factory?: IDBFactory;
   verifierOptions?: CredentialVerifierOptions;
   now?: () => string;
+  selectedSessionIds?: string[];
 }): Promise<{
   verification: SpecialTrainingCredentialVerificationResult;
   assessment: SpecialTrainingAssessment;
   record: SpecialTrainingRecord;
+  participation: { eventId: string; selectedSessionIds: string[]; updatedAt: string; revision: number } | null;
 }>;

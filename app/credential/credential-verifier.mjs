@@ -35,6 +35,11 @@ const RECOGNIZED_FIELDS = [
 const SPECIAL_TRAINING_FIELDS = [
   "eventId", "title", "category", "startDate", "endDate", "instructor"
 ];
+const SPECIAL_TRAINING_V2_FIELDS = [
+  "eventId", "revision", "supersedesCredentialId", "title", "category",
+  "startDate", "endDate", "instructor", "sessions"
+];
+const SPECIAL_TRAINING_SESSION_FIELDS = ["sessionId", "date", "label"];
 const ONBOARDING_FIELDS = [
   "onboardingId", "revision", "supersedesCredentialId", "recognizedAt", "membership",
   "recognizedRanks", "currentRankEntryId", "baselineAsOf", "currentRankSessionBaseline", "kataBaselines"
@@ -55,6 +60,7 @@ function result(reason, details = {}) {
     valid: reason === CREDENTIAL_REASON.OK,
     reason,
     credentialType: null,
+    credentialVersion: null,
     keyId: null,
     credentialId: null,
     verifiedPayload: null,
@@ -160,6 +166,30 @@ function validateSpecialTrainingPayload(payload) {
     isBoundedDisplayText(payload.instructor);
 }
 
+function validateSpecialTrainingV2Payload(payload) {
+  if (!hasExactFields(payload, SPECIAL_TRAINING_V2_FIELDS) ||
+      !hasBinaryIdentifier(payload.eventId, "st1_", 16) ||
+      !Number.isSafeInteger(payload.revision) || payload.revision < 1 ||
+      !(payload.supersedesCredentialId === null || hasBinaryIdentifier(payload.supersedesCredentialId, "c1_", 16)) ||
+      (payload.revision > 1 && payload.supersedesCredentialId === null) ||
+      !isBoundedDisplayText(payload.title) || payload.category !== "special-training" ||
+      !isCalendarDate(payload.startDate) ||
+      !(payload.endDate === null || (isCalendarDate(payload.endDate) && payload.endDate >= payload.startDate)) ||
+      !isBoundedDisplayText(payload.instructor) || !Array.isArray(payload.sessions) || payload.sessions.length === 0) {
+    return false;
+  }
+  const endDate = payload.endDate ?? payload.startDate;
+  const sessionIds = new Set();
+  for (const session of payload.sessions) {
+    if (!hasExactFields(session, SPECIAL_TRAINING_SESSION_FIELDS) ||
+        !hasBinaryIdentifier(session.sessionId, "sts1_", 16) || sessionIds.has(session.sessionId) ||
+        !isCalendarDate(session.date) || session.date < payload.startDate || session.date > endDate ||
+        !isBoundedDisplayText(session.label)) return false;
+    sessionIds.add(session.sessionId);
+  }
+  return true;
+}
+
 function rankOrdinal(rank) {
   if (rank.rankType === "kyu" && Number.isSafeInteger(rank.rankValue) && rank.rankValue >= 1 && rank.rankValue <= 9) return 10 - rank.rankValue;
   if (rank.rankType === "dan" && Number.isSafeInteger(rank.rankValue) && rank.rankValue > 0) return 9 + rank.rankValue;
@@ -208,7 +238,8 @@ function validateFields(envelope, expectedType) {
   const signed = envelope.signed;
   if (!hasExactFields(signed, SIGNED_FIELDS)) return CREDENTIAL_REASON.INVALID_FIELD;
   if (signed.schema !== "samsungdang-dojolog-credential") return CREDENTIAL_REASON.UNSUPPORTED_SCHEMA;
-  if (signed.credentialVersion !== 1) return CREDENTIAL_REASON.UNSUPPORTED_VERSION;
+  const specialV2 = signed.type === "special-training" && signed.credentialVersion === 2;
+  if (signed.credentialVersion !== 1 && !specialV2) return CREDENTIAL_REASON.UNSUPPORTED_VERSION;
   if (signed.issuer !== "aikido-samsungdang") return CREDENTIAL_REASON.INVALID_FIELD;
   if (!SUPPORTED_TYPES.has(signed.type) || (expectedType && signed.type !== expectedType)) {
     return CREDENTIAL_REASON.UNSUPPORTED_TYPE;
@@ -221,7 +252,9 @@ function validateFields(envelope, expectedType) {
     : signed.type === "promotion"
       ? validatePromotionPayload(signed.payload)
       : signed.type === "special-training"
-        ? validateSpecialTrainingPayload(signed.payload)
+        ? (specialV2
+          ? validateSpecialTrainingV2Payload(signed.payload)
+          : validateSpecialTrainingPayload(signed.payload))
         : validateOnboardingPayload(signed.payload);
   return payloadValid ? null : CREDENTIAL_REASON.INVALID_FIELD;
 }
@@ -272,6 +305,9 @@ export async function verifyCredentialJson(envelopeJson, options = {}) {
   const fieldFailure = validateFields(envelope, options.expectedType);
   const identity = isObject(envelope?.signed) ? {
     credentialType: typeof envelope.signed.type === "string" ? envelope.signed.type : null,
+    credentialVersion: Number.isSafeInteger(envelope.signed.credentialVersion)
+      ? envelope.signed.credentialVersion
+      : null,
     keyId: typeof envelope.signed.keyId === "string" ? envelope.signed.keyId : null,
     credentialId: typeof envelope.signed.credentialId === "string" ? envelope.signed.credentialId : null
   } : {};

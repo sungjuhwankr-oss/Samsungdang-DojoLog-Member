@@ -14,14 +14,19 @@ const validInstant = (value) => typeof value === "string" &&
   !Number.isNaN(Date.parse(value));
 
 export function specialTrainingPayloadEqual(left, right) {
-  return left?.eventId === right?.eventId && left?.title === right?.title &&
-    left?.category === right?.category && left?.startDate === right?.startDate &&
-    left?.endDate === right?.endDate && left?.instructor === right?.instructor;
-}
-
-function validMembership(verification) {
-  return verification?.valid === true && verification.credentialType === "membership" &&
-    verification.verifiedPayload !== null;
+  if (left?.eventId !== right?.eventId || left?.title !== right?.title ||
+      left?.category !== right?.category || left?.startDate !== right?.startDate ||
+      left?.endDate !== right?.endDate || left?.instructor !== right?.instructor) return false;
+  const leftV2 = Array.isArray(left?.sessions);
+  const rightV2 = Array.isArray(right?.sessions);
+  if (!leftV2 || !rightV2) return leftV2 === rightV2;
+  return left.revision === right.revision &&
+    left.supersedesCredentialId === right.supersedesCredentialId &&
+    left.sessions.length === right.sessions.length &&
+    left.sessions.every((session, index) => {
+      const other = right.sessions[index];
+      return session.sessionId === other?.sessionId && session.date === other?.date && session.label === other?.label;
+    });
 }
 
 function verifiedIdentity(verification) {
@@ -37,16 +42,41 @@ export function classifySpecialTrainingDuplicate(verification, history) {
   }
   const sameEvent = history.find((item) => item.eventId === verification.verifiedPayload.eventId);
   if (!sameEvent) return "ready";
-  return specialTrainingPayloadEqual(sameEvent, verification.verifiedPayload)
-    ? "event-replay"
-    : "event-conflict";
+  const incomingVersion = verification.credentialVersion ?? 1;
+  const currentVersion = sameEvent.credentialVersion ?? 1;
+  if (incomingVersion === 1) {
+    if (currentVersion === 2) return "revision-downgrade";
+    return specialTrainingPayloadEqual(sameEvent.payload ?? sameEvent, verification.verifiedPayload)
+      ? "event-replay"
+      : "event-conflict";
+  }
+  const incoming = verification.verifiedPayload;
+  if (currentVersion === 1) {
+    return incoming.revision === 1 && incoming.supersedesCredentialId === sameEvent.credentialId
+      ? "correction"
+      : "revision-fork";
+  }
+  const current = sameEvent.payload ?? sameEvent;
+  if (incoming.revision === current.revision) {
+    return specialTrainingPayloadEqual(current, incoming) ? "event-replay" : "revision-conflict";
+  }
+  if (incoming.revision < current.revision) return "revision-downgrade";
+  if (incoming.revision > current.revision + 1) return "revision-skip";
+  if (incoming.supersedesCredentialId !== sameEvent.credentialId) return "revision-fork";
+  const currentSessions = new Map(current.sessions.map(session => [session.sessionId, session]));
+  for (const session of incoming.sessions) {
+    const previous = currentSessions.get(session.sessionId);
+    if (previous && (previous.date !== session.date || previous.label !== session.label)) {
+      return "session-identity-conflict";
+    }
+  }
+  return "correction";
 }
 
-export function assessSpecialTrainingCredential(verification, membershipVerification, history) {
+export function assessSpecialTrainingCredential(verification, _membershipVerification, history) {
   if (!verifiedIdentity(verification)) return { canConfirm: false, reason: "invalid-credential" };
-  if (!validMembership(membershipVerification)) return { canConfirm: false, reason: "membership-required" };
   const reason = classifySpecialTrainingDuplicate(verification, history);
-  return { canConfirm: reason === "ready", reason };
+  return { canConfirm: reason === "ready" || reason === "correction", reason };
 }
 
 export function createSpecialTrainingRecord(verification, registeredAt) {
@@ -111,6 +141,8 @@ export async function validateStoredSpecialTrainingHistory(records, verifierOpti
       credentialId: record.credentialId,
       keyId: record.keyId,
       ...verification.verifiedPayload,
+      payload: verification.verifiedPayload,
+      credentialVersion: verification.credentialVersion ?? 1,
       registeredAt: record.registeredAt
     });
   }

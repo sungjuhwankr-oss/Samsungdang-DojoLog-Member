@@ -119,11 +119,33 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .small { font-size: 0.9rem; color: var(--muted); }
 
+.event-form-grid,
+.event-card,
+.event-session-row { display: grid; gap: 12px; }
+.event-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.event-card { padding: 18px 0; border-top: 1px solid var(--line); }
+.event-card h3, .event-card p { margin: 0; }
+.event-session-row { grid-template-columns: minmax(130px, 0.35fr) minmax(0, 1fr) auto; align-items: end; margin: 10px 0; }
+.event-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.event-check { display: flex !important; flex-direction: row !important; gap: 9px; align-items: start; margin: 8px 0; }
+.event-check input { width: auto; margin-top: 3px; }
+.event-history-list { padding-left: 22px; }
+.button-reset { border: 0; font: inherit; cursor: pointer; }
+.button-secondary,
+.button-danger { min-height: 42px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; }
+.button-danger { color: #a52a2a; }
+
+label { display: grid; gap: 6px; font-weight: 700; }
+input, textarea { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); color: var(--text); font: inherit; }
+textarea { min-height: 84px; resize: vertical; }
+fieldset { margin: 0; border: 1px solid var(--line); border-radius: 10px; }
+
 @media (max-width: 520px) {
   .shell { width: min(100% - 20px, 760px); padding-top: 18px; }
   .panel { padding: 16px; border-radius: 14px; }
   .diag-grid { grid-template-columns: 1fr; gap: 3px; }
   .diag-grid dd { margin-bottom: 8px; }
+  .event-form-grid, .event-session-row { grid-template-columns: 1fr; }
 }
 
 .app-navigation {

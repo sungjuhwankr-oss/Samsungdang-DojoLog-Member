@@ -75,17 +75,19 @@ function acceptingCrypto() {
   } };
 }
 
-test("B previews verified content but cannot confirm, mutate history, or become A", async () => {
+test("B previews and confirms valid v1 without becoming A or creating a session", async () => {
   const factory = new IDBFactory();
   const preview = await previewSpecialTrainingCredentialToken(a1Token, { factory });
   assert.equal(preview.verification.valid, true);
-  assert.equal(preview.assessment.canConfirm, false);
-  assert.equal(preview.assessment.reason, "membership-required");
+  assert.equal(preview.assessment.canConfirm, true);
+  assert.equal(preview.assessment.reason, "ready");
   assert.equal((await rawSpecialHistory(factory)).length, 0);
   assert.equal(await readStoredMembershipRecord(factory), null);
   assert.equal(createMembershipFeatureGate(await loadStoredMembershipVerification(factory)).hasValidMembershipCredential, false);
-  await assert.rejects(registerSpecialTrainingCredentialToken(a1Token, { factory }), { code: "membership-required" });
-  assert.equal((await rawSpecialHistory(factory)).length, 0);
+  await registerSpecialTrainingCredentialToken(a1Token, { factory });
+  assert.equal((await rawSpecialHistory(factory)).length, 1);
+  assert.equal(await readStoredMembershipRecord(factory), null);
+  assert.equal(createMembershipFeatureGate(await loadStoredMembershipVerification(factory)).hasValidMembershipCredential, false);
 });
 
 test("A confirms atomically and read-time verification derives the history view after restart", async () => {

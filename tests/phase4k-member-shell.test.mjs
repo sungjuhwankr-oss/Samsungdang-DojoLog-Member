@@ -195,10 +195,15 @@ test("rendered Phase 4K-B UI no longer exposes 수련일수", async () => {
   assert.doesNotMatch(sources.join("\n"), /수련일수/);
 });
 
-test("events shell does not implement Phase 4K-D event domain semantics", async () => {
-  const source = await read("../app/events/page.tsx");
-  assert.match(source, /<SpecialTrainingHistory \/>/);
-  assert.doesNotMatch(source, /createExternal|participantSession|special-training.*v2|eventMemo/);
+test("events route mounts the Phase 4K-D unified event domain without changing the route shell", async () => {
+  const [source, manager] = await Promise.all([
+    read("../app/events/page.tsx"),
+    read("../app/components/event-manager.tsx")
+  ]);
+  assert.match(source, /<EventManager \/>/);
+  assert.match(manager, /createExternalEvent/);
+  assert.match(manager, /updateSpecialParticipation/);
+  assert.match(manager, /saveEventMemo/);
 });
 
 test("Phase 4K-C upgrades to DB v6, sixteen physical stores, and preserves Backup v1", async () => {

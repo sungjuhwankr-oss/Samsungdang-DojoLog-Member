@@ -17,37 +17,40 @@ test("production special-training route uses one credential token and verified p
   assert.match(verifier, /tokens\.length !== 1/);
 });
 
-test("B sees verified preview but confirm is assessment-gated and cancel is mutation-free", async () => {
+test("B and A share explicit confirm while v1 remains zero-session and cancel is mutation-free", async () => {
   const panel = await read("../app/components/special-training-registration-panel.tsx");
   assert.match(panel, /Special-training Credential입니다/);
   assert.match(panel, /assessment\.canConfirm &&/);
-  assert.match(panel, /Membership Credential 등록 필요/);
+  assert.match(panel, /session 정보 없음/);
+  assert.match(panel, /수련횟수는 0회/);
   assert.match(panel, /특별수련 이력 등록/);
   assert.match(panel, /등록 취소/);
   assert.match(panel, /window\.history\.replaceState/);
   assert.doesNotMatch(panel, /localStorage|sessionStorage/);
 });
 
-test("events route reuses the existing verified special history as a read-only B/A shell", async () => {
-  const [events, history] = await Promise.all([
+test("events route provides unified participation, external-event, memo and history UX", async () => {
+  const [events, manager] = await Promise.all([
     read("../app/events/page.tsx"),
-    read("../app/components/special-training-history.tsx")
+    read("../app/components/event-manager.tsx")
   ]);
-  assert.match(events, /<SpecialTrainingHistory \/>/);
-  assert.doesNotMatch(events, /SpecialTrainingRegistrationPanel|externalEvent|participantSession/);
-  assert.match(events, /읽기 전용/);
-  assert.match(history, /listVerifiedSpecialTrainingHistory/);
-  assert.match(history, /SPECIAL_TRAINING_CHANGED_EVENT/);
-  assert.doesNotMatch(history, /promotionHistory|trainingSession/);
+  assert.match(events, /<EventManager \/>/);
+  assert.match(manager, /updateSpecialParticipation/);
+  assert.match(manager, /createExternalEvent/);
+  assert.match(manager, /updateExternalEvent/);
+  assert.match(manager, /deleteExternalEvent/);
+  assert.match(manager, /saveEventMemo/);
+  assert.match(manager, /암호학적으로 검증된 출석 증명이 아닙니다/);
 });
 
-test("confirm rechecks both eventId and credentialId in one readwrite transaction", async () => {
+test("confirm rechecks identity and performs correction/archive/participation in one transaction", async () => {
   const store = await read("../app/special-training-store.mjs");
-  assert.match(store, /transaction\(SPECIAL_TRAINING_HISTORY_STORE, "readwrite"\)/);
+  assert.match(store, /SPECIAL_TRAINING_HISTORY_STORE,[\s\S]*EVENT_PARTICIPATION_STORE,[\s\S]*EVENT_CHANGE_HISTORY_STORE,[\s\S]*CREDENTIAL_ARCHIVE_STORE/);
   assert.match(store, /index\("byCredentialId"\)\.get/);
   assert.match(store, /store\.get\(verification\.verifiedPayload\.eventId\)/);
   assert.match(store, /store\.add\(record\)/);
-  assert.doesNotMatch(store, /\.put\(record\)/);
+  assert.match(store, /store\.put\(record\)/);
+  assert.match(store, /domain: "special-training"/);
 });
 
 test("service worker precaches and directly falls back to the special-training route", async () => {

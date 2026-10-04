@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import kataCatalog from "../../reference/kata-catalog.v2.json";
+import { EVENTS_CHANGED_EVENT, loadEventTrainingData } from "../event-store.mjs";
 import { loadStoredMembershipVerification } from "../membership-store.mjs";
 import { deriveCurrentRankWithOnboarding } from "../member-data.mjs";
 import { loadActiveOnboardingState, ONBOARDING_CHANGED_EVENT } from "../onboarding-store.mjs";
@@ -22,9 +23,13 @@ type DashboardData = {
   special: SpecialTrainingHistoryView[];
   memberId: string | null;
   onboarding: ActiveOnboardingState | null;
+  eventSessions: { special: Array<{ date: string }>; external: Array<{ date: string }> };
 };
 
-const emptyData: DashboardData = { sessions: [], promotions: [], special: [], memberId: null, onboarding: null };
+const emptyData: DashboardData = {
+  sessions: [], promotions: [], special: [], memberId: null, onboarding: null,
+  eventSessions: { special: [], external: [] }
+};
 
 function sessionTitle(session: HydratedTrainingSession) {
   return session.source === "shared"
@@ -46,16 +51,18 @@ export function Dashboard() {
         listPromotionHistory(),
         listVerifiedSpecialTrainingHistory(),
         loadStoredMembershipVerification(),
-        loadActiveOnboardingState()
+        loadActiveOnboardingState(),
+        loadEventTrainingData()
       ]).then(
-        ([sessions, promotions, special, membership, onboarding]) => {
+        ([sessions, promotions, special, membership, onboarding, eventSessions]) => {
           if (!active) return;
           setData({
             sessions,
             promotions,
             special,
             memberId: membership?.valid ? membership.verifiedPayload?.memberId ?? null : null,
-            onboarding
+            onboarding,
+            eventSessions
           });
           setStatus("ready");
         },
@@ -67,16 +74,18 @@ export function Dashboard() {
     reload();
     window.addEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
     window.addEventListener(ONBOARDING_CHANGED_EVENT, reload);
+    window.addEventListener(EVENTS_CHANGED_EVENT, reload);
     return () => {
       active = false;
       window.removeEventListener(TRAINING_DATA_CHANGED_EVENT, reload);
       window.removeEventListener(ONBOARDING_CHANGED_EVENT, reload);
+      window.removeEventListener(EVENTS_CHANGED_EVENT, reload);
     };
   }, []);
 
   const analysis = useMemo(
-    () => createTrainingAnalysis(data.promotions, data.sessions, kataCatalog, data.onboarding),
-    [data.onboarding, data.promotions, data.sessions]
+    () => createTrainingAnalysis(data.promotions, data.sessions, kataCatalog, data.onboarding, data.eventSessions),
+    [data.eventSessions, data.onboarding, data.promotions, data.sessions]
   );
   const currentRank = useMemo(() => deriveCurrentRankWithOnboarding(data.promotions, data.onboarding), [data.onboarding, data.promotions]);
   const latestSession = data.sessions[0] ?? null;
@@ -89,7 +98,9 @@ export function Dashboard() {
         <div className="metric-card">
           <span id="dashboard-count-title">전체 수련횟수</span>
           <strong>{status === "ready" ? `${analysis.trainingCounts.total}회` : "—"}</strong>
-          <small>현재 일반 수련일지 {analysis.trainingCounts.sources.general}회 반영</small>
+          <small>
+            일반 {analysis.trainingCounts.sources.general} · 삼성당 특별수련 {analysis.trainingCounts.sources.special} · 외부행사 {analysis.trainingCounts.sources.external}
+          </small>
         </div>
         {isMember && (
           <div className="metric-card">
@@ -115,8 +126,8 @@ export function Dashboard() {
           <span>초심자 동영상</span><strong>기본 동작과 대인 기술</strong><small>53개 영상 항목</small>
         </Link>
         <Link className="dashboard-card" href="/events/">
-          <span>행사</span><strong>{isMember && latestSpecial ? latestSpecial.title : "특별수련·외부행사"}</strong>
-          <small>{isMember && latestSpecial ? latestSpecial.startDate : "현재 특별수련 이력 확인"}</small>
+          <span>행사</span><strong>{latestSpecial ? latestSpecial.title : "특별수련·외부행사"}</strong>
+          <small>{latestSpecial ? latestSpecial.startDate : "특별수련·외부행사 기록"}</small>
         </Link>
         <Link className="dashboard-card" href="/backup/">
           <span>백업</span><strong>Backup v1</strong><small>내보내기와 복원</small>
@@ -139,10 +150,7 @@ export function Dashboard() {
           </>
         )}
       </section>
-      <p className="small dashboard-note">
-        특별수련 참가 session과 외부행사 수련횟수는 해당 기록 기능이 제공된 뒤 합산됩니다.
-        기존 특별수련 v1 이력만으로 session 수를 추정하지 않습니다.
-      </p>
+      <p className="small dashboard-note">기존 특별수련 v1은 session 정보가 없어 전체 수련횟수에 합산하지 않습니다.</p>
     </>
   );
 }
