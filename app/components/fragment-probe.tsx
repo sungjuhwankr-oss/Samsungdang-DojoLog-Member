@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 import kataCatalog from "../../reference/kata-catalog.v2.json";
 import {
@@ -8,7 +8,7 @@ import {
   validateSessionKataCatalog
 } from "../kata-catalog-validation.mjs";
 import {
-  parseSessionHash,
+  parseSessionHashAsync,
   type SessionParseResult,
   type SessionPayload
 } from "../session-share.mjs";
@@ -146,7 +146,21 @@ export function FragmentProbe() {
     getHashSnapshot,
     getServerHashSnapshot
   );
-  const result: SessionParseResult = useMemo(() => parseSessionHash(hash), [hash]);
+  const [decoded, setDecoded] = useState<{ hash: string; result: SessionParseResult } | null>(null);
+  useEffect(() => {
+    let active = true;
+    void parseSessionHashAsync(hash).then(result => {
+      if (active) setDecoded({ hash, result });
+    });
+    return () => { active = false; };
+  }, [hash]);
+
+  // Hide the previous preview immediately on hash change, including its save
+  // action. Late results from a discarded effect cannot become saveable.
+  if (!decoded || decoded.hash !== hash) {
+    return <p className="small" role="status">수련기록을 확인하고 있습니다.</p>;
+  }
+  const result = decoded.result;
 
   if (!result.ok) {
     return (

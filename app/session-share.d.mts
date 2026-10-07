@@ -13,6 +13,10 @@ export interface SessionPayload {
 }
 
 export type SessionErrorCode =
+  | "unsupported-transport"
+  | "invalid-compressed-stream"
+  | "inflated-too-large"
+  | "decompression-unavailable"
   | "no-session"
   | "fragment-too-long"
   | "invalid-base64url"
@@ -38,5 +42,8 @@ export const MAX_FRAGMENT_LENGTH: number;
 export const MAX_DECODED_BYTES: number;
 export const MAX_KATA_COUNT: number;
 export const MAX_KATA_STRING_LENGTH: number;
+export const SESSION_GZIP_PREFIX: "gz1.";
+export const MAX_COMPRESSED_BYTES: number;
 
 export function parseSessionHash(hash: string): SessionParseResult;
+export function parseSessionHashAsync(hash: string): Promise<SessionParseResult>;

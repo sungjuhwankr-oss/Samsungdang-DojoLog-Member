@@ -1,0 +1,17 @@
+{
+  "payload": {
+    "schema": "samsungdang-dojolog-session",
+    "version": 1,
+    "dojo": "samsungdang",
+    "sessionNo": 1042,
+    "date": "2026-09-13",
+    "kata": [
+      {
+        "id": "뒤양손잡기-허리던지기",
+        "name": "뒤양손잡기 허리던지기"
+      }
+    ]
+  },
+  "legacyUrl": "https://sungjuhwankr-oss.github.io/Samsungdang-DojoLog-Member/import/#session=eyJzY2hlbWEiOiJzYW1zdW5nZGFuZy1kb2pvbG9nLXNlc3Npb24iLCJ2ZXJzaW9uIjoxLCJkb2pvIjoic2Ftc3VuZ2RhbmciLCJzZXNzaW9uTm8iOjEwNDIsImRhdGUiOiIyMDI2LTA5LTEzIiwia2F0YSI6W3siaWQiOiLrkqTslpHshpDsnqHquLAt7ZeI66as642Y7KeA6riwIiwibmFtZSI6IuuSpOyWkeyGkOyeoeq4sCDtl4jrpqzrjZjsp4DquLAifV19",
+  "gzipUrl": "https://sungjuhwankr-oss.github.io/Samsungdang-DojoLog-Member/import/#session=gz1.H4sIAAAAAAAAA6tWKk7OSM1NVLJSKk7MLS7NS09JzEvXTcnPys_JT9ctTi0uzszPU9JRKkstArOsDHWUQLKoGpR0lKBK_fKVrAwNTIx0lFISS1KVrJSMDIzMdA0sdQ2NlXSUshNLEpWsoquVMlOUrJReT1ryZtrEN20T3sxb-GrHBt230zteL1vzunfGm-UNr3ZsUNJRykvMTcVUqICusDa2FgAMAh3yyQAAAA"
+}
