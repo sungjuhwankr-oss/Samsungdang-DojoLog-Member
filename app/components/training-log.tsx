@@ -13,23 +13,12 @@ import {
   listTrainingSessions,
   restoreSharedTrainingSession,
   TRAINING_DATA_CHANGED_EVENT,
-  TRAINING_DB_NAME,
-  TRAINING_DB_VERSION,
   updateTrainingSession
 } from "../training-store";
 
 type KataValue = { id: string; name: string };
 type LoadState = "loading" | "ready" | "error";
 type JournalView = "all" | "memo" | "search";
-
-function initialOrigin() {
-  return typeof window === "undefined" ? "" : window.location.origin;
-}
-
-function initialDisplayMode() {
-  if (typeof window === "undefined") return "browser";
-  return window.matchMedia("(display-mode: standalone)").matches ? "standalone" : "browser";
-}
 
 function sessionAnchor(record: Pick<HydratedTrainingSession, "dojo" | "sessionNo">) {
   return `session-${encodeURIComponent(record.dojo)}-${record.sessionNo}`;
@@ -211,8 +200,6 @@ function SessionEditor({ record }: { record: HydratedTrainingSession }) {
 export function TrainingLog() {
   const [records, setRecords] = useState<HydratedTrainingSession[]>([]);
   const [loadState, setLoadState] = useState<LoadState>("loading");
-  const [origin] = useState(initialOrigin);
-  const [displayMode] = useState(initialDisplayMode);
   const [date, setDate] = useState("");
   const [note, setNote] = useState("");
   const [kata, setKata] = useState<KataValue[]>([]);
@@ -291,12 +278,6 @@ export function TrainingLog() {
           {loadState === "ready" && records.length === 0 && <p>저장된 수련일지가 없습니다.</p>}
           {records.length > 0 && <ul className="session-list">{records.map((record) => <SessionEditor key={`${record.dojo}-${record.sessionNo}`} record={record} />)}</ul>}
 
-          <dl className="diag-grid storage-diagnostic">
-            <dt>IndexedDB</dt><dd>{typeof indexedDB === "undefined" ? "unavailable" : "available"}</dd>
-            <dt>database</dt><dd>{TRAINING_DB_NAME} v{TRAINING_DB_VERSION}</dd>
-            <dt>origin</dt><dd>{origin || "server render"}</dd>
-            <dt>display-mode</dt><dd>{displayMode}</dd>
-          </dl>
         </div> : <div role="tabpanel">
           {view === "search" && <label className="search-field">메모 본문 검색<input type="search" value={memoQuery} onChange={(event) => setMemoQuery(event.target.value)} /></label>}
           {view === "search" && !memoQuery.trim() && <p className="small">검색할 메모 내용을 입력하십시오.</p>}

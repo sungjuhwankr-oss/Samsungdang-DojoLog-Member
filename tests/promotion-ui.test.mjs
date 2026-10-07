@@ -41,7 +41,7 @@ test("service worker precaches and directly falls back to the promotion route", 
   assert.match(serviceWorker, /"\.\/promotion\/"/);
   assert.match(serviceWorker, /endsWith\("\/promotion\/"\)/);
   assert.match(serviceWorker, /caches\.match\(scoped\("\.\/promotion\/"\)\)/);
-  assert.match(serviceWorker, /samsungdang-member-phase4k-c-v1/);
+  assert.match(serviceWorker, /samsungdang-member-pre-resume-shell-v1/);
 });
 
 test("recognized-at-entry history is labeled as entry or transfer recognition", async () => {

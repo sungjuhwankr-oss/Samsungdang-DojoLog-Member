@@ -29,29 +29,28 @@ test("Phase 4K-B target routes are independent static pages", async () => {
   }
 });
 
-test("primary mobile navigation is 홈 / 수련일지 / 카타 / 행사 / 전체", async () => {
+test("primary mobile navigation keeps existing route identities in the refined six-item shell", async () => {
+  const { PRIMARY_NAVIGATION } = await import("../app/shell-navigation.mjs");
+  assert.deepEqual(PRIMARY_NAVIGATION.map(item => [item.href, item.label]), [
+    ["/", "홈"], ["/journal/", "수련일지"], ["/kata/", "카타/심사표"],
+    ["/events/", "행사참여기록"], ["/beginner-videos/", "초심자용 교본"]
+  ]);
   const navigation = await read("../app/components/app-navigation.tsx");
-  for (const [href, label] of [["/", "홈"], ["/journal/", "수련일지"], ["/kata/", "카타"], ["/events/", "행사"]]) {
-    assert.match(navigation, new RegExp(`href: \\\"${href.replaceAll("/", "\\/")}\\\", label: \\\"${label}\\\"`));
-  }
-  assert.match(navigation, /<summary[^>]*>전체<\/summary>/);
+  assert.match(navigation, /기타/);
   assert.match(navigation, /usePathname/);
   assert.match(navigation, /aria-current/);
 });
 
-test("전체 menu keeps B routes visible and wraps A-only routes in credential gates", async () => {
+test("기타 menu keeps B routes visible and uses the unchanged A-only credential boundaries", async () => {
+  const { MORE_NAVIGATION } = await import("../app/shell-navigation.mjs");
+  assert.deepEqual(MORE_NAVIGATION.map(item => item.href), [
+    "/onboarding/", "/membership-card/", "/promotion-history/", "/backup/", "/manual/"
+  ]);
+  assert.equal(MORE_NAVIGATION[1].feature, "membership-card");
+  assert.equal(MORE_NAVIGATION[2].feature, "training-progress");
   const navigation = await read("../app/components/app-navigation.tsx");
-  assert.match(navigation, /href="\/beginner-videos\/"/);
-  assert.match(navigation, /href="\/backup\/"/);
-  const membership = navigation.slice(
-    navigation.indexOf("SAMSUNGDANG_FEATURE.MEMBERSHIP_CARD"),
-    navigation.indexOf("SAMSUNGDANG_FEATURE.TRAINING_PROGRESS")
-  );
-  assert.match(membership, /href="\/membership-card\/"/);
-  const promotion = navigation.slice(navigation.indexOf("SAMSUNGDANG_FEATURE.TRAINING_PROGRESS"));
-  assert.match(promotion, /href="\/promotion-history\/"/);
+  assert.match(navigation, /SamsungdangFeatureBoundary.*feature=\{item.feature\}/);
   assert.doesNotMatch(navigation, /disabled/);
-  assert.match(navigation, /href="\/onboarding\/"/);
 });
 
 test("A-only route contents remain fail-closed behind the existing Membership gate", async () => {

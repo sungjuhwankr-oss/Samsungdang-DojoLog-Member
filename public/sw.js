@@ -1,4 +1,4 @@
-const CACHE_NAME = "samsungdang-member-phase4k-c-v1";
+const CACHE_NAME = "samsungdang-member-pre-resume-shell-v1";
 const BUILD_ASSETS = /*__BUILD_ASSETS__*/ [];
 
 function scoped(path) {
@@ -19,6 +19,7 @@ const SHELL_PATHS = [
   "./promotion-history/",
   "./events/",
   "./backup/",
+  "./manual/",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
@@ -92,6 +93,9 @@ self.addEventListener("fetch", (event) => {
           }
           if (url.pathname.endsWith("/backup/") || url.pathname.endsWith("/backup")) {
             return caches.match(scoped("./backup/"));
+          }
+          if (url.pathname.endsWith("/manual/") || url.pathname.endsWith("/manual")) {
+            return caches.match(scoped("./manual/"));
           }
           return caches.match(scoped("./"));
         })

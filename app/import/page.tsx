@@ -1,4 +1,3 @@
-import { Diagnostics } from "../components/diagnostics";
 import { FragmentProbe } from "../components/fragment-probe";
 import { SamsungdangFeatureBoundary } from "../components/samsungdang-feature-boundary";
 import { SAMSUNGDANG_FEATURE } from "../membership-gate.mjs";
@@ -33,7 +32,6 @@ export default function ImportPage() {
         <a href={`${basePath}/`}>홈으로 돌아가기</a>
       </section>
 
-      <Diagnostics />
     </main>
   );
 }

@@ -1,4 +1,3 @@
-import { Diagnostics } from "../components/diagnostics";
 import { OnboardingRegistrationPanel } from "../components/onboarding-registration-panel";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -11,6 +10,5 @@ export default function OnboardingPage() {
       <OnboardingRegistrationPanel />
       <p><a href={`${basePath}/`}>홈으로 돌아가기</a></p>
     </section>
-    <Diagnostics />
   </main>;
 }

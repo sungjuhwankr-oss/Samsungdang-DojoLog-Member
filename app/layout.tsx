@@ -3,6 +3,7 @@ import "./globals.css";
 import { AppNavigation } from "./components/app-navigation";
 import { PwaBootstrap } from "./components/pwa-bootstrap";
 import { MembershipFeatureGateProvider } from "./components/samsungdang-feature-boundary";
+import { ScrollControls } from "./components/scroll-controls";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <MembershipFeatureGateProvider>
           {children}
           <AppNavigation />
+          <ScrollControls />
         </MembershipFeatureGateProvider>
       </body>
     </html>

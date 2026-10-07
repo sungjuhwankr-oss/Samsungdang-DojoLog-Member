@@ -21,9 +21,9 @@ test("production onboarding route uses bundle query, full preview, explicit conf
 
 test("onboarding route is available to B and A without a membership boundary", async () => {
   const [navigation, page] = await Promise.all([
-    read("../app/components/app-navigation.tsx"), read("../app/onboarding/page.tsx")
+    read("../app/shell-navigation.mjs"), read("../app/onboarding/page.tsx")
   ]);
-  assert.match(navigation, /href="\/onboarding\/"/);
+  assert.match(navigation, /href: "\/onboarding\/", label: "회원 전자 증명서 등록" \}/);
   assert.doesNotMatch(page, /SamsungdangFeatureBoundary|MEMBERSHIP_CARD|TRAINING_PROGRESS/);
 });
 

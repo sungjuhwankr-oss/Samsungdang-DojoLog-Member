@@ -35,7 +35,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .shell {
   width: min(100% - 32px, 760px);
   margin: 0 auto;
-  padding: 28px 0 112px;
+  padding: 28px 0 calc(var(--navigation-space, 110px) + 80px);
 }
 
 .brand {
@@ -63,7 +63,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .page-brand { margin-bottom: 18px; }
 .page-brand h1 { font-size: clamp(1.7rem, 7vw, 2.4rem); }
 
-.install-diagnostic {
+.install-panel {
   width: min(100% - 32px, 760px);
   margin: 14px auto 0;
 }
@@ -155,7 +155,8 @@ fieldset { margin: 0; border: 1px solid var(--line); border-radius: 10px; }
   bottom: 0;
   left: 0;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: stretch;
   border-top: 1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 96%, transparent);
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
@@ -164,22 +165,30 @@ fieldset { margin: 0; border: 1px solid var(--line); border-radius: 10px; }
 }
 
 .app-navigation > a,
-.more-navigation > summary {
+.more-navigation > button {
   display: grid;
   place-items: center;
-  min-height: 48px;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  min-height: 64px;
   padding: 5px 2px;
+  border: 0;
   border-radius: 10px;
+  background: transparent;
   color: var(--muted);
-  font-size: 0.82rem;
+  font: inherit;
+  font-size: clamp(0.68rem, 2.6vw, 0.82rem);
   font-weight: 750;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  list-style: none;
 }
 
-.more-navigation > summary::-webkit-details-marker { display: none; }
+.navigation-icon { width: 22px; height: 22px; }
+.navigation-label { max-width: 100%; line-height: 1.35; word-break: keep-all; overflow-wrap: anywhere; }
+.more-navigation > button { width: 100%; height: 100%; }
+.app-navigation :focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .app-navigation [aria-current="page"] { background: var(--bg); color: var(--accent); }
 .more-navigation { position: relative; }
 
@@ -194,9 +203,13 @@ fieldset { margin: 0; border: 1px solid var(--line); border-radius: 10px; }
   border-radius: 14px;
   background: var(--panel);
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.2);
+  max-height: min(420px, calc(100dvh - 150px));
+  overflow-y: auto;
 }
 
 .more-navigation-sheet a {
+  display: block;
+  min-height: 44px;
   padding: 13px 14px;
   border-radius: 9px;
   color: var(--text);
@@ -205,6 +218,33 @@ fieldset { margin: 0; border: 1px solid var(--line); border-radius: 10px; }
 }
 
 .more-navigation-sheet a:hover { background: var(--bg); }
+
+.scroll-controls {
+  position: fixed;
+  z-index: 40;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: calc(var(--navigation-space, 110px) + 12px);
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.14);
+}
+.scroll-controls button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.manual-contents { display: flex; flex-wrap: wrap; gap: 12px 18px; }
+.manual-section { scroll-margin-top: 18px; }
 
 @media (min-width: 760px) {
   .app-navigation {
@@ -474,11 +514,6 @@ fieldset { margin: 0; border: 1px solid var(--line); border-radius: 10px; }
 
 @media (max-width: 520px) {
   .training-day-grid { grid-template-columns: 1fr; }
-}
-
-.storage-diagnostic {
-  padding-top: 16px;
-  margin-top: 16px;
 }
 
 .compact-form {

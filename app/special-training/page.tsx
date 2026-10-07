@@ -1,4 +1,3 @@
-import { Diagnostics } from "../components/diagnostics";
 import { SamsungdangFeatureBoundary } from "../components/samsungdang-feature-boundary";
 import { SpecialTrainingHistory } from "../components/special-training-history";
 import { SpecialTrainingRegistrationPanel } from "../components/special-training-registration-panel";
@@ -21,7 +20,6 @@ export default function SpecialTrainingPage() {
       <SamsungdangFeatureBoundary feature={SAMSUNGDANG_FEATURE.SPECIAL_TRAINING_HISTORY}>
         <SpecialTrainingHistory />
       </SamsungdangFeatureBoundary>
-      <Diagnostics />
     </main>
   );
 }

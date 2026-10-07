@@ -34,12 +34,14 @@ test("invalid credential UI exposes only a reason code, not unverified identity 
 });
 
 test("B navigation hides the digital card while the A-only route remains gated", async () => {
-  const [navigation, route] = await Promise.all([
+  const [navigation, destinations, route] = await Promise.all([
     read("../app/components/app-navigation.tsx"),
+    read("../app/shell-navigation.mjs"),
     read("../app/membership-card/page.tsx")
   ]);
-  assert.match(navigation, /SAMSUNGDANG_FEATURE\.MEMBERSHIP_CARD/);
-  assert.match(navigation, /href="\/membership-card\/"/);
+  assert.match(navigation, /SamsungdangFeatureBoundary.*feature=\{item.feature\}/);
+  assert.match(destinations, /SAMSUNGDANG_FEATURE\.MEMBERSHIP_CARD/);
+  assert.match(destinations, /href: "\/membership-card\/"/);
   assert.match(route, /SAMSUNGDANG_FEATURE\.MEMBERSHIP_CARD/);
   assert.match(route, /<MembershipCard \/>/);
 });

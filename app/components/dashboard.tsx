@@ -123,7 +123,7 @@ export function Dashboard() {
           <span>카타</span><strong>카타 자료실 · 삼성당 심사표</strong><small>97개 canonical Kata</small>
         </Link>
         <Link className="dashboard-card" href="/beginner-videos/">
-          <span>초심자 동영상</span><strong>기본 동작과 대인 기술</strong><small>53개 영상 항목</small>
+          <span>초심자용 교본</span><strong>기본 동작과 대인 기술</strong><small>53개 영상 항목</small>
         </Link>
         <Link className="dashboard-card" href="/events/">
           <span>행사</span><strong>{latestSpecial ? latestSpecial.title : "특별수련·외부행사"}</strong>

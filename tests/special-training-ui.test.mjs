@@ -58,7 +58,7 @@ test("service worker precaches and directly falls back to the special-training r
   assert.match(serviceWorker, /"\.\/special-training\/"/);
   assert.match(serviceWorker, /endsWith\("\/special-training\/"\)/);
   assert.match(serviceWorker, /caches\.match\(scoped\("\.\/special-training\/"\)\)/);
-  assert.match(serviceWorker, /samsungdang-member-phase4k-c-v1/);
+  assert.match(serviceWorker, /samsungdang-member-pre-resume-shell-v1/);
 });
 
 test("Backup v1 UI discloses exclusion, same-device preservation, and cross-device loss risk", async () => {

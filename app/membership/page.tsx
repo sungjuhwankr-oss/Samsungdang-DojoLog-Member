@@ -1,4 +1,3 @@
-import { Diagnostics } from "../components/diagnostics";
 import { MembershipRegistrationPanel } from "../components/membership-registration-panel";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -17,7 +16,6 @@ export default function MembershipPage() {
         <p><a href={`${basePath}/`}>홈으로 돌아가기</a></p>
       </section>
 
-      <Diagnostics />
     </main>
   );
 }

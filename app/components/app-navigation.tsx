@@ -2,53 +2,52 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-import { SAMSUNGDANG_FEATURE } from "../membership-gate.mjs";
+import { bindNavigationDismissal, MORE_NAVIGATION, normalizedNavigationPath, PRIMARY_NAVIGATION } from "../shell-navigation.mjs";
+import { NavigationIcon } from "./navigation-icon";
 import { SamsungdangFeatureBoundary } from "./samsungdang-feature-boundary";
 
-const primary = [
-  { href: "/", label: "홈" },
-  { href: "/journal/", label: "수련일지" },
-  { href: "/kata/", label: "카타" },
-  { href: "/events/", label: "행사" }
-];
-
-const secondaryPaths = ["/beginner-videos/", "/onboarding/", "/membership-card/", "/promotion-history/", "/backup/"];
-
-function normalizedPath(pathname: string) {
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-  const withoutBase = basePath && pathname.startsWith(basePath)
-    ? pathname.slice(basePath.length)
-    : pathname;
-  if (!withoutBase || withoutBase === "/") return "/";
-  return withoutBase.endsWith("/") ? withoutBase : `${withoutBase}/`;
+export function AppNavigation() {
+  const pathname = normalizedNavigationPath(usePathname(), process.env.NEXT_PUBLIC_BASE_PATH ?? "");
+  // A route-specific disclosure cannot survive navigation, even through back/forward.
+  return <NavigationForRoute key={pathname} pathname={pathname} />;
 }
 
-export function AppNavigation() {
-  const pathname = normalizedPath(usePathname());
-  const moreActive = secondaryPaths.includes(pathname);
+function NavigationForRoute({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const moreActive = MORE_NAVIGATION.some(item => item.href === pathname);
+
+  useEffect(() => {
+    if (!open) return;
+    return bindNavigationDismissal(document,
+      target => target instanceof Node && Boolean(moreRef.current?.contains(target)),
+      () => setOpen(false), () => triggerRef.current?.focus());
+  }, [open]);
 
   return (
     <nav className="app-navigation" aria-label="주요 메뉴">
-      {primary.map((item) => (
+      {PRIMARY_NAVIGATION.map((item) => (
         <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined}>
-          {item.label}
+          <NavigationIcon name={item.icon} />
+          <span className="navigation-label">{item.label}</span>
         </Link>
       ))}
-      <details className="more-navigation">
-        <summary aria-current={moreActive ? "page" : undefined}>전체</summary>
-        <div className="more-navigation-sheet">
-          <Link href="/beginner-videos/">초심자 동영상</Link>
-          <Link href="/onboarding/">기존 회원 등록</Link>
-          <SamsungdangFeatureBoundary feature={SAMSUNGDANG_FEATURE.MEMBERSHIP_CARD}>
-            <Link href="/membership-card/">회원증</Link>
-          </SamsungdangFeatureBoundary>
-          <SamsungdangFeatureBoundary feature={SAMSUNGDANG_FEATURE.TRAINING_PROGRESS}>
-            <Link href="/promotion-history/">승단급 이력</Link>
-          </SamsungdangFeatureBoundary>
-          <Link href="/backup/">백업</Link>
-        </div>
-      </details>
+      <div className="more-navigation" ref={moreRef}>
+        <button ref={triggerRef} type="button" aria-expanded={open} aria-controls="more-navigation-sheet" aria-current={moreActive ? "page" : undefined} onClick={() => setOpen(value => !value)}>
+          <NavigationIcon name="more" /><span className="navigation-label">기타</span>
+        </button>
+        {open && <div className="more-navigation-sheet" id="more-navigation-sheet" aria-label="기타 메뉴">
+          {MORE_NAVIGATION.map(item => {
+            const link = <Link href={item.href} onClick={() => setOpen(false)} aria-current={pathname === item.href ? "page" : undefined}>{item.label}</Link>;
+            return item.feature
+              ? <SamsungdangFeatureBoundary key={item.href} feature={item.feature}>{link}</SamsungdangFeatureBoundary>
+              : <span key={item.href} className="more-navigation-item">{link}</span>;
+          })}
+        </div>}
+      </div>
     </nav>
   );
 }

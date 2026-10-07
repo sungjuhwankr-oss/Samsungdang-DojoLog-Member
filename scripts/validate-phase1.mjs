@@ -15,6 +15,7 @@ const mustExist = [
   "app/promotion-history/page.tsx",
   "app/events/page.tsx",
   "app/backup/page.tsx",
+  "app/manual/page.tsx",
   "app/poc/membership-credential-v1/page.tsx",
   "app/components/pwa-bootstrap.tsx",
   "app/session-share.mjs",
@@ -56,7 +57,7 @@ for (const required of [
   "navigator.serviceWorker",
   "(display-mode: standalone)"
 ]) {
-  if (!pwaBootstrap.includes(required)) throw new Error("PWA diagnostic missing " + required);
+  if (!pwaBootstrap.includes(required)) throw new Error("PWA bootstrap missing " + required);
 }
 
 const sw = await readFile(path.join(root, "public/sw.js"), "utf8");
@@ -71,29 +72,32 @@ for (const icon of ["icon-192.png", "icon-512.png", "icon-maskable-512.png", "ap
 const outDir = path.join(root, "out");
 try {
   await access(outDir);
-  for (const rel of [
-    "index.html",
-    "import/index.html",
-    "membership/index.html",
-    "onboarding/index.html",
-    "journal/index.html",
-    "kata/index.html",
-    "beginner-videos/index.html",
-    "membership-card/index.html",
-    "promotion-history/index.html",
-    "events/index.html",
-    "backup/index.html",
-    "poc/credential-verify/index.html",
-    "poc/membership-credential-v1/index.html",
-    "manifest.webmanifest",
-    "sw.js"
-  ]) {
-    await access(path.join(outDir, rel));
-  }
-  const builtSw = await readFile(path.join(outDir, "sw.js"), "utf8");
-  if (builtSw.includes("/*__BUILD_ASSETS__*/ []")) throw new Error("Built service worker precache assets were not injected");
-  if (!builtSw.includes("./_next/static/")) throw new Error("Built service worker does not precache Next.js static assets");
-  console.log("Static export output detected and verified.");
 } catch {
   console.log("Source validation passed. Static export output is not present in this environment.");
+  process.exit(0);
 }
+for (const rel of [
+  "index.html",
+  "import/index.html",
+  "membership/index.html",
+  "onboarding/index.html",
+  "journal/index.html",
+  "kata/index.html",
+  "beginner-videos/index.html",
+  "membership-card/index.html",
+  "promotion-history/index.html",
+  "events/index.html",
+  "backup/index.html",
+  "manual/index.html",
+  "poc/credential-verify/index.html",
+  "poc/membership-credential-v1/index.html",
+  "manifest.webmanifest",
+  "sw.js"
+]) {
+  await access(path.join(outDir, rel));
+}
+const builtSw = await readFile(path.join(outDir, "sw.js"), "utf8");
+if (builtSw.includes("/*__BUILD_ASSETS__*/ []")) throw new Error("Built service worker precache assets were not injected");
+if (!builtSw.includes("./_next/static/")) throw new Error("Built service worker does not precache Next.js static assets");
+if (!builtSw.includes('"./manual/"') || !builtSw.includes('endsWith("/manual/")')) throw new Error("Built service worker does not handle the manual route");
+console.log("Static export output detected and verified.");
