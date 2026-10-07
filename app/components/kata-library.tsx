@@ -5,61 +5,32 @@ import { useEffect, useMemo, useState } from "react";
 import kataCatalog from "../../reference/kata-catalog.v2.json";
 import {
   createExamTable,
-  getCurrentKataPresentation,
-  getKataExamLabels,
-  groupKataByCategory,
-  KATA_CATEGORIES,
   type CanonicalKata
 } from "../kata-library.mjs";
+import { groupKataForPresentation, kataExamBadges, KATA_PRESENTATION_GROUPS } from "../kata-presentation.mjs";
+import { KataVideo } from "./kata-video";
 
 type View = "library" | "exam";
 
-function videoLabel(label: string | undefined, multiple: boolean) {
-  if (!multiple) return "영상 보기";
-  return `영상 보기${label ? ` (${label})` : ""}`;
-}
-
-function KataDetail({ kata, openExam }: { kata: CanonicalKata; openExam(anchor: string): void }) {
-  const presentation = getCurrentKataPresentation(kataCatalog, kata.id);
-  const examLabels = getKataExamLabels(kata);
+function KataRow({ kata, openExam }: { kata: CanonicalKata; openExam(anchor: string): void }) {
   return (
-    <details className="kata-detail" id={`kata-${kata.id}`}>
-      <summary>
-        <strong>{kata.nameKo}</strong>
-        {examLabels.length > 0 && <span>{examLabels.join(" · ")}</span>}
-      </summary>
-      <dl className="kata-metadata">
-        <dt>자세</dt><dd>{kata.form}</dd>
-        <dt>공격</dt><dd>{kata.attack}</dd>
-        <dt>기술</dt><dd>{kata.technique}</dd>
-      </dl>
-      {presentation.status === "video" ? (
-        <div className="video-link-list">
-          {presentation.links.map((link) => (
-            <a key={`${link.url}-${link.label ?? ""}`} className="secondary-button" href={link.url} target="_blank" rel="noreferrer">
-              {videoLabel(link.label, presentation.links.length > 1)}
-            </a>
-          ))}
-        </div>
-      ) : <p className="video-unavailable">영상 없음</p>}
-      {kata.examEntries.length > 0 && (
-        <div className="exam-link-list" aria-label="삼성당 심사표 연결">
-          {kata.examEntries.map((entry) => {
-            const label = entry.track === "kyu" ? `${entry.grade}급` : "유단자용";
-            const anchor = entry.track === "kyu" ? `exam-grade-${entry.grade}` : "exam-dan";
-            return <button key={`${entry.track}-${entry.grade ?? "dan"}`} type="button" onClick={() => openExam(anchor)}>{label} 심사항목</button>;
-          })}
-        </div>
-      )}
-    </details>
+    <article className="kata-row" id={`kata-${kata.id}`}>
+      <strong className="kata-row-name">{kata.nameKo}</strong>
+      <KataVideo id={kata.id} />
+      <div className="kata-exam-badges" aria-label="삼성당 심사표 연결">
+        {kataExamBadges(kata).map(({ label, anchor }) => anchor
+          ? <button key={label} className="kata-exam-badge" type="button" onClick={() => openExam(anchor)}>{label}</button>
+          : <span key={label} className="kata-exam-badge outside-exam">{label}</span>)}
+      </div>
+    </article>
   );
 }
 
 export function KataLibrary() {
   const [view, setView] = useState<View>("library");
-  const [category, setCategory] = useState(KATA_CATEGORIES[0].id);
+  const [category, setCategory] = useState(KATA_PRESENTATION_GROUPS[0].id);
   const [pendingAnchor, setPendingAnchor] = useState<string | null>(null);
-  const groups = useMemo(() => groupKataByCategory(kataCatalog), []);
+  const groups = useMemo(() => groupKataForPresentation(kataCatalog), []);
   const examTable = useMemo(() => createExamTable(kataCatalog), []);
   const currentGroup = groups.find((group) => group.id === category) ?? groups[0];
 
@@ -96,8 +67,8 @@ export function KataLibrary() {
           </div>
           <section aria-labelledby={`category-${currentGroup.id}`}>
             <h2 id={`category-${currentGroup.id}`}>{currentGroup.label}</h2>
-            <div className="kata-detail-list">
-              {currentGroup.kata.map((kata) => <KataDetail key={kata.id} kata={kata} openExam={openExam} />)}
+            <div className="kata-row-list">
+              {currentGroup.kata.map((kata) => <KataRow key={kata.id} kata={kata} openExam={openExam} />)}
             </div>
           </section>
         </div>
@@ -113,12 +84,12 @@ export function KataLibrary() {
           {examTable.kyu.map((section) => (
             <section key={section.grade} id={`exam-grade-${section.grade}`} className="exam-section">
               <h3>{section.grade}급</h3>
-              <ol>{section.kata.map((kata) => <li key={kata.id}><a href={`#kata-${kata.id}`} onClick={() => setView("library")}>{kata.nameKo}</a></li>)}</ol>
+              <ol>{section.kata.map((kata) => <li key={kata.id}><div className="exam-kata-row"><span>{kata.nameKo}</span><KataVideo id={kata.id} /></div></li>)}</ol>
             </section>
           ))}
           <section id="exam-dan" className="exam-section">
             <h3>유단자용</h3>
-            <ol>{examTable.dan.map((kata) => <li key={kata.id}>{kata.nameKo}</li>)}</ol>
+            <ol>{examTable.dan.map((kata) => <li key={kata.id}><div className="exam-kata-row"><span>{kata.nameKo}</span><KataVideo id={kata.id} /></div></li>)}</ol>
           </section>
         </div>
       )}

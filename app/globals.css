@@ -308,8 +308,7 @@ fieldset { margin: 0; border: 1px solid var(--line); border-radius: 10px; }
 }
 
 .section-tabs button,
-.category-navigation button,
-.exam-link-list button {
+.category-navigation button {
   min-height: 42px;
   border: 0;
   border-radius: 9px;
@@ -346,32 +345,36 @@ fieldset { margin: 0; border: 1px solid var(--line); border-radius: 10px; }
 }
 
 .category-navigation button span { color: var(--muted); font-size: 0.82rem; }
-.kata-detail-list { display: grid; gap: 8px; }
-.kata-detail {
+.kata-row-list { display: grid; gap: 8px; }
+.kata-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
   scroll-margin-top: 18px;
   padding: 13px;
   border: 1px solid var(--line);
   border-radius: 11px;
 }
 
-.kata-detail > summary { display: flex; justify-content: space-between; gap: 10px; cursor: pointer; }
-.kata-detail > summary span { color: var(--accent); font-size: 0.84rem; white-space: nowrap; }
-.kata-metadata { display: grid; grid-template-columns: 64px 1fr; gap: 7px; margin: 14px 0; }
-.kata-metadata dt { color: var(--muted); }
-.kata-metadata dd { margin: 0; }
-.video-link-list,
-.exam-link-list { display: flex; flex-wrap: wrap; gap: 7px; }
-.video-unavailable,
+.kata-row-name { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.kata-video-actions,
+.kata-exam-badges { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.kata-video-button { display: inline-flex; align-items: center; text-decoration: none; font-size: 0.86rem; }
+.kata-video-button:hover { background: var(--bg); }
+.kata-video-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .kata-video-state { color: var(--muted); font-size: 0.86rem; }
 .kata-video-state.unknown { color: var(--warn); }
-.exam-link-list { margin-top: 12px; }
-.exam-link-list button { min-height: 36px; padding: 6px 9px; border: 1px solid var(--line); color: var(--accent); }
+.kata-exam-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--accent); font: inherit; font-size: 0.84rem; font-weight: 750; }
+button.kata-exam-badge { cursor: pointer; }
+.outside-exam { color: var(--muted); }
 .exam-section { scroll-margin-top: 18px; padding-top: 10px; }
 .exam-section + .exam-section { border-top: 1px solid var(--line); }
 .exam-section li { padding: 4px 0; }
+.exam-kata-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.exam-kata-row > span:first-child { min-width: 0; overflow-wrap: anywhere; }
 
 .saved-kata-label { display: grid; gap: 4px; min-width: 0; }
-.saved-kata-video-links { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.86rem; }
 .snapshot-box li { margin: 5px 0; }
 
 .beginner-video-list {

@@ -127,7 +127,8 @@ test("known no-video Kata exposes the explicit 영상 없음 state", async () =>
   const presentation = getCurrentKataPresentation(catalog, "검-아와세-1번");
   assert.equal(presentation.status, "no-video");
   assert.equal(presentation.links.length, 0);
-  assert.match(await read("../app/components/training-log.tsx"), /영상 없음/);
+  assert.match(await read("../app/components/kata-video.tsx"), /영상 없음/);
+  assert.match(await read("../app/components/training-log.tsx"), /<KataVideo id=\{kata.id\}/);
 });
 
 test("exam labels use exact N급 and 유단자용 wording", () => {
@@ -160,7 +161,8 @@ test("Kata UI provides equal library/exam tabs, full-table anchors, and current 
   assert.match(source, /삼성당 심사표/);
   assert.match(source, /exam-grade-/);
   assert.match(source, /응시 급까지 앞 급수의 심사항목을 누적/);
-  assert.match(source, /getCurrentKataPresentation\(kataCatalog, kata\.id\)/);
+  assert.match(source, /<KataVideo id=\{kata.id\}/);
+  assert.match(await read("../app/components/kata-video.tsx"), /getCurrentKataPresentation\(kataCatalog, id\)/);
   assert.doesNotMatch(source, /최초 배정 급|급부터/);
 });
 

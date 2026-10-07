@@ -3,7 +3,8 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import kataCatalog from "../../reference/kata-catalog.v2.json";
-import { getCurrentKataPresentation } from "../kata-library.mjs";
+import { groupKataForPresentation } from "../kata-presentation.mjs";
+import { KataVideo } from "./kata-video";
 import { listMemoSessions } from "../training-journal.mjs";
 import type { HydratedTrainingSession, SharedSessionSnapshotRecord } from "../training-records.mjs";
 import {
@@ -28,29 +29,8 @@ function sessionLabel(record: Pick<HydratedTrainingSession, "source" | "sessionN
   return record.source === "shared" ? `공유수업 ${record.sessionNo}` : `개인수련 · 기록 ${record.sessionNo}`;
 }
 
-function CurrentKataVideo({ id }: { id: string }) {
-  const presentation = getCurrentKataPresentation(kataCatalog, id);
-  if (presentation.status === "unknown") {
-    return <span className="kata-video-state unknown">카탈로그 외 기록</span>;
-  }
-  if (presentation.status === "no-video") {
-    return <span className="kata-video-state">영상 없음</span>;
-  }
-  return (
-    <span className="saved-kata-video-links">
-      {presentation.links.map((link, index) => (
-        <a key={`${link.url}-${link.label ?? ""}`} href={link.url} target="_blank" rel="noreferrer">
-          {presentation.links.length === 1
-            ? "영상 보기"
-            : `영상 보기${link.label ? ` (${link.label})` : ` ${index + 1}`}`}
-        </a>
-      ))}
-    </span>
-  );
-}
-
 function KataEditor({ values, onChange }: { values: KataValue[]; onChange(values: KataValue[]): void }) {
-  const available = kataCatalog.kata.filter((kata) => !values.some((value) => value.id === kata.id));
+  const groups = groupKataForPresentation(kataCatalog);
   const [selectedId, setSelectedId] = useState("");
 
   function addSelected() {
@@ -66,7 +46,7 @@ function KataEditor({ values, onChange }: { values: KataValue[]; onChange(values
         <ul className="editable-kata-list">
           {values.map((kata) => (
             <li key={kata.id}>
-              <span className="saved-kata-label"><span>{kata.name}</span><CurrentKataVideo id={kata.id} /></span>
+              <span className="saved-kata-label"><span>{kata.name}</span><KataVideo id={kata.id} /></span>
               <button type="button" className="secondary-button" onClick={() => onChange(values.filter((item) => item.id !== kata.id))}>삭제</button>
             </li>
           ))}
@@ -75,7 +55,12 @@ function KataEditor({ values, onChange }: { values: KataValue[]; onChange(values
       <div className="inline-controls">
         <select aria-label="추가할 카타" value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
           <option value="">카타 선택</option>
-          {available.map((kata) => <option key={kata.id} value={kata.id}>{kata.nameKo}</option>)}
+          {groups.map((group) => (
+            <optgroup key={group.id} label={group.label}>
+              {group.kata.filter((kata) => !values.some((value) => value.id === kata.id))
+                .map((kata) => <option key={kata.id} value={kata.id}>{kata.nameKo}</option>)}
+            </optgroup>
+          ))}
         </select>
         <button type="button" className="secondary-button" disabled={!selectedId} onClick={addSelected}>카타 추가</button>
       </div>
@@ -88,7 +73,7 @@ function SnapshotView({ snapshot }: { snapshot: SharedSessionSnapshotRecord }) {
     <div className="snapshot-box" aria-label="공유 원본">
       <p><strong>공유 원본</strong> · 수업 {snapshot.sessionNo} · {snapshot.date}</p>
       {snapshot.kata.length === 0 ? <p className="small">원본 카타 없음</p> : (
-        <ol>{snapshot.kata.map((kata) => <li key={`${kata.id}-${kata.order}`}><span>{kata.name}</span> <CurrentKataVideo id={kata.id} /></li>)}</ol>
+        <ol>{snapshot.kata.map((kata) => <li key={`${kata.id}-${kata.order}`}><span>{kata.name}</span> <KataVideo id={kata.id} /></li>)}</ol>
       )}
     </div>
   );
@@ -175,14 +160,14 @@ function SessionEditor({ record }: { record: HydratedTrainingSession }) {
             <input type="date" value={date} disabled={shared} required onChange={(event) => setDate(event.target.value)} />
           </label>
           {shared && <p className="small">공유수업의 dojo·수업번호·날짜는 변경할 수 없습니다.</p>}
-          <label>
-            메모
-            <textarea value={note} maxLength={20_000} rows={5} onChange={(event) => setNote(event.target.value)} />
-          </label>
           <fieldset>
             <legend>카타</legend>
             <KataEditor values={kata} onChange={setKata} />
           </fieldset>
+          <label>
+            메모
+            <textarea value={note} maxLength={20_000} rows={5} onChange={(event) => setNote(event.target.value)} />
+          </label>
           <div className="button-row">
             <button className="action-button" type="submit" disabled={busy}>변경 저장</button>
             {shared && <button className="secondary-button" type="button" disabled={busy} onClick={showSnapshot}>공유 원본 보기</button>}
@@ -265,8 +250,8 @@ export function TrainingLog() {
             <summary>개인수련 추가</summary>
             <form className="compact-form" onSubmit={createPersonal}>
               <label>수련일<input type="date" required value={date} onChange={(event) => setDate(event.target.value)} /></label>
-              <label>메모<textarea value={note} maxLength={20_000} rows={5} onChange={(event) => setNote(event.target.value)} /></label>
               <fieldset><legend>카타</legend><KataEditor values={kata} onChange={setKata} /></fieldset>
+              <label>메모<textarea value={note} maxLength={20_000} rows={5} onChange={(event) => setNote(event.target.value)} /></label>
               <button className="action-button" type="submit">개인수련 저장</button>
             </form>
             <p className="small">과거 날짜와 같은 날짜의 복수 수련을 기록할 수 있습니다. 카타 없이도 저장할 수 있습니다.</p>
