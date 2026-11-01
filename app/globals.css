@@ -125,6 +125,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .event-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .event-card { padding: 18px 0; border-top: 1px solid var(--line); }
 .event-card h3, .event-card p { margin: 0; }
+.event-summary { cursor: pointer; min-height: 56px; padding: 6px 0; }
+.event-summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.event-summary-content { display: inline-grid; gap: 5px; width: calc(100% - 28px); vertical-align: middle; }
+.event-summary-content strong { overflow-wrap: anywhere; }
+.event-summary-content span { color: var(--muted); font-size: 0.88rem; }
+.event-details { display: grid; gap: 12px; padding: 14px 0 4px; }
 .event-session-row { grid-template-columns: minmax(130px, 0.35fr) minmax(0, 1fr) auto; align-items: end; margin: 10px 0; }
 .event-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .event-check { display: flex !important; flex-direction: row !important; gap: 9px; align-items: start; margin: 8px 0; }

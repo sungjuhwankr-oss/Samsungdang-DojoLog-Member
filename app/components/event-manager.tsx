@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   createExternalEvent,
@@ -18,6 +18,7 @@ import type {
 } from "../event-store.mjs";
 
 type SessionDraft = { sessionId?: string; date: string; label: string };
+type ParticipationFeedback = { kind: "saving" | "success" | "error"; message: string };
 type ExternalDraft = {
   title: string;
   organizer: string;
@@ -40,6 +41,8 @@ export function EventManager() {
   const [draft, setDraft] = useState<ExternalDraft>(emptyDraft);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [participation, setParticipation] = useState<Record<string, string[]>>({});
+  const [participationFeedback, setParticipationFeedback] = useState<Record<string, ParticipationFeedback>>({});
+  const savingParticipationIds = useRef(new Set<string>());
   const [memos, setMemos] = useState<Record<string, string>>({});
 
   const reload = useCallback(async () => {
@@ -58,7 +61,7 @@ export function EventManager() {
     } catch {
       setStatus("error");
     }
-  }, []);
+  }, [setMemos]);
 
   useEffect(() => {
     const timer = window.setTimeout(reload, 0);
@@ -126,12 +129,42 @@ export function EventManager() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const changeParticipation = (eventId: string, sessionId: string, checked: boolean) => {
+    setParticipation(current => ({
+      ...current,
+      [eventId]: checked
+        ? [...(current[eventId] ?? []), sessionId]
+        : (current[eventId] ?? []).filter(id => id !== sessionId)
+    }));
+    setParticipationFeedback(current => {
+      if (!current[eventId]) return current;
+      const next = { ...current };
+      delete next[eventId];
+      return next;
+    });
+  };
+
   const saveParticipation = async (eventId: string) => {
+    if (savingParticipationIds.current.has(eventId)) return;
+    savingParticipationIds.current.add(eventId);
+    const selectedSessionIds = [...(participation[eventId] ?? [])];
+    setParticipationFeedback(current => ({
+      ...current,
+      [eventId]: { kind: "saving", message: "참가 기록을 저장 중입니다." }
+    }));
     try {
-      await updateSpecialParticipation(eventId, participation[eventId] ?? []);
-      setMessage("참가 session 선택과 변경 이력을 저장했습니다.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "참가 session을 저장하지 못했습니다.");
+      await updateSpecialParticipation(eventId, selectedSessionIds);
+      setParticipationFeedback(current => ({
+        ...current,
+        [eventId]: { kind: "success", message: `참가 기록을 저장했습니다. 현재 참가 ${selectedSessionIds.length}회` }
+      }));
+    } catch {
+      setParticipationFeedback(current => ({
+        ...current,
+        [eventId]: { kind: "error", message: "참가 기록을 저장하지 못했습니다. 기존 기록은 유지됩니다." }
+      }));
+    } finally {
+      savingParticipationIds.current.delete(eventId);
     }
   };
 
@@ -183,30 +216,44 @@ export function EventManager() {
       {domain.verified.filter(event => matches(event, `samsungdang:${event.eventId}`)).map(event => {
         const eventKey = `samsungdang:${event.eventId}`;
         const selected = new Set(participation[event.eventId] ?? []);
+        const savedSelected = new Set(event.participation?.selectedSessionIds ?? []);
+        const hasUnsavedSelection = selected.size !== savedSelected.size || [...selected].some(id => !savedSelected.has(id));
+        const totalSessions = "sessions" in event.payload ? event.payload.sessions.length : 0;
+        const feedback = participationFeedback[event.eventId];
+        const saving = feedback?.kind === "saving";
         return <article className="event-card" key={eventKey}>
-          <h3>{event.title}</h3>
-          <p>{event.endDate ? `${event.startDate} ~ ${event.endDate}` : event.startDate} · {event.instructor}</p>
-          {event.credentialVersion === 1 ? <>
-            <p className="small">Credential v1 · session 정보 없음 · 참가 session 0회</p>
-            <p className="small">날짜를 근거로 session을 자동 추정하지 않습니다.</p>
-          </> : <>
-            <fieldset>
-              <legend>실제 참가 session</legend>
-              {("sessions" in event.payload ? event.payload.sessions : []).map(session => <label className="event-check" key={session.sessionId}>
-                <input type="checkbox" checked={selected.has(session.sessionId)} onChange={changeEvent => setParticipation(current => ({
-                  ...current,
-                  [event.eventId]: changeEvent.target.checked
-                    ? [...(current[event.eventId] ?? []), session.sessionId]
-                    : (current[event.eventId] ?? []).filter(id => id !== session.sessionId)
-                }))} />
-                <span>{session.date} · {session.label}</span>
-              </label>)}
-            </fieldset>
-            <p className="small">이 선택은 본인이 기록한 참가 정보이며 암호학적으로 검증된 출석 증명이 아닙니다.</p>
-            <button type="button" className="button-secondary" onClick={() => saveParticipation(event.eventId)}>참가 선택 저장</button>
-          </>}
-          <label>Member 행사 메모<textarea value={memos[eventKey] ?? ""} onChange={memoEvent => setMemos(current => ({ ...current, [eventKey]: memoEvent.target.value }))} /></label>
-          <button type="button" className="button-secondary" onClick={() => saveMemo(eventKey)}>메모 저장</button>
+          <details className="event-collapsible">
+            <summary className="event-summary">
+              <span className="event-summary-content">
+                <strong>{event.title}</strong>
+                <span>{event.endDate ? `${event.startDate} ~ ${event.endDate}` : event.startDate} · {event.instructor}</span>
+                <span>{event.credentialVersion === 1 ? "참가 회차 0회 (v1)" : `저장된 참가 ${savedSelected.size}/${totalSessions}회${hasUnsavedSelection ? " · 미저장 변경" : ""}`}</span>
+              </span>
+            </summary>
+            <div className="event-details">
+              {event.credentialVersion === 1 ? <>
+                <p className="small">Credential v1 · session 정보 없음 · 참가 session 0회</p>
+                <p className="small">날짜를 근거로 session을 자동 추정하지 않습니다.</p>
+              </> : <>
+                <fieldset>
+                  <legend>실제 참가 session</legend>
+                  {("sessions" in event.payload ? event.payload.sessions : []).map(session => <label className="event-check" key={session.sessionId}>
+                    <input type="checkbox" checked={selected.has(session.sessionId)} disabled={saving}
+                      onChange={changeEvent => changeParticipation(event.eventId, session.sessionId, changeEvent.target.checked)} />
+                    <span>{session.date} · {session.label}</span>
+                  </label>)}
+                </fieldset>
+                <p className="small">이 선택은 본인이 기록한 참가 정보이며 암호학적으로 검증된 출석 증명이 아닙니다.</p>
+                <button type="button" className="button-secondary" disabled={saving} onClick={() => saveParticipation(event.eventId)}>
+                  {saving ? "저장 중…" : "참가 선택 저장"}
+                </button>
+                {feedback && <p className={feedback.kind === "success" ? "status-ok" : feedback.kind === "error" ? "status-warn" : "small"}
+                  role={feedback.kind === "error" ? "alert" : "status"}>{feedback.message}</p>}
+              </>}
+              <label>Member 행사 메모<textarea value={memos[eventKey] ?? ""} onChange={memoEvent => setMemos(current => ({ ...current, [eventKey]: memoEvent.target.value }))} /></label>
+              <button type="button" className="button-secondary" onClick={() => saveMemo(eventKey)}>메모 저장</button>
+            </div>
+          </details>
         </article>;
       })}
       {activeExternal.filter(event => matches(event, `external:${event.eventId}`)).map(event => {
