@@ -628,6 +628,29 @@ button.kata-exam-badge { cursor: pointer; }
   font-weight: 700;
 }
 
+.create-session-box > .create-session-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-weight: 800;
+  list-style: none;
+}
+
+.create-session-toggle::-webkit-details-marker { display: none; }
+.create-session-toggle::after { content: "펼치기"; margin-left: auto; font-size: 0.8rem; }
+.create-session-toggle-icon { font-size: 1.25rem; line-height: 1; }
+.create-session-box[open] > .create-session-toggle { background: var(--panel); color: var(--accent); }
+.create-session-box[open] > .create-session-toggle::after { content: "접기"; }
+.create-session-box > .create-session-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
 .create-session-box > .compact-form,
 .session-edit-form { margin-top: 1rem; }
 

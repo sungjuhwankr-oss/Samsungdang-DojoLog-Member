@@ -247,7 +247,10 @@ export function TrainingLog() {
 
         {view === "all" ? <div role="tabpanel">
           <details className="create-session-box">
-            <summary>개인수련 추가</summary>
+            <summary className="create-session-toggle">
+              <span className="create-session-toggle-icon" aria-hidden="true">＋</span>
+              <span>개인수련 추가</span>
+            </summary>
             <form className="compact-form" onSubmit={createPersonal}>
               <label>수련일<input type="date" required value={date} onChange={(event) => setDate(event.target.value)} /></label>
               <fieldset><legend>카타</legend><KataEditor values={kata} onChange={setKata} /></fieldset>
