@@ -2,7 +2,8 @@
 const DB_NAME = "samsungdang-dojolog-member";
 const DB_VERSION = 6;
 const REQUIRED_STORES = [
-  "onboardingReceipt", "specialTrainingHistory", "credentialArchive", "eventParticipation"
+  "onboardingReceipt", "specialTrainingHistory", "credentialArchive", "eventParticipation",
+  "eventChangeHistory", "eventMemo", "externalEvent"
 ];
 
 function requestResult(request) {
@@ -65,12 +66,16 @@ export async function inspectMemberIndexedDb(factory = indexedDB) {
     const specialTask = requestResult(transaction.objectStore("specialTrainingHistory").getAll());
     const archiveTask = requestResult(transaction.objectStore("credentialArchive").getAll());
     const participationTask = requestResult(transaction.objectStore("eventParticipation").getAll());
-    const [counts, onboarding, special, archive, participation] = await Promise.all([
-      countsTask, onboardingTask, specialTask, archiveTask, participationTask
+    const historyTask = requestResult(transaction.objectStore("eventChangeHistory").getAll());
+    const memoTask = requestResult(transaction.objectStore("eventMemo").getAll());
+    const externalTask = requestResult(transaction.objectStore("externalEvent").getAll());
+    const [counts, onboarding, special, archive, participation, history, memos, external] = await Promise.all([
+      countsTask, onboardingTask, specialTask, archiveTask, participationTask,
+      historyTask, memoTask, externalTask
     ]);
 
     return {
-      schema: "samsungdang-dojolog-read-only-inventory-v1",
+      schema: "samsungdang-dojolog-read-only-inventory-v2",
       database: DB_NAME,
       databaseVersion: existing.version,
       readOnly: true,
@@ -94,6 +99,29 @@ export async function inspectMemberIndexedDb(factory = indexedDB) {
         eventId: row.eventId,
         sessionCount: Array.isArray(row.selectedSessionIds) ? row.selectedSessionIds.length : 0,
         updatedAt: row.updatedAt
+      })),
+      eventChangeHistory: history.map(row => ({
+        changeId: row.changeId,
+        eventKey: row.eventKey,
+        kind: row.kind,
+        changedAt: row.changedAt,
+        beforeSessionCount: Array.isArray(row.before?.selectedSessionIds) ? row.before.selectedSessionIds.length : null,
+        afterSessionCount: Array.isArray(row.after?.selectedSessionIds) ? row.after.selectedSessionIds.length : null,
+        beforeRevision: typeof row.before?.revision === "number" ? row.before.revision : null,
+        afterRevision: typeof row.after?.revision === "number" ? row.after.revision : null
+      })),
+      eventMemo: memos.map(row => ({
+        eventKey: row.eventKey,
+        updatedAt: row.updatedAt,
+        hasContent: typeof row.memo === "string" && row.memo.length > 0
+      })),
+      externalEvent: external.map(row => ({
+        eventId: row.eventId,
+        revision: row.revision,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+        deletedAt: row.deletedAt ?? null,
+        sessionCount: Array.isArray(row.sessions) ? row.sessions.length : null
       }))
     };
   } finally {

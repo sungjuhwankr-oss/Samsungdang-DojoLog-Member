@@ -24,7 +24,8 @@ test("read-only inspector returns projected IDs and counts without changing any 
   const factory = new IDBFactory();
   const database = await openTrainingDatabase(factory);
   const tx = database.transaction([
-    "onboardingReceipt", "specialTrainingHistory", "credentialArchive", "eventParticipation"
+    "onboardingReceipt", "specialTrainingHistory", "credentialArchive", "eventParticipation",
+    "eventChangeHistory", "eventMemo", "externalEvent"
   ], "readwrite");
   const onboarding = {
     onboardingId: "on1_fixture", credentialId: "c1_onboard", memberId: "ASD-000",
@@ -42,6 +43,9 @@ test("read-only inspector returns projected IDs and counts without changing any 
   tx.objectStore("specialTrainingHistory").add(special);
   tx.objectStore("credentialArchive").add({ credentialId: "c1_archive", domain: "special-training", eventId: "st1_fixture", archivedAt: "2026-11-01T02:00:00Z" });
   tx.objectStore("eventParticipation").add({ eventId: "st1_fixture", selectedSessionIds: ["s1"], updatedAt: "2026-11-01T03:00:00Z" });
+  tx.objectStore("eventChangeHistory").add({ changeId: "eh1_fixture", eventKey: "samsungdang:st1_fixture", kind: "participation-change", changedAt: "2026-11-01T03:00:00Z", before: null, after: { selectedSessionIds: ["s1"], revision: 2, secret: "must-not-export" } });
+  tx.objectStore("eventMemo").add({ eventKey: "samsungdang:st1_fixture", memo: "private memo must-not-export", updatedAt: "2026-11-01T03:00:00Z" });
+  tx.objectStore("externalEvent").add({ eventId: "xe1_fixture", title: "private event must-not-export", revision: 1, createdAt: "2026-11-01T02:00:00Z", updatedAt: "2026-11-01T03:00:00Z", deletedAt: null, sessions: [{sessionId: "xes1_01"}] });
   await new Promise((resolve, reject) => { tx.oncomplete = resolve; tx.onerror = tx.onabort = () => reject(tx.error); });
 
   const before = await requestResult(database.transaction("onboardingReceipt", "readonly").objectStore("onboardingReceipt").getAll());
@@ -57,6 +61,12 @@ test("read-only inspector returns projected IDs and counts without changing any 
   assert.equal(result.specialTraining[0].sessionCount, 2);
   assert.equal(result.credentialArchive[0].credentialId, "c1_archive");
   assert.equal(result.eventParticipation[0].sessionCount, 1);
+  assert.equal(result.schema, "samsungdang-dojolog-read-only-inventory-v2");
+  assert.equal(result.eventChangeHistory[0].eventKey, "samsungdang:st1_fixture");
+  assert.equal(result.eventChangeHistory[0].afterSessionCount, 1);
+  assert.equal(result.eventChangeHistory[0].afterRevision, 2);
+  assert.equal(result.eventMemo[0].hasContent, true);
+  assert.equal(result.externalEvent[0].eventId, "xe1_fixture");
   const text = JSON.stringify(result);
   assert.ok(!text.includes("must-not-export"));
   assert.ok(!text.includes("Sensitive Test Name"));

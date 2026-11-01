@@ -42,7 +42,7 @@ export function ReadOnlyInventoryPanel() {
 
   return <section className="panel">
     <h2>현재 브라우저 데이터 식별</h2>
-    <p>이 화면은 저장소별 기록 수와 인증·행사의 ID 및 날짜만 조회합니다. 이름, 전자 증명서 원문, 개인키는 출력하지 않습니다.</p>
+    <p>저장소별 기록 수, 인증·행사 ID와 연결된 변경 이력·메모의 키만 조회합니다. 이름, 메모 본문, 변경 전후 원본, 전자 증명서 원문, 개인키는 출력하지 않습니다.</p>
     <p className="status-warn">A(삼성 인터넷)와 B(웨일)에서 각각 설치된 회원용 앱을 실행하여 확인하십시오. 다른 브라우저로 이동하면 같은 데이터가 아닐 수 있습니다.</p>
     <label>현재 환경: <select value={environment} disabled={busy} onChange={event => setEnvironment(event.target.value === "B" ? "B" : "A")}>
       <option value="A">A · 삼성 인터넷</option>
