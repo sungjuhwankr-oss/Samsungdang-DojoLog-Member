@@ -133,6 +133,14 @@ export function Dashboard() {
           <span>백업</span><strong>Backup v1</strong><small>내보내기와 복원</small>
         </Link>
 
+        {!isMember && (
+          <Link className="dashboard-card" href="/onboarding/">
+            <span>회원증</span>
+            <strong>회원 전자 증명서 등록 후 표시</strong>
+            <small>회원증은 등록된 브라우저의 홈 및 ‘기타’ 메뉴에서 확인할 수 있습니다.</small>
+          </Link>
+        )}
+
         {isMember && (
           <>
             <Link className="dashboard-card member-card-link" href="/membership-card/">

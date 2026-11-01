@@ -15,7 +15,13 @@ export default function ImportPage() {
       <section className="panel">
         <SamsungdangFeatureBoundary
           feature={SAMSUNGDANG_FEATURE.SESSION_SHARE_IMPORT}
-          fallback={<p className="status-warn" role="status">요청한 화면을 현재 사용할 수 없습니다.</p>}
+          fallback={
+            <div role="status">
+              <p className="status-warn">요청한 화면을 현재 사용할 수 없습니다.</p>
+              <p>현재 브라우저에서 검증된 회원 전자 증명서를 확인하지 못했습니다. 수련기록 링크는 회원 등록이 확인된 브라우저에서 열어야 합니다.</p>
+              <p className="small">다른 브라우저나 설치된 앱에서 이미 회원증을 사용하고 있다면 그 환경에서 링크를 열어 보십시오. 기존 앱 데이터는 삭제하지 마십시오.</p>
+            </div>
+          }
         >
           <>
             <h2>수련기록 가져오기</h2>

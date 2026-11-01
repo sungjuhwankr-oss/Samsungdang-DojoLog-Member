@@ -15,6 +15,10 @@ const TECHNIQUE_ORDER = Object.freeze([
   "천지던지기", "회전던지기", "호흡던지기", "입기 호흡법", "십자던지기", "허리던지기", "합기떨어뜨리기"
 ]);
 
+// Match the Instructor app's named technique headings while retaining the
+// Member app's four existing top-level catalogue groups and all 97 IDs.
+export const HOMBU_TECHNIQUE_HEADINGS = TECHNIQUE_ORDER;
+
 function techniqueCategory(kata) {
   if (kata.nameKo === "엇서한손잡기 구석던지기") return "호흡던지기";
   if (kata.technique === "내회전던지기" || kata.technique === "외회전던지기") return "회전던지기";
@@ -39,6 +43,33 @@ export function groupKataForPresentation(catalog) {
     label: group.label,
     kata: orderHombuKataPresentation(catalog.kata.filter((kata) => group.categoryIds.includes(kata.categoryId)))
   }));
+}
+
+export function groupKataForLibrarySections(group) {
+  const { id, kata } = group;
+  let labels;
+  let heading;
+  if (id === "taijutsu") {
+    heading = techniqueCategory;
+    const observed = [...new Set(kata.map(heading))];
+    labels = [...TECHNIQUE_ORDER.filter(label => observed.includes(label)),
+      ...observed.filter(label => !TECHNIQUE_ORDER.includes(label)).sort((a, b) => a.localeCompare(b, "ko"))];
+  } else if (id === "sword-knife") {
+    heading = item => item.categoryId === "tanto" ? "단도 뺏기"
+      : item.nameKo.startsWith("검 뺏기") ? "검 뺏기" : "검술·검 아와세";
+    labels = ["단도 뺏기", "검 뺏기", "검술·검 아와세"];
+  } else if (id === "jo") {
+    heading = item => item.nameKo.startsWith("장 뺏기") ? "장 뺏기" : "장술·장 아와세";
+    labels = ["장 뺏기", "장술·장 아와세"];
+  } else {
+    heading = () => "2인 잡기";
+    labels = ["2인 잡기"];
+  }
+  return labels.map((label, index) => ({
+    id: `${id}-${index}`,
+    label,
+    kata: kata.filter(item => heading(item) === label)
+  })).filter(section => section.kata.length > 0);
 }
 
 export function kataVideoActions(links) {

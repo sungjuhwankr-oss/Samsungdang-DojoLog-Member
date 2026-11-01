@@ -72,7 +72,9 @@ function ValidSessionPreview({
           return (
             <li key={kata.id + "-" + index}>
               <strong>{kata.name}</strong>
-              <span className="small">ID: {kata.id}</span>
+              {validation.status !== KATA_CATALOG_STATUS.KNOWN_MATCH && (
+                <span className="small">검증용 ID: {kata.id}</span>
+              )}
 
               {validation.status === KATA_CATALOG_STATUS.UNKNOWN_ID && (
                 <>

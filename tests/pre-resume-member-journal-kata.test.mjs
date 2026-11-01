@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { createExamTable, getCurrentKataPresentation } from "../app/kata-library.mjs";
-import { groupKataForPresentation, orderHombuKataPresentation, kataVideoActions, kataExamBadges } from "../app/kata-presentation.mjs";
+import { groupKataForLibrarySections, groupKataForPresentation, HOMBU_TECHNIQUE_HEADINGS, orderHombuKataPresentation, kataVideoActions, kataExamBadges } from "../app/kata-presentation.mjs";
 import { createMemoryJournalRepository } from "../app/training-journal.mjs";
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), "utf8");
@@ -87,6 +87,16 @@ test("C2 exactly four groups cover every stable canonical ID once", () => {
     ["taijutsu", "기본 체술", 64], ["sword-knife", "검/단도", 15], ["jo", "장", 15], ["multi-other", "2인 이상", 3]
   ]);
   assert.deepEqual(groups().flatMap(g => g.kata.map(k => k.id)).sort(), catalog.kata.map(k => k.id).sort());
+});
+test("Member Kata library adds Instructor technique headings without changing four navigation groups or 97 canonical IDs", () => {
+  const sections = groups().map(group => ({ id: group.id, sections: groupKataForLibrarySections(group) }));
+  assert.deepEqual(sections[0].sections.map(section => section.label), HOMBU_TECHNIQUE_HEADINGS);
+  assert.deepEqual(sections[1].sections.map(section => section.label), ["단도 뺏기", "검 뺏기", "검술·검 아와세"]);
+  assert.deepEqual(sections[2].sections.map(section => section.label), ["장 뺏기", "장술·장 아와세"]);
+  assert.deepEqual(sections[3].sections.map(section => section.label), ["2인 잡기"]);
+  assert.deepEqual(sections.flatMap(g => g.sections.flatMap(s => s.kata.map(k => k.id))).sort(), catalog.kata.map(k => k.id).sort());
+  assert.match(library, /groupKataForLibrarySections\(currentGroup\)/);
+  assert.match(library, /className="kata-technique-section"/);
 });
 for (const expectedGroup of expected.groups) {
   test(`C1/C2 ${expectedGroup.label} exact internal ordering matches executed Instructor comparator`, () => {
@@ -185,7 +195,8 @@ test("C3 presentation sorting cannot change the 77 kyu and 2 dan-only exam entri
 });
 test("C3 top jumps stay 9급 through 1급 followed by 유단자용", () => {
   assert.deepEqual(createExamTable(catalog).kyu.map(s => s.grade), [9, 8, 7, 6, 5, 4, 3, 2, 1]);
-  const nav = library.slice(library.indexOf('<nav className="exam-anchor-navigation"'), library.indexOf("</nav>"));
+  const start = library.indexOf('<nav className="exam-anchor-navigation"');
+  const nav = library.slice(start, library.indexOf("</nav>", start));
   assert.match(nav, /examTable.kyu.map/); assert.match(nav, /href=\{`#exam-grade-\$\{section.grade\}`\}/);
   assert.match(nav, /<a href="#exam-dan">유단자용<\/a>/);
 });
@@ -195,9 +206,16 @@ test("C3 cumulative exam text, authoritative ordered lists and full sections are
   assert.match(library, /createExamTable\(kataCatalog\)/);
 });
 test("C3 Kata names are plain text and cannot reverse-navigate to library", () => {
-  assert.doesNotMatch(library, /href=\{`#kata-|onClick=\{\(\) => setView\("library"\)\}>\{kata.nameKo\}/);
+  const exam = library.slice(library.indexOf('className="exam-table"'));
+  assert.doesNotMatch(exam, /href=\{`#kata-|onClick=\{\(\) => setView\("library"\)\}>\{kata.nameKo\}/);
   assert.doesNotMatch(library, /<a[^>]*>\{kata.nameKo\}<\/a>/);
   assert.equal([...library.matchAll(/<span>\{kata.nameKo\}<\/span>/g)].length, 2);
+});
+test("C3 exam readability styles preserve all authoritative grade sections and item order", () => {
+  assert.match(library, /className="exam-kata-details"/);
+  assert.match(library, /\{kata.form\} · \{kata.attack\}/);
+  assert.match(css, /\.exam-section li::marker/);
+  assert.match(css, /\.exam-kata-details small/);
 });
 test("C3 both kyu and dan exam lists directly use the same video controls as library", () => {
   assert.equal([...library.matchAll(/<KataVideo id=\{kata.id\}/g)].length, 3);

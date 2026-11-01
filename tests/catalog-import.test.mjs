@@ -160,5 +160,8 @@ test("preview explains both catalog warning types and keeps explicit save", asyn
   assert.match(source, /공유된 이름: \{validation\.name\}/);
   assert.match(source, /현재 카타 이름: \{validation\.canonicalName\}/);
   assert.match(source, /ID는 동일하며 공유된 이름 그대로 저장할 수 있습니다/);
+  assert.match(source, /validation\.status !== KATA_CATALOG_STATUS\.KNOWN_MATCH/);
+  assert.match(source, /검증용 ID: \{kata\.id\}/);
+  assert.doesNotMatch(source, /<span className="small">ID: \{kata\.id\}<\/span>/);
   assert.match(source, /saveTrainingSessionToIndexedDb\(payload\)/);
 });
