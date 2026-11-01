@@ -18,6 +18,8 @@ const legacyStores = [
   PROMOTION_HISTORY_STORE
 ];
 
+const sessionKey = (record) => `${record.dojo}\u0000${record.sessionNo}`;
+
 export async function readBackupV1Data(factory = indexedDB) {
   const database = await openTrainingDatabase(factory);
   try {
@@ -85,6 +87,24 @@ export async function restoreBackupV1ToIndexedDb(value, factory = indexedDB) {
     const profile = transaction.objectStore(MEMBER_PROFILE_STORE);
     const promotions = transaction.objectStore(PROMOTION_HISTORY_STORE);
     const snapshots = transaction.objectStore(SHARED_SESSION_SNAPSHOT_STORE);
+
+    // Backup v1 excludes personal sessions, so restoring its shared records must
+    // not erase personal sessions and their Kata in the same physical stores.
+    const [existingSessions, existingKata] = await Promise.all([
+      requestResult(training.getAll()),
+      requestResult(kata.getAll())
+    ]);
+    const personalSessions = existingSessions.filter((session) => session.source === "personal");
+    const personalKeys = new Set(personalSessions.map(sessionKey));
+    if (backup.data.trainingSession.some((session) => personalKeys.has(sessionKey(session)))) {
+      transaction.abort();
+      throw new BackupValidationError(
+        "personal-session-conflict",
+        "백업의 수련기록이 현재 개인 수련기록과 중복되어 복원할 수 없습니다."
+      );
+    }
+    const personalKata = existingKata.filter((record) => personalKeys.has(sessionKey(record)));
+
     training.clear();
     kata.clear();
     profile.clear();
@@ -96,6 +116,8 @@ export async function restoreBackupV1ToIndexedDb(value, factory = indexedDB) {
       snapshots.put(createSharedSnapshot(migrated, backup.data.sessionKata));
     }
     for (const record of backup.data.sessionKata) kata.put(record);
+    for (const record of personalSessions) training.put(record);
+    for (const record of personalKata) kata.put(record);
     for (const record of backup.data.memberProfile) profile.put(record);
     for (const record of backup.data.promotionHistory) promotions.put(record);
     await transactionDone(transaction);
