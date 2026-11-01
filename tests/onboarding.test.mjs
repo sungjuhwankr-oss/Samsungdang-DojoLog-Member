@@ -18,6 +18,7 @@ import {
   verifyMemberOnboardingToken
 } from "../app/credential/onboarding-verifier.mjs";
 import { deriveCurrentRankWithOnboarding } from "../app/member-data.mjs";
+import { allowsSamsungdangFeature, createMembershipFeatureGate, SAMSUNGDANG_FEATURE } from "../app/membership-gate.mjs";
 import { loadStoredMembershipVerification } from "../app/membership-store.mjs";
 import {
   loadActiveOnboardingState,
@@ -128,7 +129,11 @@ test("preview is mutation-free; confirm is atomic and keeps 0, unknown, and unse
   assert.equal(state.receipt.memberId, "ASD-000");
   const membership = await loadStoredMembershipVerification(factory, { registry: fixture.registry });
   assert.equal(membership.valid, true);
+  assert.equal(membership.credentialType, "member-onboarding");
   assert.deepEqual(membership.verifiedPayload, envelope.signed.payload.membership);
+  const gate = createMembershipFeatureGate(membership);
+  assert.equal(gate.hasValidMembershipCredential, true);
+  assert.equal(allowsSamsungdangFeature(gate, SAMSUNGDANG_FEATURE.SESSION_SHARE_IMPORT), true);
   assert.equal(state.ranks.length, 2);
   assert.equal(state.baselines.find(row => row.subjectId === envelope.signed.payload.currentRankEntryId).value, 0);
   assert.equal(state.baselines.find(row => row.subjectId === catalog.kata[1].id).value, null);

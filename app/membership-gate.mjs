@@ -11,12 +11,14 @@ const KNOWN_FEATURES = new Set(Object.values(SAMSUNGDANG_FEATURE));
 
 /** The gate consumes only a completed production-verifier result. */
 export function createMembershipFeatureGate(verification) {
+  const isMembershipIdentity = verification?.credentialType === "membership" ||
+    verification?.credentialType === "member-onboarding";
   const hasValidMembershipCredential = verification?.valid === true &&
     verification?.reason === "OK" &&
-    verification?.credentialType === "membership" &&
+    isMembershipIdentity &&
     typeof verification?.keyId === "string" &&
     typeof verification?.credentialId === "string" &&
-    verification?.verifiedPayload !== null;
+    verification?.verifiedPayload != null;
 
   return Object.freeze({
     hasValidMembershipCredential,

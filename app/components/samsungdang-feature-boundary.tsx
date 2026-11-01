@@ -10,6 +10,7 @@ import {
   type SamsungdangFeature
 } from "../membership-gate.mjs";
 import { MEMBERSHIP_CHANGED_EVENT } from "../membership-store.mjs";
+import { ONBOARDING_CHANGED_EVENT } from "../onboarding-store.mjs";
 
 const MembershipFeatureGateContext = createContext<MembershipFeatureGate>(
   getCurrentMembershipFeatureGate()
@@ -27,9 +28,11 @@ export function MembershipFeatureGateProvider({ children }: { children: ReactNod
     };
     reload();
     window.addEventListener(MEMBERSHIP_CHANGED_EVENT, reload);
+    window.addEventListener(ONBOARDING_CHANGED_EVENT, reload);
     return () => {
       active = false;
       window.removeEventListener(MEMBERSHIP_CHANGED_EVENT, reload);
+      window.removeEventListener(ONBOARDING_CHANGED_EVENT, reload);
     };
   }, []);
 
