@@ -19,6 +19,7 @@ const SHELL_PATHS = [
   "./promotion-history/",
   "./events/",
   "./backup/",
+  "./diagnostics/",
   "./manual/",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
